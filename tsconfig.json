@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "lib": [
+      "ES6","DOM"
+    ],
+    "noImplicitAny": false,
+    "target": "es6",
+    "module": "commonjs",
+    "rootDir": "./",
+    "outDir": "./build",
+    "esModuleInterop": true,
+    "strict": true,
+    "resolveJsonModule": true,
+    "allowJs": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["__tests__"]
+}
