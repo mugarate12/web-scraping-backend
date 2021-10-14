@@ -42,10 +42,46 @@ export default class DownDetectorController {
       }
     })
 
-    // await page.screenshot({ path: 'downfacebook.png' })
-
     await browser.close()
 
     return res.json({ result })
+  }
+
+  public accessDownDetectorRoutine = async (serviceName: string) => {
+    const url = this.makeUrl(serviceName)
+    const browser = await puppeteer.launch({ headless: false })
+    const page = await browser.newPage()
+
+    await page.setDefaultNavigationTimeout(0)
+    await page.goto(url)
+
+    const result = await page.evaluate(() => {
+      const titleElement = document.getElementsByClassName('entry-title')[0]
+      const titleTextContent = String(titleElement.textContent)
+      
+      // get title
+      const firstLetter = titleTextContent.indexOf('User')
+      const textSlicedToFirstLetter = titleTextContent.slice(firstLetter, titleTextContent.length)
+      const title = textSlicedToFirstLetter.slice(0, textSlicedToFirstLetter.indexOf('\n'))
+
+      const currentServiceProperties = window['DD']['currentServiceProperties']
+      const status = currentServiceProperties['status']
+      const series = currentServiceProperties['series']
+      const baseline = series['baseline']['data']
+      const reports = series['reports']['data']
+
+      return {
+        title,
+        status,
+        baseline,
+        reports
+      }
+    })
+
+    console.log(`${serviceName} status: ${result.status}`)
+
+    await browser.close()
+
+    return
   }
 }
