@@ -21,7 +21,7 @@ app.use(express.json())
 app.use(routes)
 
 // run routines
-routines()
+// routines()
 // setInterval(() => {
 //   oneMinuteRoutines()
 // }, convertMinutesToMilliseconds(3))

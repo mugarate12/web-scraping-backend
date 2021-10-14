@@ -6,6 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
+    "predev": "run-script-os",
+    "predev:win32": "SET NODE_ENV=development&&knex migrate:rollback --all&&knex migrate:latest",
+    "predev:darwin:linux": "export NODE_ENV=development&&knex migrate:rollback --all&&knex migrate:latest",
     "dev": "run-script-os",
     "dev:win32": "nodemon --exec ts-node --files src/cluster.ts",
     "dev:darwin:linux": "nodemon --exec ts-node --files src/server.ts",
@@ -17,11 +20,11 @@
   "dependencies": {
     "axios": "^0.22.0",
     "celebrate": "^15.0.0",
-    "cheerio": "^1.0.0-rc.10",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
-    "http-proxy": "^1.18.1",
+    "knex": "^0.95.11",
+    "mysql2": "^2.3.0",
     "puppeteer": "^10.4.0",
     "request": "^2.88.2",
     "run-script-os": "^1.1.6"
@@ -29,7 +32,6 @@
   "devDependencies": {
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.13",
-    "@types/http-proxy": "^1.17.7",
     "@types/node": "^16.10.3",
     "@types/puppeteer": "^5.4.4",
     "nodemon": "^2.0.13",
