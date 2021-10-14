@@ -10,8 +10,8 @@
     "predev:win32": "SET NODE_ENV=development&&knex migrate:rollback --all&&knex migrate:latest",
     "predev:darwin:linux": "export NODE_ENV=development&&knex migrate:rollback --all&&knex migrate:latest",
     "dev": "run-script-os",
-    "dev:win32": "nodemon --exec ts-node --files src/cluster.ts",
-    "dev:darwin:linux": "nodemon --exec ts-node --files src/server.ts",
+    "dev:win32": "SET NODE_ENV=development&&nodemon --exec ts-node --files src/cluster.ts",
+    "dev:darwin:linux": "export NODE_ENV=development&&nodemon --exec ts-node --files src/server.ts",
     "start": "node build/src/cluster.js"
   },
   "keywords": [],

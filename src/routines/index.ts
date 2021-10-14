@@ -1,5 +1,7 @@
 import { downDetectorController } from './../controllers'
 
+import oneMinuteRoutinesRequests from './oneMinuteRoutines'
+
 export function convertMinutesToMilliseconds(minutes: number) {
   const oneMinuteInMilliseconds = 60000
 
@@ -17,10 +19,7 @@ export async function oneMinuteRoutines() {
   if (runOneMinuteRoutines) {
     runOneMinuteRoutines = false
 
-    console.log('facebook routine')
-    await downDetectorController.accessDownDetectorRoutine('facebook')
-    console.log('instagram routine')
-    await downDetectorController.accessDownDetectorRoutine('instagram')
+    await oneMinuteRoutinesRequests()
   
     await sleep(convertMinutesToMilliseconds(3))
 
