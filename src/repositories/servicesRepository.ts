@@ -28,10 +28,11 @@ export interface updateServiceInterface {
 export default class ServicesRepository {
   private reference = () => connection<serviceInterface>(SERVICES_TABLE_NAME)
 
-  public create = async ({ serviceName }: createServiceInterface) => {
+  public create = async ({ serviceName, update_time }: createServiceInterface) => {
     return this.reference()
       .insert({
-        service_name: serviceName
+        service_name: serviceName,
+        update_time
       })
       .then(() => {
         return
