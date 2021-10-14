@@ -7,6 +7,7 @@ exports.up = function(knex) {
     table.increments('id').notNullable()
 
     table.string('service_name').unique().notNullable()
+    table.integer('update_time').notNullable()
   })
 }
 
