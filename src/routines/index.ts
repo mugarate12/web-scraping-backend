@@ -1,4 +1,4 @@
-import { downDetectorController } from './../controllers'
+import { Server } from 'socket.io'
 
 import oneMinuteRoutinesRequests from './oneMinuteRoutines'
 
@@ -15,20 +15,20 @@ async function sleep(milliseconds: number) {
 let runOneMinuteRoutines = true
 
 // rotinas de um minuto
-export async function oneMinuteRoutines() {
+export async function oneMinuteRoutines(serverIo: Server) {
   if (runOneMinuteRoutines) {
     runOneMinuteRoutines = false
 
-    await oneMinuteRoutinesRequests()
+    await oneMinuteRoutinesRequests(serverIo)
   
-    await sleep(convertMinutesToMilliseconds(3))
+    await sleep(convertMinutesToMilliseconds(2))
 
     runOneMinuteRoutines = true
   }
 }
 
-export default () => {
+export default (serverIo: Server) => {
   setInterval(() => {
-    oneMinuteRoutines()
+    oneMinuteRoutines(serverIo)
   }, 5000)
 }

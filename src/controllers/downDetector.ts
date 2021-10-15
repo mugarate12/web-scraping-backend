@@ -71,6 +71,7 @@ export default class DownDetectorController {
       const reports = series['reports']['data']
 
       return {
+        url,
         title,
         status,
         baseline,
@@ -82,6 +83,6 @@ export default class DownDetectorController {
 
     await browser.close()
 
-    return
+    return result
   }
 }

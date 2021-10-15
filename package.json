@@ -27,7 +27,8 @@
     "mysql2": "^2.3.0",
     "puppeteer": "^10.4.0",
     "request": "^2.88.2",
-    "run-script-os": "^1.1.6"
+    "run-script-os": "^1.1.6",
+    "socket.io": "^4.3.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.12",
