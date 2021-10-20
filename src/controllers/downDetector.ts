@@ -71,6 +71,7 @@ export default class DownDetectorController {
       const reports = series['reports']['data']
 
       return {
+        name: title.split(' ')[title.split('').length - 1], 
         url,
         title,
         status,
