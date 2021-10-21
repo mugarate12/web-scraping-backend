@@ -18,7 +18,7 @@ const io = new Server(server, {
 })
 
 app.use(cors({
-  origin: ['http://localhost:3000', '*', String(process.env.FRONTEND_HOST)],
+  origin: ['http://localhost:3000', 'https://web-scraping-frontend.vercel.app', '*', String(process.env.FRONTEND_HOST)],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['*'],
   exposedHeaders: ['Authorization', 'Content-Type', 'Content-Disposition', 'Access-Control-Allow-Headers', 'Origin', 'Accept', 'X-Requested-With', 'filename'],
