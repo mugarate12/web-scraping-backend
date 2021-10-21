@@ -10,14 +10,31 @@ export default class DownDetectorController {
     return url
   }
 
+  private sleep = (milliseconds: number) => {
+    return new Promise(resolve => setTimeout(resolve, milliseconds))
+  }
+
   public accessDownDetector = async (req: Request, res: Response) => {
     const { serviceName } = req.params
     
-    const browser = await puppeteer.launch({ headless: false })
+    const browser = await puppeteer.launch({ 
+      headless: true,
+      slowMo: 200
+    })
     const page = await browser.newPage()
 
+    await page.setUserAgent('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36')
+
+    // await page.setDefaultTimeout(2000)
     await page.setDefaultNavigationTimeout(0)
+    
     await page.goto(this.makeUrl(serviceName))
+      // .then(async (response) => {
+      //   console.log('status', response.status())
+      //   console.log('status text', response.statusText())
+      //   // const text = await response.text()
+      //   // console.log('response body text', text)
+      // })
 
     const result = await page.evaluate(() => {
       const titleElement = document.getElementsByClassName('entry-title')[0]
@@ -45,12 +62,15 @@ export default class DownDetectorController {
     await browser.close()
 
     return res.json({ result })
+    // return res.json({})
   }
 
   public accessDownDetectorRoutine = async (serviceName: string) => {
     const url = this.makeUrl(serviceName)
-    const browser = await puppeteer.launch({ headless: false })
+    const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'], slowMo: 200 })
     const page = await browser.newPage()
+
+    await page.setUserAgent('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36')
 
     await page.setDefaultNavigationTimeout(0)
     await page.goto(url)
