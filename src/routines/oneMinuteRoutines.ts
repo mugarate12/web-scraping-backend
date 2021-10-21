@@ -39,7 +39,9 @@ export default async function oneMinuteRoutinesRequests(serverIo: Server) {
     .catch(error => console.log('error', error))
 
   if (!!requests) {
-    console.log('requisitando serviços de update em um minuto')
+    if (requests.length > 0) {
+      console.log('requisitando serviços de update em um minuto')
+    }
 
     const requestsPromisses = requests.map(async (request) => {
       const result = await downDetectorController.accessDownDetectorRoutine(request.service_name)
@@ -51,8 +53,9 @@ export default async function oneMinuteRoutinesRequests(serverIo: Server) {
 
     await emitUpdatedMonitoring(serverIo)
     
-    console.log('requisições finalizadas')
-
+    if (requests.length > 0) {
+      console.log('requisições finalizadas')
+    }
     // for (let index = 0; index < requests.length; index++) {
     //   const request = requests[index]
       
