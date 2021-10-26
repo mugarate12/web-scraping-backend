@@ -65,17 +65,16 @@ export default class DownDetectorController {
     // return res.json({})
   }
 
-  public accessDownDetectorRoutine = async (serviceName: string) => {
+  public accessDownDetectorRoutine = async (serviceName: string, browser: puppeteer.Browser) => {
     const url = this.makeUrl(serviceName)
-    const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'], slowMo: 200 })
-    const page = await browser.newPage()
 
-    await page.setUserAgent('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36')
+    const pageInstance = await browser.newPage()
+    await pageInstance.setUserAgent('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36')
 
-    await page.setDefaultNavigationTimeout(0)
-    await page.goto(url)
+    await pageInstance.setDefaultNavigationTimeout(0)
+    await pageInstance.goto(url)
 
-    const result = await page.evaluate(() => {
+    const result = await pageInstance.evaluate(() => {
       const titleElement = document.getElementsByClassName('entry-title')[0]
       const titleTextContent = String(titleElement.textContent)
       
@@ -101,8 +100,11 @@ export default class DownDetectorController {
     })
 
     console.log(`${serviceName} status: ${result.status}`)
+    // console.log(result)
 
-    await browser.close()
+    pageInstance.close()
+
+    // await browser.close()
 
     return result
   }
