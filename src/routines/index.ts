@@ -8,7 +8,7 @@ import oneMinuteRoutinesRequests from './oneMinuteRoutines'
 import { pageInstanceInterface } from './../interfaces/routines'
 
 async function runBrowser() {
-  const browser = await puppeteer.launch({ headless: false, args: ['--no-sandbox'], slowMo: 200 })
+  const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'], slowMo: 200 })
   return browser
 }
 

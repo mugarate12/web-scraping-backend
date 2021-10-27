@@ -1,7 +1,11 @@
 const MONITORING_TABLE_NAME = 'monitoring'
 const SERVICES_TABLE_NAME = 'services'
+const DOWN_DETECTOR_HIST_TABLE_NAME = 'downdetector_hist'
+const DOWN_DETECTOR_CHANGE_TABLE_NAME = 'downdetector_change'
 
 module.exports = {
+  DOWN_DETECTOR_CHANGE_TABLE_NAME,
+  DOWN_DETECTOR_HIST_TABLE_NAME,
   MONITORING_TABLE_NAME,
   SERVICES_TABLE_NAME
 }

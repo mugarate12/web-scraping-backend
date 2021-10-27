@@ -1,6 +1,8 @@
 import { Request, Response } from 'express'
 import puppeteer from 'puppeteer'
 
+import { downDetectorData } from './../interfaces/downDetector'
+
 export default class DownDetectorController {
   private url = 'https://downdetector.com/status/facebook/'
 
@@ -35,6 +37,9 @@ export default class DownDetectorController {
       //   // const text = await response.text()
       //   // console.log('response body text', text)
       // })
+      .catch(error => {
+        console.log(error)
+      })
 
     const result = await page.evaluate(() => {
       const titleElement = document.getElementsByClassName('entry-title')[0]
@@ -46,10 +51,10 @@ export default class DownDetectorController {
       const title = textSlicedToFirstLetter.slice(0, textSlicedToFirstLetter.indexOf('\n'))
 
       const currentServiceProperties = window['DD']['currentServiceProperties']
-      const status = currentServiceProperties['status']
+      const status: string = currentServiceProperties['status']
       const series = currentServiceProperties['series']
-      const baseline = series['baseline']['data']
-      const reports = series['reports']['data']
+      const baseline: Array<downDetectorData> = series['baseline']['data']
+      const reports: Array<downDetectorData> = series['reports']['data']
 
       return {
         title,
@@ -74,7 +79,7 @@ export default class DownDetectorController {
     await pageInstance.setDefaultNavigationTimeout(0)
     await pageInstance.goto(url)
 
-    const result = await pageInstance.evaluate(() => {
+    const data = await pageInstance.evaluate(() => {
       const titleElement = document.getElementsByClassName('entry-title')[0]
       const titleTextContent = String(titleElement.textContent)
       
@@ -84,14 +89,13 @@ export default class DownDetectorController {
       const title = textSlicedToFirstLetter.slice(0, textSlicedToFirstLetter.indexOf('\n'))
 
       const currentServiceProperties = window['DD']['currentServiceProperties']
-      const status = currentServiceProperties['status']
+      const status: string = currentServiceProperties['status']
       const series = currentServiceProperties['series']
-      const baseline = series['baseline']['data']
-      const reports = series['reports']['data']
+      const baseline: Array<downDetectorData> = series['baseline']['data']
+      const reports: Array<downDetectorData> = series['reports']['data']
 
       return {
-        name: title.split(' ')[title.split('').length - 1], 
-        url,
+        name: title.split(' ')[title.split('').length - 1],
         title,
         status,
         baseline,
@@ -99,12 +103,14 @@ export default class DownDetectorController {
       }
     })
 
-    console.log(`${serviceName} status: ${result.status}`)
-    // console.log(result)
+    const result = {
+      url,
+      ...data
+    }
+
+    console.log(`${serviceName} status: ${data.status}`)
 
     pageInstance.close()
-
-    // await browser.close()
 
     return result
   }
