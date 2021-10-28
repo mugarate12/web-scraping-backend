@@ -4,6 +4,7 @@ import { celebrate, Joi, Segments } from 'celebrate'
 import { 
   downDetectorController,
   servicesController,
+  sessionController,
   usersController
 } from './controllers'
 import authJWT from './middlewares/authJWT'
@@ -20,7 +21,7 @@ routes.get('/downDetector/:serviceName', celebrate({
   })
 }), downDetectorController.accessDownDetector)
 
-//users routes
+// users routes
 routes.post('/users', celebrate({
   [Segments.BODY]: Joi.object().keys({
     login: Joi.string().required(),
@@ -33,6 +34,14 @@ routes.put('/users', celebrate({
     password: Joi.string().required()
   })
 }), authJWT, usersController.update)
+
+// session routes
+routes.post('/session', celebrate({
+  [Segments.BODY]: Joi.object().keys({
+    login: Joi.string().required(),
+    password: Joi.string().required()
+  })
+}), sessionController.create)
 
 // services routes
 routes.post('/services', celebrate({
