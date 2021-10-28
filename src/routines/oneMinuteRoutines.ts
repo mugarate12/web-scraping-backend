@@ -7,12 +7,13 @@ import {
 } from './../controllers'
 
 import {
+  downDetectorChangeRepository,
   downDetectorHistRepository,
   monitoringRepository,
   servicesRepository
 } from './../repositories'
 
-import { pageInstanceInterface } from './../interfaces/routines'
+import { downDetectorChangeInterface } from './../repositories/downDetectorChangeRepository'
 import { downDetectorSearchResult } from './../interfaces/downDetector'
 
 function normalizeDownDetectorResult(downDetectorResult: downDetectorSearchResult) {
@@ -30,31 +31,76 @@ function normalizeDownDetectorResult(downDetectorResult: downDetectorSearchResul
   return data
 }
 
+function createStatusChangeString(lastRegistryOfChange: downDetectorChangeInterface[], downDetectorResult: downDetectorSearchResult) {
+  if (lastRegistryOfChange.length > 0) {
+    const lastRegistryStatusLetter = lastRegistryOfChange[0].status_atual[0].toUpperCase()
+    const actualStatusLetter = downDetectorResult.status[0].toUpperCase()
+
+    const change = `${lastRegistryStatusLetter}${actualStatusLetter}`
+
+    return change
+  } else {
+    const actualStatusLetter = downDetectorResult.status[0].toUpperCase()
+
+    return actualStatusLetter
+  }
+}
+
 async function updateOrCreateMonitoringService(downDetectorResult: downDetectorSearchResult) {
   const downDetectorHistory = await downDetectorHistRepository.index({ serviceURL: downDetectorResult.url })
 
   const normalizedData = normalizeDownDetectorResult(downDetectorResult)
   
-  const registryDataPromises = normalizedData.map(async (downDetectorReport) => {
-    let haveRegistry = false
+  // const registryDataPromises = normalizedData.map(async (downDetectorReport) => {
+  //   let haveRegistry = false
 
-    downDetectorHistory.forEach((history) => {
-      if (history.hist_date === downDetectorReport.date) {
-        haveRegistry = true
-      }
-    })
+  //   downDetectorHistory.forEach((history) => {
+  //     if (history.hist_date === downDetectorReport.date) {
+  //       haveRegistry = true
+  //     }
+  //   })
 
-    if (!haveRegistry) {
-      await downDetectorHistRepository.create({
-        site_d: downDetectorResult.url,
-        hist_date: downDetectorReport.date,
-        baseline: downDetectorReport.baseline,
-        notification_count: downDetectorReport.notificationCount
-      })
-    }
+  //   if (!haveRegistry) {
+  //     await downDetectorHistRepository.create({
+  //       site_d: downDetectorResult.url,
+  //       hist_date: downDetectorReport.date,
+  //       baseline: downDetectorReport.baseline,
+  //       notification_count: downDetectorReport.notificationCount
+  //     })
+  //   }
+  // })
+
+  const lastRegistryOfChange = await downDetectorChangeRepository.index({
+    orderBy: { property: 'id', orientation: 'desc' },
+    limit: 1
   })
 
-  await Promise.all(registryDataPromises)
+  // console.log(lastRegistryOfChange);
+
+  if (lastRegistryOfChange.length === 0) {
+    await downDetectorChangeRepository.create({
+      site_c: downDetectorResult.url,
+      hist_date: moment().format('YYYY-MM-DD HH:mm:ss'),
+      status_anterior: '',
+      status_atual: downDetectorResult.status,
+      status_change: createStatusChangeString(lastRegistryOfChange, downDetectorResult)
+    })
+  }
+ 
+  if (lastRegistryOfChange.length > 0 && lastRegistryOfChange[0].status_atual !== downDetectorResult.status) {
+    console.log(lastRegistryOfChange[0].status_atual !== downDetectorResult.status);
+
+    await downDetectorChangeRepository.create({
+      site_c: downDetectorResult.url,
+      hist_date: moment().format('YYYY-MM-DD HH:mm:ss'),
+      status_anterior: lastRegistryOfChange[0].status_atual,
+      status_atual: downDetectorResult.status,
+      status_change: createStatusChangeString(lastRegistryOfChange, downDetectorResult)
+    })
+  } else {
+  }
+
+  // await Promise.all(registryDataPromises)
 }
 
 async function emitUpdatedMonitoring(serverIo: Server) {
