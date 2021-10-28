@@ -1,11 +1,7 @@
 import { Server } from 'socket.io'
 import puppeteer from 'puppeteer'
 
-import { servicesController } from './../controllers'
-import { servicesRepository } from './../repositories'
 import routinesRequests from './downDetectorRoutines'
-
-import { pageInstanceInterface } from './../interfaces/routines'
 
 let runOneMinuteRoutines = true
 let runThreeMinutesRoutines = true

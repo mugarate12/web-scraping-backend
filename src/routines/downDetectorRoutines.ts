@@ -52,22 +52,13 @@ async function updateOrCreateMonitoringService(downDetectorResult: downDetectorS
   const normalizedData = normalizeDownDetectorResult(downDetectorResult)
   
   const registryDataPromises = normalizedData.map(async (downDetectorReport) => {
-    let haveRegistry = false
-
-    downDetectorHistory.forEach((history) => {
-      if (history.hist_date === downDetectorReport.date) {
-        haveRegistry = true
-      }
+    await downDetectorHistRepository.create({
+      site_d: downDetectorResult.url,
+      hist_date: downDetectorReport.date,
+      baseline: downDetectorReport.baseline,
+      notification_count: downDetectorReport.notificationCount
     })
-
-    if (!haveRegistry) {
-      await downDetectorHistRepository.create({
-        site_d: downDetectorResult.url,
-        hist_date: downDetectorReport.date,
-        baseline: downDetectorReport.baseline,
-        notification_count: downDetectorReport.notificationCount
-      })
-    }
+      .catch(error => {})
   })
 
   const lastRegistryOfChange = await downDetectorChangeRepository.index({
@@ -112,7 +103,7 @@ export default async function routinesRequests(serverIo: Server, browser: puppet
     .catch(error => console.log('error', error))
   
   if (!!requests && requests.length > 0) {
-      console.log(`requisitando serviços de update em um ${updateTime} minuto(s)`)
+      console.log(`requisitando serviços de update em ${updateTime} minuto(s)`)
       
       const requestsResultsPromises = requests.map(async (request) => {
         const result = await downDetectorController.accessDownDetectorRoutine(request.service_name, browser)
