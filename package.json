@@ -12,7 +12,7 @@
     "dev": "run-script-os",
     "dev:win32": "SET NODE_ENV=development&&nodemon --exec ts-node --files src/cluster.ts",
     "dev:darwin:linux": "export NODE_ENV=development&&nodemon --exec ts-node --files src/server.ts",
-    "start": "knex migrate:latest&&&&knex seed:run&&node build/src/cluster.js"
+    "start": "knex migrate:latest&&knex seed:run&&node build/src/cluster.js"
   },
   "keywords": [],
   "author": "",
