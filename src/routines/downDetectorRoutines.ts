@@ -47,8 +47,6 @@ function createStatusChangeString(lastRegistryOfChange: downDetectorChangeInterf
 }
 
 async function updateOrCreateMonitoringService(downDetectorResult: downDetectorSearchResult) {
-  const downDetectorHistory = await downDetectorHistRepository.index({ serviceURL: downDetectorResult.url })
-
   const normalizedData = normalizeDownDetectorResult(downDetectorResult)
   
   const registryDataPromises = normalizedData.map(async (downDetectorReport) => {
@@ -62,6 +60,9 @@ async function updateOrCreateMonitoringService(downDetectorResult: downDetectorS
   })
 
   const lastRegistryOfChange = await downDetectorChangeRepository.index({
+    identifiers: {
+      serviceURL: downDetectorResult.url
+    },
     orderBy: { property: 'id', orientation: 'desc' },
     limit: 1
   })

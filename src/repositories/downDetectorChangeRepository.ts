@@ -23,6 +23,9 @@ export interface createDownDetectorChangeInterface {
 }
 
 export interface indexDownDetectorChangeIndexOptions {
+  identifiers?: {
+    serviceURL?: string
+  },
   orderBy?: {
     property: string,
     orientation: 'desc' | 'asc'
@@ -57,10 +60,17 @@ export default class DownDetectorChangeRepository {
   }
 
   public index = async ({
+    identifiers,
     orderBy,
     limit
   }: indexDownDetectorChangeIndexOptions) => {
     let query = this.reference()
+
+    if (!!identifiers) {
+      if (!!identifiers.serviceURL) {
+        query = query.where('site_c', '=', identifiers.serviceURL)
+      }
+    }
 
     if (!!orderBy) {
       query =  query.orderBy(orderBy.property, orderBy.orientation)
