@@ -6,7 +6,7 @@ exports.up = function(knex) {
   return knex.schema.createTable(SERVICES_TABLE_NAME, (table) => {
     table.increments('id').notNullable()
 
-    table.string('service_name').unique().notNullable()
+    table.string('service_name', 191).unique().notNullable()
     table.integer('update_time').notNullable()
   })
 }

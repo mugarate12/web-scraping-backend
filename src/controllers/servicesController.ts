@@ -18,7 +18,23 @@ export default class servicesController {
     })
       .then(() => {
         return res.status(201).json({
-          message: 'service added to monitoring successful!'
+          message: 'serviços adicionados com sucesso!'
+        })
+      })
+      .catch((error: AppError) => {
+        return errorHandler(
+          new AppError(error.name, 403, error.message, true),
+          res
+        )
+      })
+  }
+
+  public index = async (req: Request, res: Response) => {
+    await servicesRepository.index({})
+      .then(response => {
+        return res.status(200).json({
+          message: 'serviços recuperados com sucesso!',
+          services: response
         })
       })
       .catch((error: AppError) => {
@@ -41,7 +57,7 @@ export default class servicesController {
     })
       .then(() => {
         return res.status(200).json({
-          message: 'update service monitoring time successful!'
+          message: 'serviço atualizado com sucesso!'
         })
       })
       .catch((error: AppError) => {
@@ -58,7 +74,7 @@ export default class servicesController {
     await servicesRepository.delete(Number(serviceID))
       .then(() => {
         return res.status(200).json({
-          message: 'delete service monitoring successful!'
+          message: 'serviço deletado com sucesso!'
         })
       })
       .catch((error: AppError) => {

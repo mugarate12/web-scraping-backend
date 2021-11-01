@@ -6,7 +6,7 @@ exports.up = function(knex) {
   return knex.schema.createTable(MONITORING_TABLE_NAME, (table) => {
     table.increments('id').notNullable()
 
-    table.string('name').unique().notNullable()
+    table.string('name', 191).unique().notNullable()
     table.text('content').notNullable()
   })
 }
