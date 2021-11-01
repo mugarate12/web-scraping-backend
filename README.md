@@ -15,7 +15,7 @@ RESTful API criada em NodeJS para execução de rotinas para realização de mon
 
 ## Instalação
 
-### MySQL Configuration
+### Configuração do Bando de dados
 
 #### Se você for rodar a aplicação em modo de homologação
 1. create "web_scraping" database
