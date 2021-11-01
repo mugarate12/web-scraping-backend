@@ -1,8 +1,6 @@
 const knex = require('knex')
 const configuration = require('./../../knexfile.js')
 
-console.log(process.env.NODE_ENV);
-
 let config
 if (process.env.NODE_ENV === 'test') {
   config = configuration.test

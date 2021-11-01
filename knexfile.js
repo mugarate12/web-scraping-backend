@@ -5,11 +5,12 @@ dotenv.config()
 
 module.exports = {
   development: {
-    client: "mysql2",
+    client: "mysql",
     connection: {
       database: 'web_scraping',
       user: process.env.DATABASE_DEVELOPMENT_USER,
-      password: process.env.DATABASE_DEVELOPMENT_PASSWORD
+      password: process.env.DATABASE_DEVELOPMENT_PASSWORD,
+      port: Number(process.env.DATABASE_DEVELOPMENT_PORT)
     },
     migrations: {
       directory: path.resolve(__dirname, 'src', 'database', 'migrations')
@@ -20,11 +21,12 @@ module.exports = {
   },
 
   test: {
-    client: "mysql2",
+    client: "mysql",
     connection: {
       database: 'web_scraping_test',
       user: process.env.DATABASE_DEVELOPMENT_USER,
-      password: process.env.DATABASE_DEVELOPMENT_PASSWORD
+      password: process.env.DATABASE_DEVELOPMENT_PASSWORD,
+      port: process.env.DATABASE_DEVELOPMENT_PORT
     },
     migrations: {
       directory: path.resolve(__dirname, 'src', 'database', 'migrations')
@@ -35,12 +37,13 @@ module.exports = {
   },
 
   production: {
-    client: "mysql2",
+    client: "mysql",
     connection: {
       host: process.env.DATABASE_HOST,
       database: process.env.DATABASE_NAME,
       user: process.env.DATABASE_USER,
-      password: !process.env.DATABASE_PASSWORD ? '' : process.env.DATABASE_PASSWORD
+      password: !process.env.DATABASE_PASSWORD ? '' : process.env.DATABASE_PASSWORD,
+      port: process.env.DATABASE_PORT
     },
     pool: {
       min: 2,

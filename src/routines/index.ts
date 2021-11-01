@@ -29,9 +29,9 @@ export async function oneMinuteRoutines(serverIo: Server, browser: puppeteer.Bro
   if (runOneMinuteRoutines) {
     runOneMinuteRoutines = false
 
-    await routinesRequests(serverIo, browser, 1)
-  
     await sleep(convertMinutesToMilliseconds(1))
+    
+    await routinesRequests(serverIo, browser, 1)
 
     runOneMinuteRoutines = true
   }
@@ -42,9 +42,9 @@ export async function threeMinuteRoutines(serverIo: Server, browser: puppeteer.B
   if (runThreeMinutesRoutines) {
     runThreeMinutesRoutines = false
 
-    await routinesRequests(serverIo, browser, 3)
-  
     await sleep(convertMinutesToMilliseconds(3))
+    
+    await routinesRequests(serverIo, browser, 3)
 
     runThreeMinutesRoutines = true
   }
@@ -55,9 +55,9 @@ export async function fiveMinuteRoutines(serverIo: Server, browser: puppeteer.Br
   if (runFiveMinutesRoutines) {
     runFiveMinutesRoutines = false
 
-    await routinesRequests(serverIo, browser, 5)
-  
     await sleep(convertMinutesToMilliseconds(5))
+    
+    await routinesRequests(serverIo, browser, 5)
 
     runFiveMinutesRoutines = true
   }
@@ -68,9 +68,9 @@ export async function teenMinuteRoutines(serverIo: Server, browser: puppeteer.Br
   if (runTeenMinutesRoutines) {
     runTeenMinutesRoutines = false
 
-    await routinesRequests(serverIo, browser, 10)
-  
     await sleep(convertMinutesToMilliseconds(10))
+    
+    await routinesRequests(serverIo, browser, 10)
 
     runTeenMinutesRoutines = true
   }
@@ -81,9 +81,9 @@ export async function fifteenMinuteRoutines(serverIo: Server, browser: puppeteer
   if (runFifteenMinutesRoutines) {
     runFifteenMinutesRoutines = false
 
-    await routinesRequests(serverIo, browser, 15)
-  
     await sleep(convertMinutesToMilliseconds(15))
+    
+    await routinesRequests(serverIo, browser, 15)
 
     runFifteenMinutesRoutines = true
   }

@@ -12,7 +12,10 @@
     "dev": "run-script-os",
     "dev:win32": "SET NODE_ENV=development&&nodemon --exec ts-node --files src/cluster.ts",
     "dev:darwin:linux": "export NODE_ENV=development&&nodemon --exec ts-node --files src/server.ts",
-    "start": "knex migrate:latest&&knex seed:run&&node build/src/cluster.js"
+    "prestart": "npm run build",
+    "start": "run-script-os",
+    "start:win32": "SET NODE_ENV=production&&knex migrate:latest&&knex seed:run&&node build/src/cluster.js",
+    "start:darwin:linux": "export NODE_ENV=production&&knex migrate:latest&&knex seed:run&&node build/src/cluster.js"
   },
   "keywords": [],
   "author": "",
@@ -27,6 +30,7 @@
     "jsonwebtoken": "^8.5.1",
     "knex": "^0.95.11",
     "moment": "^2.29.1",
+    "mysql": "^2.18.1",
     "mysql2": "^2.3.0",
     "puppeteer": "^10.4.0",
     "request": "^2.88.2",
