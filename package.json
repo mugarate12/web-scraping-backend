@@ -12,7 +12,6 @@
     "dev": "run-script-os",
     "dev:win32": "SET NODE_ENV=development&&nodemon --exec ts-node --files src/cluster.ts",
     "dev:darwin:linux": "export NODE_ENV=development&&nodemon --exec ts-node --files src/server.ts",
-    "prestart": "npm run build",
     "start": "run-script-os",
     "start:win32": "SET NODE_ENV=production&&knex migrate:latest&&knex seed:run&&node build/src/cluster.js",
     "start:darwin:linux": "export NODE_ENV=production&&knex migrate:latest&&knex seed:run&&node build/src/cluster.js"
