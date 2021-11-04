@@ -31,23 +31,10 @@ export default class servicesController {
   }
 
   public index = async (req: Request, res: Response) => {
-    await downDetectorHistRepository.index({})
-      .then(response => {
-        return res.status(200).json({
-          a: '',
-          services: response
-        })
-      })
-      .catch((error: AppError) => {
-        return errorHandler(
-          new AppError(error.name, 403, error.message, true),
-          res
-        )
-      })
-    // await servicesRepository.index({})
+    // await downDetectorHistRepository.index({})
     //   .then(response => {
     //     return res.status(200).json({
-    //       message: 'serviços recuperados com sucesso!',
+    //       message: 'services gated successful!',
     //       services: response
     //     })
     //   })
@@ -57,6 +44,19 @@ export default class servicesController {
     //       res
     //     )
     //   })
+    await servicesRepository.index({})
+      .then(response => {
+        return res.status(200).json({
+          message: 'serviços recuperados com sucesso!',
+          services: response
+        })
+      })
+      .catch((error: AppError) => {
+        return errorHandler(
+          new AppError(error.name, 403, error.message, true),
+          res
+        )
+      })
   }
 
   public update = async (req: Request, res: Response) => {

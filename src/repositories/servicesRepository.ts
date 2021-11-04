@@ -60,7 +60,6 @@ export default class ServicesRepository {
   public update = async ({ id, update_time }: updateServiceInterface) => {
     return this.reference()
       .where('id', '=', id)
-      .where('update_time', '=', update_time)
       .update({
         update_time: update_time
       })
