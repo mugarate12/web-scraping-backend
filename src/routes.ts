@@ -29,6 +29,8 @@ routes.post('/users', celebrate({
   })
 }), authJWT, usersController.create)
 
+routes.get('/users', usersController.index)
+
 routes.put('/users', celebrate({
   [Segments.BODY]: Joi.object().keys({
     password: Joi.string().required()

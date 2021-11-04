@@ -27,6 +27,19 @@ export default class UsersController {
       })
   }
 
+  public index = async (req: Request, res: Response) => {
+    return await usersRepository.index({})
+      .then(response => {
+        return res.status(200).json({
+          message: 'usuários recuperados com sucesso!',
+          users: response
+        })
+      })
+      .catch((err) => {
+        return errorHandler(err, res)
+      })
+  }
+
   public update = async (req: Request, res: Response) => {
     const userID = Number(res.getHeader('userID'))
     const { password } = req.body
@@ -62,7 +75,20 @@ export default class UsersController {
         .catch((err) => {
           return errorHandler(err, res)
         })
-
     }
+  }
+
+  public delete = async (req: Request, res: Response) => {
+    const { userID } = req.params
+
+    return usersRepository.delete({ id: Number(userID) })
+      .then(() => {
+        return res.status(200).json({
+          message: 'usuário deletado com sucesso!'
+        })
+      })
+      .catch((err) => {
+        return errorHandler(err, res)
+      })
   }
 }

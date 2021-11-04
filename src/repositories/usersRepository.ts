@@ -34,6 +34,10 @@ export interface updateUserInterface {
   }
 }
 
+export interface removeUserInterface {
+  id: number
+}
+
 export default class UsersRepository {
   private reference = () => connection<UserInterface>(USERS_TABLE_NAME)
 
@@ -84,7 +88,7 @@ export default class UsersRepository {
     let query = this.reference()
 
     return query
-      .select('*')
+      .select('id', 'login')
       .then(downDetectorHists => downDetectorHists)
       .catch(error => {
         throw new AppError('Database Error', 406, error.message, true)
@@ -112,6 +116,21 @@ export default class UsersRepository {
       .update({
         password
       })
+      .then(() => {
+        return
+      })
+      .catch(error => {
+        throw new AppError('Database Error', 406, error.message, true)
+      })
+  }
+
+  public delete = async ({
+    id
+  }: removeUserInterface) => {
+    return this.reference()
+      .where('id', '=', id)
+      .first()
+      .delete()
       .then(() => {
         return
       })
