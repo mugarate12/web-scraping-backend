@@ -43,39 +43,42 @@ export default class UsersController {
   public update = async (req: Request, res: Response) => {
     const userID = Number(res.getHeader('userID'))
     const { password } = req.body
+    const { id } = req.params
 
-    const user = await usersRepository.get({ id: userID })
-      .then(user => user)
-      .catch(error => {
-        return undefined
+    return await usersRepository.update({
+      identifiers: {
+        id: Number(id)
+      },
+      payload: {
+        password: password
+      }
+    })
+      .then(() => {
+        return res.status(200).json({
+          message: 'senha atualizada com sucesso!'
+        })
+      })
+      .catch((err) => {
+        return errorHandler(err, res)
       })
 
-    if (!user) {
-      return errorHandler(
-        new AppError('Erros de usuário', 406, 'usuário não encontrado', true),
-        res
-      )
-    }
+    // const user = await usersRepository.get({ id: Number(id) })
+    //   .then(user => user)
+    //   .catch(error => {
+    //     return undefined
+    //   })
+
+    // if (!user) {
+    //   return errorHandler(
+    //     new AppError('Erros de usuário', 406, 'usuário não encontrado', true),
+    //     res
+    //   )
+    // }
 
     
-    if (bcrypt.compareSync(password, user.password)) {
-      return await usersRepository.update({
-        identifiers: {
-          id: userID
-        },
-        payload: {
-          password: password
-        }
-      })
-        .then(() => {
-          return res.status(200).json({
-            message: 'senha atualizada com sucesso!'
-          })
-        })
-        .catch((err) => {
-          return errorHandler(err, res)
-        })
-    }
+    // if (bcrypt.compareSync(password, user.password)) {
+      
+    // }
   }
 
   public delete = async (req: Request, res: Response) => {

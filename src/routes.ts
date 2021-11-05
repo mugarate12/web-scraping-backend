@@ -31,7 +31,7 @@ routes.post('/users', celebrate({
 
 routes.get('/users', usersController.index)
 
-routes.put('/users', celebrate({
+routes.put('/users/:id', celebrate({
   [Segments.BODY]: Joi.object().keys({
     password: Joi.string().required()
   })
