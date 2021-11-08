@@ -6,6 +6,8 @@ import {
 } from './../repositories'
 import { errorHandler, AppError } from './../utils/handleError'
 
+import { updateServiceInterface } from './../repositories/servicesRepository'
+
 export default class servicesController {
   public add = async (req: Request, res: Response) => {
     const {
@@ -61,14 +63,24 @@ export default class servicesController {
 
   public update = async (req: Request, res: Response) => {
     const {
-      updateTime
+      updateTime,
+      able
     } = req.body
     const { serviceID } = req.params
 
-    await servicesRepository.update({
-      id: Number(serviceID),
-      update_time: Number(updateTime)
-    })
+    const updatePayload: updateServiceInterface = {
+      id: Number(serviceID)
+    }
+
+    if (!!updateTime) {
+      updatePayload.update_time = Number(updateTime)
+    }
+
+    if (able !== undefined) {
+      updatePayload.habilitado = Number(able)
+    }
+
+    await servicesRepository.update(updatePayload)
       .then(() => {
         return res.status(200).json({
           message: 'serviço atualizado com sucesso!'

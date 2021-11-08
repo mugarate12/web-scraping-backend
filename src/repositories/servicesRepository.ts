@@ -8,7 +8,8 @@ export interface serviceInterface {
   id: number, 
 
   service_name: string,
-  update_time: number
+  update_time: number,
+  habilitado: number
 }
 
 export interface createServiceInterface {
@@ -17,12 +18,14 @@ export interface createServiceInterface {
 }
 
 export interface indexServiceInterface {
-  update_time?: number
+  update_time?: number,
+  habilitado?: number
 }
 
 export interface updateServiceInterface {
   id: number,
-  update_time: number
+  update_time?: number,
+  habilitado?: number
 }
 
 export default class ServicesRepository {
@@ -42,11 +45,15 @@ export default class ServicesRepository {
       })
   }
 
-  public index = async ({ update_time }: indexServiceInterface) => {
+  public index = async ({ update_time, habilitado }: indexServiceInterface) => {
     let query = this.reference()
 
     if (!!update_time) {
       query = query.where('update_time', '=', update_time)
+    }
+
+    if (!!habilitado) {
+      query = query.where('habilitado', '=', habilitado)
     }
 
     return query
@@ -57,11 +64,12 @@ export default class ServicesRepository {
       })
   }
 
-  public update = async ({ id, update_time }: updateServiceInterface) => {
+  public update = async ({ id, update_time, habilitado }: updateServiceInterface) => {
     return this.reference()
       .where('id', '=', id)
       .update({
-        update_time: update_time
+        update_time: update_time,
+        habilitado
       })
       .then(() => {
         return

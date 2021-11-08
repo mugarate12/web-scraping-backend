@@ -110,7 +110,7 @@ async function emitUpdatedMonitoring(serverIo: Server) {
 }
 
 export default async function routinesRequests(serverIo: Server, browser: puppeteer.Browser, updateTime: number) {  
-  const requests = await servicesRepository.index({ update_time: updateTime })
+  const requests = await servicesRepository.index({ update_time: updateTime, habilitado: 1 })
     .then(services => services)
     .catch(error => console.log('error', error))
   

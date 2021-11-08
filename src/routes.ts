@@ -66,7 +66,8 @@ routes.get('/services', servicesController.index)
 
 routes.put('/services/:serviceID', celebrate({
   [Segments.BODY]: Joi.object().keys({
-    updateTime: Joi.number().required()
+    updateTime: Joi.number().optional(),
+    able: Joi.number().optional()
   }),
   [Segments.PARAMS]: Joi.object().keys({
     serviceID: Joi.number().required()
