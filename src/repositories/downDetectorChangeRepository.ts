@@ -9,16 +9,16 @@ export interface downDetectorChangeInterface {
 
   site_c: string,
   hist_date: string,
-  status_atual: string,
-  status_anterior: string,
+  status_atual: number,
+  status_anterior: number,
   status_change: string
 }
 
 export interface createDownDetectorChangeInterface {
   site_c: string,
   hist_date: string,
-  status_atual: string,
-  status_anterior: string,
+  status_atual: number,
+  status_anterior: number,
   status_change: string
 }
 
