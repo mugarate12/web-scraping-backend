@@ -32,10 +32,19 @@ routes.post('/users', celebrate({
 routes.get('/users', usersController.index)
 
 routes.put('/users/:id', celebrate({
+  [Segments.PARAMS]: Joi.object().keys({
+    id: Joi.number().required()
+  }),
   [Segments.BODY]: Joi.object().keys({
     password: Joi.string().required()
   })
 }), authJWT, usersController.update)
+
+routes.delete('/users/:userID', celebrate({
+  [Segments.PARAMS]: Joi.object().keys({
+    userID: Joi.number().required()
+  })
+}), authJWT, usersController.delete)
 
 // session routes
 routes.post('/session', celebrate({
