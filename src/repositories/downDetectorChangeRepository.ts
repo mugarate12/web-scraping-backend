@@ -11,7 +11,7 @@ export interface downDetectorChangeInterface {
   hist_date: string,
   status_atual: number,
   status_anterior: number,
-  status_change: string
+  status_change: number
 }
 
 export interface createDownDetectorChangeInterface {
@@ -19,7 +19,7 @@ export interface createDownDetectorChangeInterface {
   hist_date: string,
   status_atual: number,
   status_anterior: number,
-  status_change: string
+  status_change: number
 }
 
 export interface indexDownDetectorChangeIndexOptions {

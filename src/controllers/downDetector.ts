@@ -1,7 +1,16 @@
 import { Request, Response } from 'express'
 import puppeteer from 'puppeteer'
+import moment from 'moment'
+import { Server } from 'socket.io'
 
 import { downDetectorData } from './../interfaces/downDetector'
+import {
+  downDetectorChangeRepository,
+  servicesUpdateTimeRepository
+} from './../repositories'
+
+import { downDetectorChangeInterface } from './../repositories/downDetectorChangeRepository'
+import { downDetectorSearchResult } from './../interfaces/downDetector'
 
 export default class DownDetectorController {
   private url = 'https://downdetector.com/status/facebook/'
@@ -95,7 +104,7 @@ export default class DownDetectorController {
       }
     })
 
-    const result = {
+    const result: downDetectorSearchResult = {
       url,
       ...data
     }
@@ -105,5 +114,86 @@ export default class DownDetectorController {
     pageInstance.close()
 
     return result
+  }
+
+  private changeStringStatusToInteger = (status: string) => {
+    if (status === 'success') {
+      return 3
+    } else if (status === 'danger') {
+      return 2
+    } else {
+      return 1
+    }
+  }
+
+  private createChangeInteger = (lastRegistryOfChange: downDetectorChangeInterface[], downDetectorResult: downDetectorSearchResult) => {
+    if (lastRegistryOfChange[0].status_atual === 3 && this.changeStringStatusToInteger(downDetectorResult.status) === 2) {
+      return 1
+    } else if (lastRegistryOfChange[0].status_atual === 3 && this.changeStringStatusToInteger(downDetectorResult.status) === 1) {
+      return 2
+    } else if (lastRegistryOfChange[0].status_atual === 2 && this.changeStringStatusToInteger(downDetectorResult.status) === 3) {
+      return 3
+    } else if (lastRegistryOfChange[0].status_atual === 2 && this.changeStringStatusToInteger(downDetectorResult.status) === 1) {
+      return 4
+    } else if (lastRegistryOfChange[0].status_atual === 1 && this.changeStringStatusToInteger(downDetectorResult.status) === 3) {
+      return 5
+    } else if (lastRegistryOfChange[0].status_atual === 1 && this.changeStringStatusToInteger(downDetectorResult.status) === 2) {
+      return 6
+    } else {
+      return 0
+    }
+  }
+
+  public updateChangeHistory = async (downDetectorResult: downDetectorSearchResult) => {
+    const lastRegistryOfChange = await downDetectorChangeRepository.index({
+      identifiers: {
+        serviceURL: downDetectorResult.url
+      },
+      orderBy: { property: 'id', orientation: 'desc' },
+      limit: 1
+    })
+
+    if (lastRegistryOfChange.length === 0) {
+      await downDetectorChangeRepository.create({
+        site_c: downDetectorResult.url,
+        hist_date: moment().format('YYYY-MM-DD HH:mm:ss'),
+        status_anterior: 0,
+        status_atual: this.changeStringStatusToInteger(downDetectorResult.status),
+        status_change: this.createChangeInteger(lastRegistryOfChange, downDetectorResult)
+      })
+    }
+
+    if (lastRegistryOfChange.length > 0 && lastRegistryOfChange[0].status_atual !== this.changeStringStatusToInteger(downDetectorResult.status)) {
+      await downDetectorChangeRepository.create({
+        site_c: downDetectorResult.url,
+        hist_date: moment().format('YYYY-MM-DD HH:mm:ss'),
+        status_anterior: lastRegistryOfChange[0].status_atual,
+        status_atual: this.changeStringStatusToInteger(downDetectorResult.status),
+        status_change: this.createChangeInteger(lastRegistryOfChange, downDetectorResult)
+      })
+    }
+  }
+
+  public createOrUpdateServiceUpdateTime = async (routine: number) => {
+    const routineRegistry = await servicesUpdateTimeRepository.get({ routine })
+      .catch(error => {
+        console.log(error)
+        return undefined
+      })
+
+    if (!routineRegistry) {
+      await servicesUpdateTimeRepository.create({ routine })
+    } else {
+      await servicesUpdateTimeRepository.update({ routine })
+    }
+  }
+
+  public emitUpdateTime = async (ioServer: Server) => {
+    const emitCall = 'routines_update_time' 
+
+    const routinesUpdateTime = await servicesUpdateTimeRepository.index()
+    // const monitoring = await monitoringRepository.index()
+  
+    ioServer.emit(emitCall, routinesUpdateTime)
   }
 }

@@ -24,44 +24,39 @@ exports.up = async function(knex) {
       })
     
     await knex(DOWN_DETECTOR_CHANGE_TABLE_NAME)
-    .where('status_atual', '=', 'danger')
-    .update({
-      status_atual: '2'
-    })
+      .where('status_atual', '=', 'danger')
+      .update({
+        status_atual: '2'
+      })
   
     await knex(DOWN_DETECTOR_CHANGE_TABLE_NAME)
-    .where('status_atual', '=', 'warning')
-    .update({
-      status_atual: '1'
-    })
+      .where('status_atual', '=', 'warning')
+      .update({
+        status_atual: '1'
+      })
   
     // trocar os valores dos status do campo status_anterior
     await knex(DOWN_DETECTOR_CHANGE_TABLE_NAME)
-    .where('status_anterior', '=', 'success')
-    .update({
-      status_anterior: '3'
-    })
+      .where('status_anterior', '=', 'success')
+      .update({
+        status_anterior: '3'
+      })
   
     await knex(DOWN_DETECTOR_CHANGE_TABLE_NAME)
-    .where('status_anterior', '=', 'danger')
-    .update({
-      status_anterior: '2'
-    })
+      .where('status_anterior', '=', 'danger')
+      .update({
+        status_anterior: '2'
+      })
   
     await knex(DOWN_DETECTOR_CHANGE_TABLE_NAME)
-    .where('status_anterior', '=', 'warning')
-    .update({
-      status_anterior: '1'
-    })
+      .where('status_anterior', '=', 'warning')
+      .update({
+        status_anterior: '1'
+      })
   }
     
   await knex.raw(`alter TABLE ${DOWN_DETECTOR_CHANGE_TABLE_NAME} MODIFY status_anterior int`)
   await knex.raw(`alter TABLE ${DOWN_DETECTOR_CHANGE_TABLE_NAME} MODIFY status_atual int`)
-
-  // return knex.schema.alterTable(DOWN_DETECTOR_CHANGE_TABLE_NAME, (table) => {
-  //   table.integer('status_anterior').alter()
-  //   table.integer('status_atual').alter()
-  // })
 }
 
 exports.down = function(knex) {

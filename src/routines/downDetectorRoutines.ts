@@ -31,32 +31,6 @@ function normalizeDownDetectorResult(downDetectorResult: downDetectorSearchResul
   return data
 }
 
-function changeStringStatusToInteger(status: string) {
-  if (status === 'success') {
-    return 3
-  } else if (status === 'danger') {
-    return 2
-  } else {
-    return 1
-  }
-}
-
-function createStatusChangeString(lastRegistryOfChange: downDetectorChangeInterface[], downDetectorResult: downDetectorSearchResult) {
-  // if (lastRegistryOfChange.length > 0) {
-  //   const lastRegistryStatusLetter = lastRegistryOfChange[0].status_atual[0].toUpperCase()
-  //   const actualStatusLetter = downDetectorResult.status[0].toUpperCase()
-
-  //   const change = `${lastRegistryStatusLetter}${actualStatusLetter}`
-
-  //   return change
-  // } else {
-  //   const actualStatusLetter = downDetectorResult.status[0].toUpperCase()
-
-  //   return actualStatusLetter
-  // }
-  return 'provisório'
-}
-
 async function updateOrCreateMonitoringService(downDetectorResult: downDetectorSearchResult) {
   const normalizedData = normalizeDownDetectorResult(downDetectorResult)
   
@@ -70,33 +44,7 @@ async function updateOrCreateMonitoringService(downDetectorResult: downDetectorS
       .catch(error => {})
   })
 
-  const lastRegistryOfChange = await downDetectorChangeRepository.index({
-    identifiers: {
-      serviceURL: downDetectorResult.url
-    },
-    orderBy: { property: 'id', orientation: 'desc' },
-    limit: 1
-  })
-
-  if (lastRegistryOfChange.length === 0) {
-    await downDetectorChangeRepository.create({
-      site_c: downDetectorResult.url,
-      hist_date: moment().format('YYYY-MM-DD HH:mm:ss'),
-      status_anterior: 0,
-      status_atual: changeStringStatusToInteger(downDetectorResult.status),
-      status_change: createStatusChangeString(lastRegistryOfChange, downDetectorResult)
-    })
-  }
- 
-  if (lastRegistryOfChange.length > 0 && lastRegistryOfChange[0].status_atual !== changeStringStatusToInteger(downDetectorResult.status)) {
-    await downDetectorChangeRepository.create({
-      site_c: downDetectorResult.url,
-      hist_date: moment().format('YYYY-MM-DD HH:mm:ss'),
-      status_anterior: lastRegistryOfChange[0].status_atual,
-      status_atual: changeStringStatusToInteger(downDetectorResult.status),
-      status_change: createStatusChangeString(lastRegistryOfChange, downDetectorResult)
-    })
-  }
+  await downDetectorController.updateChangeHistory(downDetectorResult)
 
   await Promise.all(registryDataPromises)
 }
@@ -124,6 +72,9 @@ export default async function routinesRequests(serverIo: Server, browser: puppet
       })
 
       await Promise.all(requestsResultsPromises)
+
+      await downDetectorController.createOrUpdateServiceUpdateTime(updateTime)
+      await downDetectorController.emitUpdateTime(serverIo)
       // await emitUpdatedMonitoring(serverIo)
 
       console.log('requisições finalizadas')
