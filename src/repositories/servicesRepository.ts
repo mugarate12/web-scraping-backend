@@ -58,6 +58,7 @@ export default class ServicesRepository {
 
     return query
       .select('*')
+      .orderBy('update_time', 'asc')
       .then(services => services)
       .catch(error => {
         throw new AppError('Database Error', 406, error.message, true)
