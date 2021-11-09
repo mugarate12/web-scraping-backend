@@ -63,20 +63,22 @@ export default async function routinesRequests(serverIo: Server, browser: puppet
     .catch(error => console.log('error', error))
   
   if (!!requests && requests.length > 0) {
-      console.log(`requisitando serviços de update em ${updateTime} minuto(s)`)
+    console.log(`requisitando serviços de update em ${updateTime} minuto(s)`)
+
+    await downDetectorController.emitExecutionRoutine(serverIo, updateTime)
+    
+    const requestsResultsPromises = requests.map(async (request) => {
+      const result = await downDetectorController.accessDownDetectorRoutine(request.service_name, browser)
       
-      const requestsResultsPromises = requests.map(async (request) => {
-        const result = await downDetectorController.accessDownDetectorRoutine(request.service_name, browser)
-        
-        await updateOrCreateMonitoringService(result)
-      })
+      await updateOrCreateMonitoringService(result)
+    })
 
-      await Promise.all(requestsResultsPromises)
+    await Promise.all(requestsResultsPromises)
 
-      await downDetectorController.createOrUpdateServiceUpdateTime(updateTime)
-      await downDetectorController.emitUpdateTime(serverIo)
-      // await emitUpdatedMonitoring(serverIo)
+    await downDetectorController.createOrUpdateServiceUpdateTime(updateTime)
+    await downDetectorController.emitUpdateTime(serverIo)
+    // await emitUpdatedMonitoring(serverIo)
 
-      console.log('requisições finalizadas')
+    console.log('requisições finalizadas')
   }
 }

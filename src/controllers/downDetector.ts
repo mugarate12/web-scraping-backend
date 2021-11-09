@@ -198,6 +198,12 @@ export default class DownDetectorController {
     ioServer.emit(emitCall, routinesUpdateTime)
   }
 
+  public emitExecutionRoutine = async (ioServer: Server, updateTime: number) => {
+    const emitCall = `routine_${updateTime}`
+
+    ioServer.emit(emitCall, '')
+  }
+
   private normalizeDownDetectorResult = (downDetectorResult: downDetectorSearchResult) => {
     const baselines = downDetectorResult.baseline
     const reports = downDetectorResult.reports
