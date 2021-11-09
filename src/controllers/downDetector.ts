@@ -6,6 +6,7 @@ import { Server } from 'socket.io'
 import { downDetectorData } from './../interfaces/downDetector'
 import {
   downDetectorChangeRepository,
+  downDetectorHistRepository,
   servicesUpdateTimeRepository
 } from './../repositories'
 
@@ -195,5 +196,89 @@ export default class DownDetectorController {
     // const monitoring = await monitoringRepository.index()
   
     ioServer.emit(emitCall, routinesUpdateTime)
+  }
+
+  private normalizeDownDetectorResult = (downDetectorResult: downDetectorSearchResult) => {
+    const baselines = downDetectorResult.baseline
+    const reports = downDetectorResult.reports
+
+    const data = baselines.map((baseline, index) => {
+      return {
+        date: moment(baseline.x).format('YYYY-MM-DD HH:mm:ss'),
+        baseline: baseline.y,
+        notificationCount: reports[index].y
+      }
+    })
+
+    return data
+  }
+
+  public accessDownDetectorSingleUpdate = async (req: Request, res: Response) => {
+    const { serviceName } = req.params
+
+    const browser = await puppeteer.launch({ 
+      headless: true, 
+      args: ['--no-sandbox'], 
+      slowMo: 200
+    })
+
+    const page = await browser.newPage()
+
+    await page.setUserAgent('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36')
+    await page.setDefaultNavigationTimeout(0)
+
+    await page.goto(this.makeUrl(serviceName))
+      .catch(error => {
+        console.log(error)
+      })
+
+    const data = await page.evaluate(() => {
+      const titleElement = document.getElementsByClassName('entry-title')[0]
+      const titleTextContent = String(titleElement.textContent)
+      
+      // get title
+      const firstLetter = titleTextContent.indexOf('User')
+      const textSlicedToFirstLetter = titleTextContent.slice(firstLetter, titleTextContent.length)
+      const title = textSlicedToFirstLetter.slice(0, textSlicedToFirstLetter.indexOf('\n'))
+
+      const currentServiceProperties = window['DD']['currentServiceProperties']
+      const status: string = currentServiceProperties['status']
+      const series = currentServiceProperties['series']
+      const baseline: Array<downDetectorData> = series['baseline']['data']
+      const reports: Array<downDetectorData> = series['reports']['data']
+
+      return {
+        name: title.split(' ')[title.split('').length - 1],
+        title,
+        status,
+        baseline,
+        reports
+      }
+    })
+
+    const result: downDetectorSearchResult = {
+      url: this.makeUrl(serviceName),
+      ...data
+    }
+
+    const normalizedData = this.normalizeDownDetectorResult(result)
+    const registryDataPromises = normalizedData.map(async (downDetectorReport) => {
+      await downDetectorHistRepository.create({
+        site_d: result.url,
+        hist_date: downDetectorReport.date,
+        baseline: downDetectorReport.baseline,
+        notification_count: downDetectorReport.notificationCount
+      })
+        .catch(error => {})
+    })
+
+    await this.updateChangeHistory(result)
+    await Promise.all(registryDataPromises)
+
+    await browser.close()
+
+    return res.status(200).json({
+      message: 'serviço atualizado com sucesso!'
+    })
   }
 }
