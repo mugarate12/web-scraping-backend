@@ -64,6 +64,7 @@ routes.post('/services', celebrate({
 
 routes.get('/services', servicesController.index)
 routes.get('/service/:serviceName', downDetectorController.accessDownDetectorSingleUpdate)
+routes.get('/services/updateTime', servicesController.getServicesUpdateTime)
 
 routes.put('/services/:serviceID', celebrate({
   [Segments.BODY]: Joi.object().keys({

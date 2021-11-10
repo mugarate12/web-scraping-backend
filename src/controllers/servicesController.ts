@@ -2,7 +2,8 @@ import { Request, Response } from 'express'
 
 import {
   downDetectorHistRepository,
-  servicesRepository
+  servicesRepository,
+  servicesUpdateTimeRepository
 } from './../repositories'
 import { errorHandler, AppError } from './../utils/handleError'
 
@@ -109,5 +110,14 @@ export default class servicesController {
           res
         )
       })
+  }
+
+  public getServicesUpdateTime = async (req: Request, res: Response) => {
+    const routinesUpdateTime = await servicesUpdateTimeRepository.index()
+
+    return res.status(200).json({
+      message: 'tempo de atualização recuperado com sucesso!',
+      data: routinesUpdateTime
+    })
   }
 }
