@@ -128,6 +128,10 @@ export default class DownDetectorController {
   }
 
   private createChangeInteger = (lastRegistryOfChange: downDetectorChangeInterface[], downDetectorResult: downDetectorSearchResult) => {
+    if (!lastRegistryOfChange[0]) {
+      return 0
+    }
+
     if (lastRegistryOfChange[0].status_atual === 3 && this.changeStringStatusToInteger(downDetectorResult.status) === 2) {
       return 1
     } else if (lastRegistryOfChange[0].status_atual === 3 && this.changeStringStatusToInteger(downDetectorResult.status) === 1) {
