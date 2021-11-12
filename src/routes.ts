@@ -7,7 +7,11 @@ import {
   sessionController,
   usersController
 } from './controllers'
-import authJWT from './middlewares/authJWT'
+import { 
+  authJWT,
+  createUserPermission,
+  readUsersPermission
+} from './middlewares'
 
 const routes = Router()
 
@@ -25,11 +29,12 @@ routes.get('/downDetector/:serviceName', celebrate({
 routes.post('/users', celebrate({
   [Segments.BODY]: Joi.object().keys({
     login: Joi.string().required(),
-    password: Joi.string().required()
+    password: Joi.string().required(),
+    isAdmin: Joi.boolean().required()
   })
-}), authJWT, usersController.create)
+}), authJWT, createUserPermission, usersController.create)
 
-routes.get('/users', usersController.index)
+routes.get('/users', readUsersPermission, usersController.index)
 
 routes.put('/users/:id', celebrate({
   [Segments.PARAMS]: Joi.object().keys({
@@ -38,13 +43,13 @@ routes.put('/users/:id', celebrate({
   [Segments.BODY]: Joi.object().keys({
     password: Joi.string().required()
   })
-}), authJWT, usersController.update)
+}), authJWT, createUserPermission, usersController.update)
 
 routes.delete('/users/:userID', celebrate({
   [Segments.PARAMS]: Joi.object().keys({
     userID: Joi.number().required()
   })
-}), authJWT, usersController.delete)
+}), authJWT, createUserPermission, usersController.delete)
 
 // session routes
 routes.post('/session', celebrate({

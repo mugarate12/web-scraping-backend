@@ -2,7 +2,9 @@ import { Request, Response } from 'express'
 import bcrypt from 'bcryptjs'
 
 import {
-  usersRepository
+  usersRepository,
+  permissionsRepository,
+  usersAccessRepository
 } from './../repositories'
 import { AppError, errorHandler } from './../utils/handleError'
 
@@ -10,8 +12,57 @@ export default class UsersController {
   public create = async (req: Request, res: Response) => {
     const {
       login,
-      password
+      password,
+      isAdmin
     } = req.body
+
+    const userCreation = await usersRepository.create({
+      login,
+      password
+    })
+      .then(() => {
+        return true
+      })
+      .catch((error) => {
+        return false
+      })
+
+    if (!userCreation) {
+      return errorHandler(
+        new AppError('Database Erro', 406, 'Usuário já existe', true),
+        res
+      )
+    }
+
+    const permissions = await permissionsRepository.index()
+    let permissionsIDs: Array<number> = []
+
+    permissions.forEach((permission) => {
+      const permissionToCreateServices = permission.identifier === 'ACCESS_SERVICES_CREATION'
+      const permissionToCreateUsers = permission.identifier === 'ACCESS_USERS_CREATION'
+      const isNotAdminPermissions = permission.identifier !== 'ACCESS_USERS_CREATION' && permission.identifier !== 'ACCESS_SERVICES_CREATION'
+
+      if ((permissionToCreateServices || permissionToCreateUsers) && isAdmin) {
+        permissionsIDs.push(permission.id)
+      }
+
+      if (isNotAdminPermissions) {
+        permissionsIDs.push(permission.id)
+      }
+    })
+
+    const user = await usersRepository.get({
+      login: login
+    })
+
+    await usersAccessRepository.create({
+      user_FK: user.id,
+      permissions: permissionsIDs
+    })
+
+    return res.status(201).json({
+      message: 'usuário criado com sucesso!'
+    })
 
     return await usersRepository.create({
       login,
