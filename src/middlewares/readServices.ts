@@ -7,11 +7,11 @@ import {
   usersAccessRepository
 } from './../repositories'
 
-export default async function readUsersInformations(req: Request, res: Response, next: NextFunction) {
+export default async function readServices(req: Request, res: Response, next: NextFunction) {
   const userID = Number(res.getHeader('userID'))
 
   const permission = await permissionsRepository.get({
-    identifier: 'ACCESS_USERS_VIEW'
+    identifier: 'ACCESS_SERVICES_VIEW'
   })
 
   const userAccess = await usersAccessRepository.get({

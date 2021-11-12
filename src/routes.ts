@@ -10,7 +10,9 @@ import {
 import { 
   authJWT,
   createUserPermission,
-  readUsersPermission
+  createServicePermission,
+  readUsersPermission,
+  readServicesPermission
 } from './middlewares'
 
 const routes = Router()
@@ -65,11 +67,11 @@ routes.post('/services', celebrate({
     serviceName: Joi.string().required(),
     updateTime: Joi.number().required()
   })
-}), servicesController.add)
+}), authJWT, createServicePermission, servicesController.add)
 
-routes.get('/services', servicesController.index)
-routes.get('/service/:serviceName', downDetectorController.accessDownDetectorSingleUpdate)
-routes.get('/services/updateTime', servicesController.getServicesUpdateTime)
+routes.get('/services', authJWT, readServicesPermission, servicesController.index)
+routes.get('/service/:serviceName', authJWT, readServicesPermission, downDetectorController.accessDownDetectorSingleUpdate)
+routes.get('/services/updateTime', authJWT, readServicesPermission, servicesController.getServicesUpdateTime)
 
 routes.put('/services/:serviceID', celebrate({
   [Segments.BODY]: Joi.object().keys({
@@ -79,12 +81,12 @@ routes.put('/services/:serviceID', celebrate({
   [Segments.PARAMS]: Joi.object().keys({
     serviceID: Joi.number().required()
   })
-}), servicesController.update)
+}), authJWT, createServicePermission, servicesController.update)
 
 routes.delete('/services/:serviceID', celebrate({
   [Segments.PARAMS]: Joi.object().keys({
     serviceID: Joi.number().required()
   })
-}), servicesController.delete)
+}), authJWT, createServicePermission, servicesController.delete)
 
 export default routes
