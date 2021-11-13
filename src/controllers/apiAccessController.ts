@@ -4,12 +4,37 @@ import {
   apiAccessClientsRepository,
   apiAccessTokensRepository,
   clientsAccessRepository,
+  downDetectorChangeRepository,
+  downDetectorHistRepository,
+  servicesRepository,
   permissionsRepository
 } from './../repositories'
 import { errorHandler, AppError } from './../utils/handleError'
 import createToken from '../utils/createToken'
 
 export default class ApiAccessController {
+  private makeUrl = (service: string) => {
+    console.log(service);
+    const url = `https://downdetector.com/status/${service}`
+
+    return url
+  }
+
+  private convertStatusToString = (status: number) => {
+    // initial value = 0
+    // warning = 1 
+    // danger = 2
+    // success = 3
+
+    if (status === 1) {
+      return 'atenção'
+    } else if (status === 2) {
+      return 'perigo'
+    } else {
+      return 'sucesso'
+    }
+  }
+
   public create = async (req: Request, res: Response) => {
     const {
       identifier
@@ -57,6 +82,61 @@ export default class ApiAccessController {
 
     return res.status(201).json({
       message: 'acesso criado com sucesso!'
+    })
+  }
+
+  public status = async (req: Request, res: Response) => {
+    const {
+      serviceName
+    } = req.params
+
+    const haveService = await servicesRepository.get({ serviceName: String(serviceName) })
+      .then((service) => {
+        if (!service) {
+          return false
+        } else {
+          return true
+        }
+      })
+      .catch(error => false)
+
+    if (!haveService) {
+      return res.status(406).json({
+        message: 'serviço não é monitorado por nossa base de dados'
+      })
+    }
+
+    const serviceURL = this.makeUrl(String(serviceName))
+
+    const lastRegistryOfChange = await downDetectorChangeRepository.index({
+      identifiers: { serviceURL: serviceURL },
+      orderBy: { property: 'id', orientation: 'desc' },
+      limit: 1
+    })
+
+    const lastRegistryOfHistory = await downDetectorHistRepository.index({
+      serviceURL: serviceURL,
+      orderBy: { property: 'id', orientation: 'desc' },
+      limit: 1
+    })
+
+    if (lastRegistryOfChange.length === 0 || lastRegistryOfHistory.length === 0) {
+      console.log(lastRegistryOfChange);
+      console.log(lastRegistryOfHistory);
+      
+      return res.status(406).json({
+        message: 'aguarde o serviço começar a ser atualizado por nossas rotinas'
+      })
+    }
+
+    const status = this.convertStatusToString(lastRegistryOfChange[0].status_atual)
+    const baseline = lastRegistryOfHistory[0].baseline
+    const reports = lastRegistryOfHistory[0].notification_count
+
+    return res.status(200).json({
+      status,
+      baseline,
+      reports
     })
   }
 }

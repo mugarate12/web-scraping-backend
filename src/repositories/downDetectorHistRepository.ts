@@ -21,7 +21,12 @@ export interface createDownDetectorHistInterface {
 }
 
 export interface indexDownDetectorHistIndexOptions {
-  serviceURL?: string
+  serviceURL?: string,
+  orderBy?: {
+    property: string,
+    orientation: 'desc' | 'asc'
+  },
+  limit?: number
 }
 
 export default class DownDetectorHistRepository {
@@ -49,12 +54,22 @@ export default class DownDetectorHistRepository {
   }
 
   public index = async ({
-    serviceURL
+    serviceURL,
+    orderBy,
+    limit
   }: indexDownDetectorHistIndexOptions) => {
     let query = this.reference()
 
     if (!!serviceURL) {
       query =  query.where('site_d', '=', serviceURL)
+    }
+
+    if (!!orderBy) {
+      query =  query.orderBy(orderBy.property, orderBy.orientation)
+    }
+
+    if (!!limit) {
+      query = query.limit(limit)
     }
 
     return query

@@ -17,6 +17,10 @@ export interface createServiceInterface {
   update_time: number
 }
 
+export interface getServiceInterface {
+  serviceName: string
+}
+
 export interface indexServiceInterface {
   update_time?: number,
   habilitado?: number
@@ -40,6 +44,17 @@ export default class ServicesRepository {
       .then(() => {
         return
       })
+      .catch(error => {
+        throw new AppError('Database Error', 406, error.message, true)
+      })
+  }
+
+  public get = async ({ serviceName }: getServiceInterface) => {
+    return this.reference()
+      .where('service_name', '=', serviceName)
+      .first()
+      .select('*')
+      .then(service => service)
       .catch(error => {
         throw new AppError('Database Error', 406, error.message, true)
       })

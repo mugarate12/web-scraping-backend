@@ -2,7 +2,6 @@ import { Router } from 'express'
 import { celebrate, Joi, Segments } from 'celebrate'
 
 import { 
-  apiAccessController,
   downDetectorController,
   servicesController,
   sessionController,
@@ -12,11 +11,13 @@ import {
   authJWT,
   createUserPermission,
   createServicePermission,
-  readApiInformations,
-  readApiInformationByUser,
   readUsersPermission,
   readServicesPermission
 } from './middlewares'
+
+import {
+  publicAccess
+} from './routesDefinition'
 
 const routes = Router()
 
@@ -93,10 +94,6 @@ routes.delete('/services/:serviceID', celebrate({
 }), authJWT, createServicePermission, servicesController.delete)
 
 // api access
-routes.post('/public/create', celebrate({
-  [Segments.BODY]: Joi.object().keys({
-    identifier: Joi.string().required()
-  })
-}), authJWT, readApiInformationByUser, apiAccessController.create)
+publicAccess(routes)
 
 export default routes
