@@ -40,7 +40,7 @@ export default class UsersController {
     permissions.forEach((permission) => {
       const permissionToCreateServices = permission.identifier === 'ACCESS_SERVICES_CREATION'
       const permissionToCreateUsers = permission.identifier === 'ACCESS_USERS_CREATION'
-      const isNotAdminPermissions = permission.identifier !== 'ACCESS_USERS_CREATION' && permission.identifier !== 'ACCESS_SERVICES_CREATION'
+      const isNotAdminPermissions = permission.identifier !== 'ACCESS_USERS_CREATION' && permission.identifier !== 'ACCESS_SERVICES_CREATION' && permission.identifier !== 'ACCESS_API_ACCESS_CREATION'
 
       if ((permissionToCreateServices || permissionToCreateUsers) && isAdmin) {
         permissionsIDs.push(permission.id)

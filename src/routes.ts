@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { celebrate, Joi, Segments } from 'celebrate'
 
 import { 
+  apiAccessController,
   downDetectorController,
   servicesController,
   sessionController,
@@ -11,6 +12,8 @@ import {
   authJWT,
   createUserPermission,
   createServicePermission,
+  readApiInformations,
+  readApiInformationByUser,
   readUsersPermission,
   readServicesPermission
 } from './middlewares'
@@ -88,5 +91,12 @@ routes.delete('/services/:serviceID', celebrate({
     serviceID: Joi.number().required()
   })
 }), authJWT, createServicePermission, servicesController.delete)
+
+// api access
+routes.post('/public/create', celebrate({
+  [Segments.BODY]: Joi.object().keys({
+    identifier: Joi.string().required()
+  })
+}), authJWT, readApiInformationByUser, apiAccessController.create)
 
 export default routes
