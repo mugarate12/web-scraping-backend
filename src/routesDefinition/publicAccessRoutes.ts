@@ -7,6 +7,7 @@ import {
 
 import {
   authJWT,
+  createApiClients,
   publicAccessJWT,
   readApiInformationByUser,
   readApiInformations
@@ -17,9 +18,15 @@ export default function publicAccessRoutes(routes: Router) {
     [Segments.BODY]: Joi.object().keys({
       identifier: Joi.string().required()
     })
-  }), authJWT, readApiInformationByUser, apiAccessController.create)
+  }), authJWT, createApiClients, apiAccessController.create)
 
   routes.get('/public/', authJWT, readApiInformationByUser, apiAccessController.index)
+
+  routes.delete('/public/:identifier', celebrate({
+    [Segments.PARAMS]: Joi.object().keys({
+      identifier: Joi.string().required()
+    })
+  }), authJWT, createApiClients, apiAccessController.delete)
 
   routes.get('/public/access/status/:serviceName', celebrate({
     [Segments.QUERY]: Joi.object().keys({

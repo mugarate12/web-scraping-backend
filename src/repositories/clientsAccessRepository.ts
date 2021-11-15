@@ -21,6 +21,10 @@ interface getClientAccessInterface {
   permission_FK?: number
 }
 
+interface deleteClientAccessInterface {
+  client_FK: number,
+}
+
 export default class ClientsAccessRepository {
   private reference = () => connection<clientAccessInterface>(CLIENTS_ACCESS_TABLE_NAME)
 
@@ -76,6 +80,20 @@ export default class ClientsAccessRepository {
     return query
       .select('*')
       .then(usersAccess => usersAccess)
+      .catch(error => {
+        throw new AppError('Database Error', 406, error.message, true)
+      })
+  }
+
+  public delete = async ({
+    client_FK
+  }: deleteClientAccessInterface) => {
+    return this.reference()
+      .where('client_FK', '=', client_FK)
+      .delete()
+      .then(() => {
+        return
+      })
       .catch(error => {
         throw new AppError('Database Error', 406, error.message, true)
       })

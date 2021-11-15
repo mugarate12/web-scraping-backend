@@ -123,6 +123,7 @@ export default class ApiAccessController {
     } = req.params
 
     const client = await apiAccessClientsRepository.get({ identifier: String(identifier) })
+    await clientsAccessRepository.delete({ client_FK: client.id })
     await apiAccessTokensRepository.delete({ api_access_client_FK: client.id })
     await apiAccessClientsRepository.delete({ id: client.id })
 

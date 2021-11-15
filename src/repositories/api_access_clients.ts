@@ -55,7 +55,7 @@ export default class ApiAccessClientsRepository {
     return query
       .first()
       .select('*')
-      .then(permission => permission)
+      .then(client => client)
       .catch(error => {
         throw new AppError('Database Error', 406, error.message, true)
       })
