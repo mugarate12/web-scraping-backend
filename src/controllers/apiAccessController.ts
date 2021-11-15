@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import moment from 'moment'
 
 import {
   apiAccessClientsRepository,
@@ -14,7 +15,6 @@ import createToken from '../utils/createToken'
 
 export default class ApiAccessController {
   private makeUrl = (service: string) => {
-    console.log(service);
     const url = `https://downdetector.com/status/${service}`
 
     return url
@@ -32,6 +32,30 @@ export default class ApiAccessController {
       return 'perigo'
     } else {
       return 'sucesso'
+    }
+  }
+
+  private convertChangeStatusToString (changeStatus: number) {
+    // warning to danger = 1
+    // warning to success = 2
+    // danger to warning = 3
+    // danger to success = 4
+    // success to warning = 5
+    // success to danger = 6
+    if (changeStatus === 0) {
+      return 'inicio do monitoramento'
+    } else if (changeStatus === 1) {
+      return 'mudança de atenção para perigo'
+    } else if (changeStatus === 2) {
+      return 'mudança de atenção para estável'
+    } else if (changeStatus === 3) {
+      return 'mudança de perigo para atenção'
+    } else if (changeStatus === 4) {
+      return 'mudança de perigo para estável'
+    } else if (changeStatus === 5) {
+      return 'mudança de estável para atenção'
+    } else {
+      return 'mudança de estável para perigo'
     }
   }
 
@@ -120,10 +144,7 @@ export default class ApiAccessController {
       limit: 1
     })
 
-    if (lastRegistryOfChange.length === 0 || lastRegistryOfHistory.length === 0) {
-      console.log(lastRegistryOfChange);
-      console.log(lastRegistryOfHistory);
-      
+    if (lastRegistryOfChange.length === 0 || lastRegistryOfHistory.length === 0) {      
       return res.status(406).json({
         message: 'aguarde o serviço começar a ser atualizado por nossas rotinas'
       })
@@ -137,6 +158,115 @@ export default class ApiAccessController {
       status,
       baseline,
       reports
+    })
+  }
+
+  public history = async (req: Request, res: Response) => {
+    const {
+      serviceName
+    } = req.params
+    const {
+      dataInicial,
+      dataFinal
+    } = req.query
+
+    const haveService = await servicesRepository.get({ serviceName: String(serviceName) })
+      .then((service) => {
+        if (!service) {
+          return false
+        } else {
+          return true
+        }
+      })
+      .catch(error => false)
+
+    if (!haveService) {
+      return res.status(406).json({
+        message: 'serviço não é monitorado por nossa base de dados'
+      })
+    }
+
+    const serviceURL = this.makeUrl(String(serviceName))
+    const lastSevenDaysDate = moment().subtract(7, 'days').format('YYYY-MM-DD')
+
+    const lastRegistryOfChange = await downDetectorChangeRepository.index({
+      identifiers: { serviceURL: serviceURL },
+      orderBy: { property: 'id', orientation: 'desc' },
+      limit: 1
+    })
+
+    const histories = await downDetectorHistRepository.index({
+      serviceURL,
+      initialDate: !!dataInicial ? String(dataInicial) : lastSevenDaysDate,
+      finalDate: !!dataFinal ? String(dataFinal) : '',
+    })
+    
+    const status = this.convertStatusToString(lastRegistryOfChange[0].status_atual)
+    const reportsAndBaselines = histories.map((history) => {
+      return {
+        date: moment(history.hist_date).format('YYYY-MM-DD HH:mm:ss'),
+        reports: history.notification_count,
+        baseline: history.baseline
+      }
+    })
+
+    const data = {
+      status,
+      data: reportsAndBaselines
+    }
+
+    return res.status(200).json({
+      ...data
+    })
+  }
+
+  public changes = async (req: Request, res: Response) => {
+    const {
+      serviceName
+    } = req.params
+    const {
+      dataInicial,
+      dataFinal
+    } = req.query
+
+    const haveService = await servicesRepository.get({ serviceName: String(serviceName) })
+      .then((service) => {
+        if (!service) {
+          return false
+        } else {
+          return true
+        }
+      })
+      .catch(error => false)
+
+    if (!haveService) {
+      return res.status(406).json({
+        message: 'serviço não é monitorado por nossa base de dados'
+      })
+    }
+
+    const serviceURL = this.makeUrl(String(serviceName))
+    const lastSevenDaysDate = moment().subtract(7, 'days').format('YYYY-MM-DD')
+
+    const changes = await downDetectorChangeRepository.index({
+      initialDate: !!dataInicial ? String(dataInicial) : lastSevenDaysDate,
+      finalDate: !!dataFinal ? String(dataFinal) : '',
+    })
+
+    const changesData = changes.map((change) => {
+      return {
+        date: moment(change.hist_date).format('YYYY-MM-DD HH:mm:ss'),
+        change: this.convertChangeStatusToString(change.status_change)
+      }
+    })
+
+    const data = {
+      quantidade_de_mudancas: changes.length,
+      data: changesData
+    }
+
+    return res.status(200).json({
+      ...data
     })
   }
 }

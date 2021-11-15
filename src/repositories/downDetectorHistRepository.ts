@@ -26,7 +26,9 @@ export interface indexDownDetectorHistIndexOptions {
     property: string,
     orientation: 'desc' | 'asc'
   },
-  limit?: number
+  limit?: number,
+  initialDate?: string,
+  finalDate?: string
 }
 
 export default class DownDetectorHistRepository {
@@ -56,7 +58,9 @@ export default class DownDetectorHistRepository {
   public index = async ({
     serviceURL,
     orderBy,
-    limit
+    limit,
+    initialDate,
+    finalDate
   }: indexDownDetectorHistIndexOptions) => {
     let query = this.reference()
 
@@ -70,6 +74,14 @@ export default class DownDetectorHistRepository {
 
     if (!!limit) {
       query = query.limit(limit)
+    }
+
+    if (!!initialDate) {
+      query = query.where('hist_date', 'like', `%${initialDate}%`)
+    }
+    
+    if (!!finalDate) {
+      query = query.where('hist_date', 'like', `%${finalDate}%`)
     }
 
     return query
