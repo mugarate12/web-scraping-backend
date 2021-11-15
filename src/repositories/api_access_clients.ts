@@ -18,6 +18,10 @@ interface getApiAccessClientsInterface {
   identifier?: string
 }
 
+interface deleteApiAccessClient {
+  id: number
+}
+
 export default class ApiAccessClientsRepository {
   private reference = () => connection<apiAccessClientsInterface>(API_ACCESS_CLIENTS_TABLE_NAME)
 
@@ -64,6 +68,20 @@ export default class ApiAccessClientsRepository {
       .select('*')
       .orderBy('id', 'asc')
       .then(permissions => permissions)
+      .catch(error => {
+        throw new AppError('Database Error', 406, error.message, true)
+      })
+  }
+
+  public delete = async ({
+    id
+  }: deleteApiAccessClient) => {
+    return this.reference()
+      .where('id', '=', id)
+      .delete()
+      .then(() => {
+        return
+      })
       .catch(error => {
         throw new AppError('Database Error', 406, error.message, true)
       })

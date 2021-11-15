@@ -109,6 +109,28 @@ export default class ApiAccessController {
     })
   }
 
+  public index = async (req: Request, res: Response) => {
+    const data = await apiAccessTokensRepository.index()
+
+    return res.status(200).json({
+      data: data
+    })
+  }
+
+  public delete = async (req: Request, res: Response) => {
+    const {
+      identifier
+    } = req.params
+
+    const client = await apiAccessClientsRepository.get({ identifier: String(identifier) })
+    await apiAccessTokensRepository.delete({ api_access_client_FK: client.id })
+    await apiAccessClientsRepository.delete({ id: client.id })
+
+    return res.status(200).json({
+      message: 'cliente deletado com sucesso!'
+    })
+  }
+
   public status = async (req: Request, res: Response) => {
     const {
       serviceName

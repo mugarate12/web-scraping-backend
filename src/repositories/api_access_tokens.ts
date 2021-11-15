@@ -23,6 +23,17 @@ interface getPermissionInterface {
   identifier?: string
 }
 
+interface deleteApiAccessToken {
+  api_access_client_FK: number
+}
+
+interface clientInformationData {
+  id: number,
+  key: string,
+  api_access_client_FK: number,
+  identifier: string
+}
+
 export default class ApiAccessTokensRepository {
   private reference = () => connection<apiAccessTokensRepository>(API_ACCESS_TOKENS_TABLE_NAME)
 
@@ -74,7 +85,26 @@ export default class ApiAccessTokensRepository {
       .join(API_ACCESS_CLIENTS_TABLE_NAME, `${API_ACCESS_CLIENTS_TABLE_NAME}.id`, '=', `${API_ACCESS_TOKENS_TABLE_NAME}.api_access_client_FK`)
       .select('*')
       // .orderBy('id', 'asc')
-      .then(clients => clients)
+      .then(clients => {
+        const clientsInformations: Array<clientInformationData> = clients
+
+        return clientsInformations
+      })
+      .catch(error => {
+        throw new AppError('Database Error', 406, error.message, true)
+      })
+  }
+
+  public delete = async ({ api_access_client_FK }: deleteApiAccessToken) => {
+    let query = this.reference()
+
+    query.where('api_access_client_FK', '=', api_access_client_FK)
+
+    return query
+      .delete()
+      .then(() => {
+        return
+      })
       .catch(error => {
         throw new AppError('Database Error', 406, error.message, true)
       })

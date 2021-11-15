@@ -19,6 +19,8 @@ export default function publicAccessRoutes(routes: Router) {
     })
   }), authJWT, readApiInformationByUser, apiAccessController.create)
 
+  routes.get('/public/', authJWT, readApiInformationByUser, apiAccessController.index)
+
   routes.get('/public/access/status/:serviceName', celebrate({
     [Segments.QUERY]: Joi.object().keys({
       token: Joi.string().required()
