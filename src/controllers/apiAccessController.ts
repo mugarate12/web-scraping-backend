@@ -59,6 +59,22 @@ export default class ApiAccessController {
     }
   }
 
+  private verifyServiceExistsAndAble = async (serviceName: string) => {
+    return await servicesRepository.get({ serviceName: String(serviceName) })
+    .then((service) => {
+      if (!service) {
+        return false
+      } else {
+        if (service.habilitado === 2) {
+          return false
+        } else {
+          return true
+        }
+      }
+    })
+    .catch(error => false)
+  }
+
   public create = async (req: Request, res: Response) => {
     const {
       identifier
@@ -137,19 +153,11 @@ export default class ApiAccessController {
       serviceName
     } = req.params
 
-    const haveService = await servicesRepository.get({ serviceName: String(serviceName) })
-      .then((service) => {
-        if (!service) {
-          return false
-        } else {
-          return true
-        }
-      })
-      .catch(error => false)
+    const haveService = await this.verifyServiceExistsAndAble(String(serviceName))
 
     if (!haveService) {
       return res.status(406).json({
-        message: 'serviço não é monitorado por nossa base de dados'
+        message: 'serviço não é monitorado por nossa base de dados ou não está habilitado'
       })
     }
 
@@ -176,8 +184,10 @@ export default class ApiAccessController {
     const status = this.convertStatusToString(lastRegistryOfChange[0].status_atual)
     const baseline = lastRegistryOfHistory[0].baseline
     const reports = lastRegistryOfHistory[0].notification_count
+    const date = moment(lastRegistryOfHistory[0].hist_date).format('DD-MM-YYYY HH:mm:ss')
 
     return res.status(200).json({
+      date,
       status,
       baseline,
       reports
@@ -193,19 +203,11 @@ export default class ApiAccessController {
       dataFinal
     } = req.query
 
-    const haveService = await servicesRepository.get({ serviceName: String(serviceName) })
-      .then((service) => {
-        if (!service) {
-          return false
-        } else {
-          return true
-        }
-      })
-      .catch(error => false)
+    const haveService = await this.verifyServiceExistsAndAble(String(serviceName))
 
     if (!haveService) {
       return res.status(406).json({
-        message: 'serviço não é monitorado por nossa base de dados'
+        message: 'serviço não é monitorado por nossa base de dados ou não está habilitado'
       })
     }
 
@@ -252,19 +254,11 @@ export default class ApiAccessController {
       dataFinal
     } = req.query
 
-    const haveService = await servicesRepository.get({ serviceName: String(serviceName) })
-      .then((service) => {
-        if (!service) {
-          return false
-        } else {
-          return true
-        }
-      })
-      .catch(error => false)
+    const haveService = await this.verifyServiceExistsAndAble(String(serviceName))
 
     if (!haveService) {
       return res.status(406).json({
-        message: 'serviço não é monitorado por nossa base de dados'
+        message: 'serviço não é monitorado por nossa base de dados ou não está habilitado'
       })
     }
 
