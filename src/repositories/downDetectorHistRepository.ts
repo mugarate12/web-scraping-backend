@@ -85,14 +85,6 @@ export default class DownDetectorHistRepository {
       })
     }
 
-    // if (!!initialDate) {
-    //   query = query.where('hist_date', 'like', `%${initialDate}%`)
-    // }
-    
-    // if (!!finalDate) {
-    //   query = query.where('hist_date', 'like', `%${finalDate}%`)
-    // }
-
     return query
       .select('*')
       .then(downDetectorHists => downDetectorHists)

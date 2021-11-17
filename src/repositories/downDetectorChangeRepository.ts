@@ -31,8 +31,7 @@ export interface indexDownDetectorChangeIndexOptions {
     orientation: 'desc' | 'asc'
   },
   limit?: number,
-  initialDate?: string,
-  finalDate?: string
+  dates?: Array<string>
 }
 
 export default class DownDetectorChangeRepository {
@@ -65,8 +64,7 @@ export default class DownDetectorChangeRepository {
     identifiers,
     orderBy,
     limit,
-    initialDate,
-    finalDate
+    dates
   }: indexDownDetectorChangeIndexOptions) => {
     let query = this.reference()
 
@@ -84,12 +82,15 @@ export default class DownDetectorChangeRepository {
       query = query.limit(limit)
     }
 
-    if (!!initialDate) {
-      query = query.where('hist_date', 'like', `%${initialDate}%`)
+    if (!!dates && dates.length === 1) {
+      query = query.where('hist_date', 'like', `%${dates[0]}%`)
     }
-    
-    if (!!finalDate) {
-      query = query.where('hist_date', 'like', `%${finalDate}%`)
+
+    if (!!dates && dates.length > 1) {
+      query = query.where('hist_date', 'like', `%${dates[0]}%`)
+      dates.slice(1, dates.length).forEach(date => {
+        query = query.orWhere('hist_date', 'like', `%${date}%`)
+      })
     }
 
     return query
