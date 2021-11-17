@@ -33,6 +33,43 @@ export interface indexDownDetectorHistIndexOptions {
 export default class DownDetectorHistRepository {
   private reference = () => connection<downDetectorHistInterface>(DOWN_DETECTOR_HIST_TABLE_NAME)
 
+  private IndexRaw = ({
+    serviceURL,
+    orderBy,
+    limit,
+    dates
+  }: indexDownDetectorHistIndexOptions) => {
+    let sql = `select * from ${DOWN_DETECTOR_HIST_TABLE_NAME}`
+    
+    if (!!serviceURL) {
+      sql = `${sql} where site_d = '${serviceURL}'`
+    }
+
+    if (!!dates && dates.length > 0) {
+      sql = `${sql} and (`
+
+      dates.forEach((date, index) => {
+        if (index < dates.length - 1) {
+          sql = `${sql}hist_date like '%${date}%' or `
+        } else {
+          sql = `${sql}hist_date like '%${date}%'`
+        }
+      })
+
+      sql = `${sql})`
+    }
+
+    if (!!orderBy && !!orderBy.orientation && !!orderBy.property) {
+      sql = `${sql} order by ${orderBy.property} ${orderBy.orientation}`
+    }
+
+    if (!!limit) {
+      sql = `${sql} limit ${limit}`
+    }
+
+    return sql
+  }
+
   public create = async ({
     site_d,
     hist_date,
@@ -60,34 +97,8 @@ export default class DownDetectorHistRepository {
     limit,
     dates
   }: indexDownDetectorHistIndexOptions) => {
-    let query = this.reference()
-
-    if (!!serviceURL) {
-      query =  query.where('site_d', '=', serviceURL)
-    }
-
-    if (!!orderBy) {
-      query =  query.orderBy(orderBy.property, orderBy.orientation)
-    }
-
-    if (!!limit) {
-      query = query.limit(limit)
-    }
-
-    if (!!dates && dates.length === 1) {
-      query = query.where('hist_date', 'like', `%${dates[0]}%`)
-    }
-
-    if (!!dates && dates.length > 1) {
-      query = query.where('hist_date', 'like', `%${dates[0]}%`)
-      dates.slice(1, dates.length).forEach(date => {
-        query = query.orWhere('hist_date', 'like', `%${date}%`)
-      })
-    }
-
-    return query
-      .select('*')
-      .then(downDetectorHists => downDetectorHists)
+    return connection.raw(this.IndexRaw({ serviceURL, dates, orderBy, limit }))
+      .then(downDetectorHists => downDetectorHists[0])
       .catch(error => {
         throw new AppError('Database Error', 406, error.message, true)
       })

@@ -396,7 +396,11 @@ export default class ApiAccessController {
 
     const histories = await downDetectorHistRepository.index({
       serviceURL,
-      dates
+      dates,
+      orderBy: {
+        property: 'hist_date',
+        orientation: 'desc'
+      }
     })
      
     const status = this.convertStatusToString(lastRegistryOfChange[0].status_atual)
@@ -408,9 +412,11 @@ export default class ApiAccessController {
       }
     })
 
+    const reportsAndBaselinesWithoutLowerValues = reportsAndBaselines.filter(history => history.reports !== 0)
+
     const data = {
       status,
-      data: reportsAndBaselines
+      data: reportsAndBaselinesWithoutLowerValues
     }
 
     return res.status(200).json({
