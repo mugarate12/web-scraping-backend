@@ -16,7 +16,7 @@ export default class servicesController {
       updateTime
     } = req.body
 
-    await servicesRepository.create({
+    return await servicesRepository.create({
       serviceName,
       update_time: Number(updateTime)
     })
@@ -34,20 +34,7 @@ export default class servicesController {
   }
 
   public index = async (req: Request, res: Response) => {
-    // await downDetectorHistRepository.index({})
-    //   .then(response => {
-    //     return res.status(200).json({
-    //       message: 'services gated successful!',
-    //       services: response
-    //     })
-    //   })
-    //   .catch((error: AppError) => {
-    //     return errorHandler(
-    //       new AppError(error.name, 403, error.message, true),
-    //       res
-    //     )
-    //   })
-    await servicesRepository.index({})
+    return await servicesRepository.index({})
       .then(response => {
         return res.status(200).json({
           message: 'serviços recuperados com sucesso!',
@@ -81,7 +68,7 @@ export default class servicesController {
       updatePayload.habilitado = Number(able)
     }
 
-    await servicesRepository.update(updatePayload)
+    return await servicesRepository.update(updatePayload)
       .then(() => {
         return res.status(200).json({
           message: 'serviço atualizado com sucesso!'
@@ -98,7 +85,7 @@ export default class servicesController {
   public delete = async (req: Request, res: Response) => {
     const { serviceID } = req.params
 
-    await servicesRepository.delete(Number(serviceID))
+    return await servicesRepository.delete(Number(serviceID))
       .then(() => {
         return res.status(200).json({
           message: 'serviço deletado com sucesso!'

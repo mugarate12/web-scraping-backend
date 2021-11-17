@@ -22,6 +22,16 @@ export default function publicAccessRoutes(routes: Router) {
 
   routes.get('/public/', authJWT, readApiInformationByUser, apiAccessController.index)
 
+  routes.put('/public/update/:clientID', celebrate({
+    [Segments.PARAMS]: Joi.object().keys({
+      clientID: Joi.number().required()
+    }),
+    [Segments.BODY]: Joi.object().keys({
+      identifier: Joi.string().optional(),
+      able: Joi.number().optional()
+    })
+  }), authJWT, createApiClients, apiAccessController.update)
+
   routes.delete('/public/:identifier', celebrate({
     [Segments.PARAMS]: Joi.object().keys({
       identifier: Joi.string().required()

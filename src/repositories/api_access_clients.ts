@@ -6,7 +6,8 @@ const { API_ACCESS_CLIENTS_TABLE_NAME } = require('./../database/types')
 
 interface apiAccessClientsInterface {
   id: number,
-  identifier: string
+  identifier: string,
+  able: number
 }
 
 interface createApiAccessClientInterface {
@@ -16,6 +17,17 @@ interface createApiAccessClientInterface {
 interface getApiAccessClientsInterface {
   id?: number,
   identifier?: string
+}
+
+interface updateApiAccessClientsInterface {
+  identifiers: {
+    id?: number,
+    identifier?: string
+  },
+  payload: {
+    identifier?: string,
+    able?: number
+  }
 }
 
 interface deleteApiAccessClient {
@@ -68,6 +80,45 @@ export default class ApiAccessClientsRepository {
       .select('*')
       .orderBy('id', 'asc')
       .then(permissions => permissions)
+      .catch(error => {
+        throw new AppError('Database Error', 406, error.message, true)
+      })
+  }
+
+  public update = async ({
+    identifiers,
+    payload
+  }: updateApiAccessClientsInterface) => {
+    let query = this.reference()
+
+    if (!!identifiers) {
+      if (!!identifiers.id) {
+        query = query.where('id', '=', identifiers.id)
+      }
+
+      if (!!identifiers.identifier) {
+        query = query.where('identifier', '=', identifiers.identifier)
+      }
+    }
+
+    if (!!payload) {
+      let updatePayload = {}
+
+      if (!!payload.identifier && payload.identifier.length > 0) {
+        updatePayload['identifier'] = payload.identifier
+      }
+
+      if (!!payload.able) {
+        updatePayload['able'] = payload.able
+      }
+
+      query = query.update(updatePayload)
+    }
+
+    return query
+      .then(() => {
+        return
+      })
       .catch(error => {
         throw new AppError('Database Error', 406, error.message, true)
       })

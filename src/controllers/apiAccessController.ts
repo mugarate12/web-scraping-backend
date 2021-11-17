@@ -288,6 +288,36 @@ export default class ApiAccessController {
     })
   }
 
+  
+  public update = async (req: Request, res: Response) => {
+    const { clientID } = req.params
+    const {
+      identifier,
+      able
+    } = req.body
+
+    return await apiAccessClientsRepository.update({
+      identifiers: {
+        id: Number(clientID)
+      },
+      payload: {
+        identifier: identifier !== undefined ? String(identifier) : '',
+        able: able !== undefined ? Number(able) : undefined
+      }
+    })
+      .then(() => {
+        return res.status(201).json({
+          message: 'api access clients atualizado com sucesso!'
+        })
+      })
+      .catch((error: AppError) => {
+        return errorHandler(
+          new AppError(error.name, 403, error.message, true),
+          res
+        )
+      })
+  }
+
   public delete = async (req: Request, res: Response) => {
     const {
       identifier
