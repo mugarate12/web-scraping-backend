@@ -75,6 +75,84 @@ export default class ApiAccessController {
     .catch(error => false)
   }
 
+  private createArrayOfDates = ({
+    initialDate,
+    finalDate
+  }: {
+    initialDate?: string,
+    finalDate?: string
+  }) => {
+    let dates: Array<string> = []
+
+    const initial = !!initialDate ? moment(initialDate) : moment().subtract(3, 'days')
+    const final = !!finalDate ? moment(finalDate) : moment()
+
+    let addDays = 1
+    let dateMoreDays = initial
+
+    while (dateMoreDays.format('YYYY-MM-DD') !== final.format('YYYY-MM-DD')) {
+      dates.push(dateMoreDays.format('YYYY-MM-DD'))
+
+      dateMoreDays = initial.add(addDays, 'days')
+    }
+
+    dates.push(final.format('YYYY-MM-DD'))
+
+    return dates
+  }
+
+  private allServicesStatus = async () => {
+    const services = await servicesRepository.index({
+      habilitado: 1
+    })
+
+    const dataRequests = services.map(async (service) => {
+      const serviceURL = this.makeUrl(service.service_name)
+
+      const lastRegistryOfHistory = await downDetectorHistRepository.index({
+        serviceURL: serviceURL,
+        orderBy: { property: 'id', orientation: 'desc' },
+        limit: 1
+      })
+
+      const lastRegistryOfChange = await downDetectorChangeRepository.index({
+        identifiers: { serviceURL: serviceURL },
+        orderBy: { property: 'id', orientation: 'desc' },
+        limit: 1
+      })
+
+      if (lastRegistryOfHistory.length === 0) {
+        return undefined
+      }
+
+      const status = this.convertStatusToString(lastRegistryOfChange[0].status_atual)
+      const baseline = lastRegistryOfHistory[0].baseline
+      const reports = lastRegistryOfHistory[0].notification_count
+      const date = moment(lastRegistryOfHistory[0].hist_date).format('DD-MM-YYYY HH:mm:ss')
+
+      return {
+        name: service.service_name,
+        date,
+        status,
+        baseline,
+        reports
+      }
+    })
+
+    const servicesStatus = await Promise.all(dataRequests)
+    const data = servicesStatus.filter((service) => !!service)
+    return data
+  }
+
+  private allServicesHistory = async () => {
+    const services = await servicesRepository.index({
+      habilitado: 1
+    })
+    const lastThreeDays = moment().subtract(1, 'days').format('YYYY-MM-DD')
+
+
+  }
+
   public create = async (req: Request, res: Response) => {
     const {
       identifier
@@ -153,6 +231,13 @@ export default class ApiAccessController {
       serviceName
     } = req.params
 
+    if (String(serviceName) === 'all') {
+      const data = await this.allServicesStatus()
+      return res.status(200).json({
+        data: data
+      })
+    }
+
     const haveService = await this.verifyServiceExistsAndAble(String(serviceName))
 
     if (!haveService) {
@@ -212,7 +297,13 @@ export default class ApiAccessController {
     }
 
     const serviceURL = this.makeUrl(String(serviceName))
-    const lastSevenDaysDate = moment().subtract(7, 'days').format('YYYY-MM-DD')
+    const lastThreeDays = moment().subtract(3, 'days').format('YYYY-MM-DD')
+
+    const dates = this.createArrayOfDates({
+      initialDate: !!dataInicial ? String(dataInicial) : '',
+      finalDate: !!dataFinal ? String(dataFinal) : '',
+    })
+    console.log(dates);
 
     const lastRegistryOfChange = await downDetectorChangeRepository.index({
       identifiers: { serviceURL: serviceURL },
@@ -222,10 +313,9 @@ export default class ApiAccessController {
 
     const histories = await downDetectorHistRepository.index({
       serviceURL,
-      initialDate: !!dataInicial ? String(dataInicial) : lastSevenDaysDate,
-      finalDate: !!dataFinal ? String(dataFinal) : '',
+      dates
     })
-    
+     
     const status = this.convertStatusToString(lastRegistryOfChange[0].status_atual)
     const reportsAndBaselines = histories.map((history) => {
       return {
@@ -263,10 +353,10 @@ export default class ApiAccessController {
     }
 
     const serviceURL = this.makeUrl(String(serviceName))
-    const lastSevenDaysDate = moment().subtract(7, 'days').format('YYYY-MM-DD')
+    const lastThreeDays = moment().subtract(3, 'days').format('YYYY-MM-DD')
 
     const changes = await downDetectorChangeRepository.index({
-      initialDate: !!dataInicial ? String(dataInicial) : lastSevenDaysDate,
+      initialDate: !!dataInicial ? String(dataInicial) : lastThreeDays,
       finalDate: !!dataFinal ? String(dataFinal) : '',
     })
 

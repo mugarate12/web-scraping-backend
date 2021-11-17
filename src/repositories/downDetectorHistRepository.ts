@@ -27,8 +27,7 @@ export interface indexDownDetectorHistIndexOptions {
     orientation: 'desc' | 'asc'
   },
   limit?: number,
-  initialDate?: string,
-  finalDate?: string
+  dates?: Array<string>
 }
 
 export default class DownDetectorHistRepository {
@@ -59,8 +58,7 @@ export default class DownDetectorHistRepository {
     serviceURL,
     orderBy,
     limit,
-    initialDate,
-    finalDate
+    dates
   }: indexDownDetectorHistIndexOptions) => {
     let query = this.reference()
 
@@ -76,13 +74,24 @@ export default class DownDetectorHistRepository {
       query = query.limit(limit)
     }
 
-    if (!!initialDate) {
-      query = query.where('hist_date', 'like', `%${initialDate}%`)
+    if (!!dates && dates.length === 1) {
+      query = query.where('hist_date', 'like', `%${dates[0]}%`)
     }
+
+    if (!!dates && dates.length > 1) {
+      query = query.where('hist_date', 'like', `%${dates[0]}%`)
+      dates.slice(1, dates.length).forEach(date => {
+        query = query.orWhere('hist_date', 'like', `%${date}%`)
+      })
+    }
+
+    // if (!!initialDate) {
+    //   query = query.where('hist_date', 'like', `%${initialDate}%`)
+    // }
     
-    if (!!finalDate) {
-      query = query.where('hist_date', 'like', `%${finalDate}%`)
-    }
+    // if (!!finalDate) {
+    //   query = query.where('hist_date', 'like', `%${finalDate}%`)
+    // }
 
     return query
       .select('*')
