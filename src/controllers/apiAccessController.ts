@@ -230,6 +230,24 @@ export default class ApiAccessController {
     return data
   }
 
+  private verifyClientAble = async (res: Response) => {
+    const userID = Number(res.getHeader('userID'))
+
+    return await apiAccessClientsRepository.get({
+      id: userID
+    })
+      .then(response => {
+        if (response.able === 2) {
+          return res.status(406).json({
+            message: 'cliente está desabilitado, por favor, entre em contato com o administrador do sistema'
+          })
+        }
+      })
+      .catch(error => {
+        console.log(error)
+      })
+  }
+
   public create = async (req: Request, res: Response) => {
     const {
       identifier
@@ -287,7 +305,6 @@ export default class ApiAccessController {
       data: data
     })
   }
-
   
   public update = async (req: Request, res: Response) => {
     const { clientID } = req.params
@@ -337,6 +354,8 @@ export default class ApiAccessController {
     const {
       serviceName
     } = req.params
+
+    this.verifyClientAble(res)
 
     if (String(serviceName) === 'all') {
       const data = await this.allServicesStatus()
@@ -394,6 +413,8 @@ export default class ApiAccessController {
       dataInicial,
       dataFinal
     } = req.query
+
+    this.verifyClientAble(res)
 
     if (String(serviceName) === 'all') {
       const data = await this.allServicesHistory()
@@ -462,6 +483,8 @@ export default class ApiAccessController {
       dataInicial,
       dataFinal
     } = req.query
+
+    this.verifyClientAble(res)
 
     if (String(serviceName) === 'all') {
       const data = await this.allServicesChanges()

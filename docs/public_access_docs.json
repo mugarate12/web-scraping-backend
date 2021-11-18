@@ -57,6 +57,12 @@
             "schema": {
               "$ref": "#/definitions/inline_response_401"
             }
+          },
+          "406": {
+            "description": "cliente não está habilitado, necessário entrar em contato com o adminstrador do sistema",
+            "schema": {
+              "$ref": "#/definitions/inline_response_406"
+            }
           }
         }
       }
@@ -107,6 +113,12 @@
             "description": "token não informado, invalido, ou o token não tem permissão para realizar a operação",
             "schema": {
               "$ref": "#/definitions/inline_response_401"
+            }
+          },
+          "406": {
+            "description": "cliente não está habilitado, necessário entrar em contato com o adminstrador do sistema",
+            "schema": {
+              "$ref": "#/definitions/inline_response_406"
             }
           }
         }
@@ -159,6 +171,12 @@
             "schema": {
               "$ref": "#/definitions/inline_response_401"
             }
+          },
+          "406": {
+            "description": "cliente não está habilitado, necessário entrar em contato com o adminstrador do sistema",
+            "schema": {
+              "$ref": "#/definitions/inline_response_406"
+            }
           }
         }
       }
@@ -187,6 +205,12 @@
             "description": "token não informado, invalido, ou o token não tem permissão para realizar a operação",
             "schema": {
               "$ref": "#/definitions/inline_response_401"
+            }
+          },
+          "406": {
+            "description": "cliente não está habilitado, necessário entrar em contato com o adminstrador do sistema",
+            "schema": {
+              "$ref": "#/definitions/inline_response_406"
             }
           }
         }
@@ -232,6 +256,12 @@
             "schema": {
               "$ref": "#/definitions/inline_response_401"
             }
+          },
+          "406": {
+            "description": "cliente não está habilitado, necessário entrar em contato com o adminstrador do sistema",
+            "schema": {
+              "$ref": "#/definitions/inline_response_406"
+            }
           }
         }
       }
@@ -275,6 +305,12 @@
             "description": "token não informado, invalido, ou o token não tem permissão para realizar a operação",
             "schema": {
               "$ref": "#/definitions/inline_response_401"
+            }
+          },
+          "406": {
+            "description": "cliente não está habilitado, necessário entrar em contato com o adminstrador do sistema",
+            "schema": {
+              "$ref": "#/definitions/inline_response_406"
             }
           }
         }
@@ -393,6 +429,15 @@
         "reports": {
           "type": "integer",
           "example": 100
+        }
+      }
+    },
+    "inline_response_406": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "example": "cliente está desabilitado, por favor, entre em contato com o administrador do sistema"
         }
       }
     },
@@ -544,6 +589,12 @@
       "description": "campo inválido ou não informado",
       "schema": {
         "$ref": "#/definitions/inline_response_400"
+      }
+    },
+    "ClientNotAbleError": {
+      "description": "cliente não está habilitado, necessário entrar em contato com o adminstrador do sistema",
+      "schema": {
+        "$ref": "#/definitions/inline_response_406"
       }
     }
   }
