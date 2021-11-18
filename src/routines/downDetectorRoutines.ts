@@ -31,17 +31,41 @@ function normalizeDownDetectorResult(downDetectorResult: downDetectorSearchResul
   return data
 }
 
+function haveBaselineOrReportsInHour(histories: Array<any>, baseline: number, reports: number) {
+  let have = false
+
+  histories.forEach((history) => {
+    if (history.baseline === baseline || history.notification_count === reports) {
+      have = true
+    }
+  })
+
+  return have
+}
+
 async function updateOrCreateMonitoringService(downDetectorResult: downDetectorSearchResult) {
   const normalizedData = normalizeDownDetectorResult(downDetectorResult)
   
   const registryDataPromises = normalizedData.map(async (downDetectorReport) => {
-    await downDetectorHistRepository.create({
-      site_d: downDetectorResult.url,
-      hist_date: downDetectorReport.date,
-      baseline: downDetectorReport.baseline,
-      notification_count: downDetectorReport.notificationCount
+    let createRegistry = false
+
+    await downDetectorHistRepository.index({
+      serviceURL: downDetectorResult.url,
+      dates: [ downDetectorReport.date.split(':')[0] ]
     })
-      .catch(error => {})
+      .then(response => {
+        createRegistry = haveBaselineOrReportsInHour(response, downDetectorReport.baseline, downDetectorReport.notificationCount)
+      })
+    
+    if (createRegistry) {
+      await downDetectorHistRepository.create({
+        site_d: downDetectorResult.url,
+        hist_date: downDetectorReport.date,
+        baseline: downDetectorReport.baseline,
+        notification_count: downDetectorReport.notificationCount
+      })
+        .catch(error => {})
+    }
   })
 
   await downDetectorController.updateChangeHistory(downDetectorResult)

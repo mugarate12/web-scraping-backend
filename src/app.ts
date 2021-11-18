@@ -46,7 +46,6 @@ app.use('/public/docs', swaggerUI.serve, swaggerUI.setup(publicAccessDocuments))
 // celebrate errors
 app.use(errors())
 
-
 // run routines
 routines(io)
 

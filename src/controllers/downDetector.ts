@@ -166,6 +166,7 @@ export default class DownDetectorController {
         status_atual: this.changeStringStatusToInteger(downDetectorResult.status),
         status_change: this.createChangeInteger(lastRegistryOfChange, downDetectorResult)
       })
+        .catch(error => {})
     }
 
     if (lastRegistryOfChange.length > 0 && lastRegistryOfChange[0].status_atual !== this.changeStringStatusToInteger(downDetectorResult.status)) {
@@ -176,6 +177,7 @@ export default class DownDetectorController {
         status_atual: this.changeStringStatusToInteger(downDetectorResult.status),
         status_change: this.createChangeInteger(lastRegistryOfChange, downDetectorResult)
       })
+        .catch(error => {})
     }
   }
 
