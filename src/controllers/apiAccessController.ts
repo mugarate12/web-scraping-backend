@@ -1,5 +1,8 @@
 import { Request, Response } from 'express'
 import moment from 'moment'
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 import {
   apiAccessClientsRepository,
@@ -104,6 +107,16 @@ export default class ApiAccessController {
     return dates
   }
 
+  private convertDate = (date: any) => {
+    const envToConvertDate = Number(process.env.CONVERT_HOURS) === 1
+
+    if (envToConvertDate) {
+      return moment(date).subtract(3, 'hours').format('DD-MM-YYYY HH:mm:ss')
+    } else {
+      return moment(date).format('DD-MM-YYYY HH:mm:ss')
+    }
+  }
+
   private allServicesStatus = async () => {
     const services = await servicesRepository.index({
       habilitado: 1
@@ -131,7 +144,8 @@ export default class ApiAccessController {
       const status = this.convertStatusToString(lastRegistryOfChange[0].status_atual)
       const baseline = lastRegistryOfHistory[0].baseline
       const reports = lastRegistryOfHistory[0].notification_count
-      const date = moment(lastRegistryOfHistory[0].hist_date).format('DD-MM-YYYY HH:mm:ss')
+      const date = this.convertDate(lastRegistryOfHistory[0].hist_date)
+      // const date = moment(lastRegistryOfHistory[0].hist_date).format('DD-MM-YYYY HH:mm:ss')
 
       return {
         name: service.service_name,
@@ -173,7 +187,8 @@ export default class ApiAccessController {
       const status = this.convertStatusToString(lastRegistryOfChange[0].status_atual)
       const reportsAndBaselines = histories.map((history) => {
         return {
-          date: moment(history.hist_date).format('YYYY-MM-DD HH:mm:ss'),
+          // date: moment(history.hist_date).format('YYYY-MM-DD HH:mm:ss'),
+          date: this.convertDate(history.hist_date),
           reports: history.notification_count,
           baseline: history.baseline
         }
@@ -212,7 +227,8 @@ export default class ApiAccessController {
 
       const changesData = changes.map((change) => {
         return {
-          date: moment(change.hist_date).format('YYYY-MM-DD HH:mm:ss'),
+          // date: moment(change.hist_date).format('YYYY-MM-DD HH:mm:ss'),
+          date: this.convertDate(change.hist_date),
           change: this.convertChangeStatusToString(change.status_change)
         }
       })
@@ -395,7 +411,9 @@ export default class ApiAccessController {
     const status = this.convertStatusToString(lastRegistryOfChange[0].status_atual)
     const baseline = lastRegistryOfHistory[0].baseline
     const reports = lastRegistryOfHistory[0].notification_count
-    const date = moment(lastRegistryOfHistory[0].hist_date).format('DD-MM-YYYY HH:mm:ss')
+    // const date = moment(lastRegistryOfHistory[0].hist_date).subtract(3, 'hours').format('DD-MM-YYYY HH:mm:ss')
+    // const date = moment(lastRegistryOfHistory[0].hist_date).format('DD-MM-YYYY HH:mm:ss')
+    const date = this.convertDate(lastRegistryOfHistory[0].hist_date)
 
     return res.status(200).json({
       date,
@@ -457,7 +475,8 @@ export default class ApiAccessController {
     const status = this.convertStatusToString(lastRegistryOfChange[0].status_atual)
     const reportsAndBaselines = histories.map((history) => {
       return {
-        date: moment(history.hist_date).format('YYYY-MM-DD HH:mm:ss'),
+        // date: moment(history.hist_date).format('YYYY-MM-DD HH:mm:ss'),
+        date: this.convertDate(history.hist_date),
         reports: history.notification_count,
         baseline: history.baseline
       }
@@ -516,7 +535,8 @@ export default class ApiAccessController {
 
     const changesData = changes.map((change) => {
       return {
-        date: moment(change.hist_date).format('YYYY-MM-DD HH:mm:ss'),
+        // date: moment(change.hist_date).format('YYYY-MM-DD HH:mm:ss'),
+        date: this.convertDate(change.hist_date),
         change: this.convertChangeStatusToString(change.status_change)
       }
     })
