@@ -1,0 +1,550 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "Api com as informações do monitoramento dos serviços",
+    "version": "1.0.0",
+    "title": "Web Scraping",
+    "contact": {
+      "email": "cribeiro@flowbix.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "host": "virtserver.swaggerhub.com",
+  "basePath": "/mateus-Cardoso/web-scraping/1.0.0",
+  "tags": [
+    {
+      "name": "services",
+      "description": "rotas para acesso as informações monitoradas a partir de rotas públicas"
+    }
+  ],
+  "schemes": [
+    "https"
+  ],
+  "paths": {
+    "/public/access/status/{serviceName}": {
+      "get": {
+        "tags": [
+          "services"
+        ],
+        "summary": "recuperar status atual de um serviço",
+        "parameters": [
+          {
+            "name": "serviceName",
+            "in": "path",
+            "description": "nome do serviço do qual quer o status",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "status recuperado com sucesso",
+            "schema": {
+              "$ref": "#/definitions/inline_response_200"
+            }
+          },
+          "400": {
+            "description": "campo inválido ou não informado",
+            "schema": {
+              "$ref": "#/definitions/inline_response_400"
+            }
+          },
+          "401": {
+            "description": "token não informado, invalido, ou o token não tem permissão para realizar a operação",
+            "schema": {
+              "$ref": "#/definitions/inline_response_401"
+            }
+          }
+        }
+      }
+    },
+    "/public/access/history/{serviceName}": {
+      "get": {
+        "tags": [
+          "services"
+        ],
+        "summary": "recuperar histórico atual de um serviço",
+        "parameters": [
+          {
+            "name": "serviceName",
+            "in": "path",
+            "description": "nome do serviço do qual quer o histórico",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "dataInicial",
+            "in": "query",
+            "description": "data inicial da consulta no formato (ANO-MES-DIA)",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "dataFinal",
+            "in": "query",
+            "description": "data final da consulta no formato (ANO-MES-DIA)",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "histórico recuperado com sucesso",
+            "schema": {
+              "$ref": "#/definitions/inline_response_200_1"
+            }
+          },
+          "400": {
+            "description": "campo inválido ou não informado",
+            "schema": {
+              "$ref": "#/definitions/inline_response_400"
+            }
+          },
+          "401": {
+            "description": "token não informado, invalido, ou o token não tem permissão para realizar a operação",
+            "schema": {
+              "$ref": "#/definitions/inline_response_401"
+            }
+          }
+        }
+      }
+    },
+    "/public/access/changes/{serviceName}": {
+      "get": {
+        "tags": [
+          "services"
+        ],
+        "summary": "recuperar histórico de mudanças atual de um serviço",
+        "parameters": [
+          {
+            "name": "serviceName",
+            "in": "path",
+            "description": "nome do serviço do qual quer o histórico de mudanças",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "dataInicial",
+            "in": "query",
+            "description": "data inicial da consulta no formato (ANO-MES-DIA)",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "dataFinal",
+            "in": "query",
+            "description": "data final da consulta no formato (ANO-MES-DIA)",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "histórico de mudanças atualizado com sucesso",
+            "schema": {
+              "$ref": "#/definitions/inline_response_200_2"
+            }
+          },
+          "400": {
+            "description": "campo inválido ou não informado",
+            "schema": {
+              "$ref": "#/definitions/inline_response_400"
+            }
+          },
+          "401": {
+            "description": "token não informado, invalido, ou o token não tem permissão para realizar a operação",
+            "schema": {
+              "$ref": "#/definitions/inline_response_401"
+            }
+          }
+        }
+      }
+    },
+    "/public/access/status/all": {
+      "get": {
+        "tags": [
+          "services"
+        ],
+        "summary": "recuperar status atual de um serviço",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "status de todos os serviços recuperados com sucesso",
+            "schema": {
+              "$ref": "#/definitions/inline_response_200_3"
+            }
+          },
+          "400": {
+            "description": "campo inválido ou não informado",
+            "schema": {
+              "$ref": "#/definitions/inline_response_400"
+            }
+          },
+          "401": {
+            "description": "token não informado, invalido, ou o token não tem permissão para realizar a operação",
+            "schema": {
+              "$ref": "#/definitions/inline_response_401"
+            }
+          }
+        }
+      }
+    },
+    "/public/access/history/all": {
+      "get": {
+        "tags": [
+          "services"
+        ],
+        "summary": "recuperar histórico de todos os serviços",
+        "parameters": [
+          {
+            "name": "dataInicial",
+            "in": "query",
+            "description": "data inicial da consulta no formato (ANO-MES-DIA)",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "dataFinal",
+            "in": "query",
+            "description": "data final da consulta no formato (ANO-MES-DIA)",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "histórico de todos os serviços recuperados com sucesso",
+            "schema": {
+              "$ref": "#/definitions/inline_response_200_4"
+            }
+          },
+          "400": {
+            "description": "campo inválido ou não informado",
+            "schema": {
+              "$ref": "#/definitions/inline_response_400"
+            }
+          },
+          "401": {
+            "description": "token não informado, invalido, ou o token não tem permissão para realizar a operação",
+            "schema": {
+              "$ref": "#/definitions/inline_response_401"
+            }
+          }
+        }
+      }
+    },
+    "/public/access/changes/all": {
+      "get": {
+        "tags": [
+          "services"
+        ],
+        "summary": "recuperar mudanças de status de todos os serviços",
+        "parameters": [
+          {
+            "name": "dataInicial",
+            "in": "query",
+            "description": "data inicial da consulta no formato (ANO-MES-DIA)",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "dataFinal",
+            "in": "query",
+            "description": "data final da consulta no formato (ANO-MES-DIA)",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "mudanças de status de todos os serviços recuperados com sucesso",
+            "schema": {
+              "$ref": "#/definitions/inline_response_200_5"
+            }
+          },
+          "400": {
+            "description": "campo inválido ou não informado",
+            "schema": {
+              "$ref": "#/definitions/inline_response_400"
+            }
+          },
+          "401": {
+            "description": "token não informado, invalido, ou o token não tem permissão para realizar a operação",
+            "schema": {
+              "$ref": "#/definitions/inline_response_401"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "StatusAll": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "facebook"
+        },
+        "date": {
+          "type": "string",
+          "example": "18-11-2021 00:00:47"
+        },
+        "status": {
+          "type": "string",
+          "example": "status"
+        },
+        "baseline": {
+          "type": "integer",
+          "example": 20
+        },
+        "reports": {
+          "type": "integer",
+          "example": 100
+        }
+      }
+    },
+    "History": {
+      "type": "object",
+      "properties": {
+        "date": {
+          "type": "string",
+          "example": "18-11-2021 00:00:47"
+        },
+        "baseline": {
+          "type": "integer",
+          "example": 20
+        },
+        "reports": {
+          "type": "integer",
+          "example": 100
+        }
+      }
+    },
+    "HistoryAll": {
+      "type": "object",
+      "properties": {
+        "service": {
+          "type": "string",
+          "example": "https://downdetector.com/status/facebook"
+        },
+        "status": {
+          "type": "string",
+          "example": "sucesso"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/History"
+          }
+        }
+      }
+    },
+    "Change": {
+      "type": "object",
+      "properties": {
+        "date": {
+          "type": "string",
+          "example": "18-11-2021 00:00:47"
+        },
+        "change": {
+          "type": "string",
+          "example": "mudança de estável para atenção"
+        }
+      }
+    },
+    "ChangeAll": {
+      "type": "object",
+      "properties": {
+        "service": {
+          "type": "string",
+          "example": "https://downdetector.com/status/instagram"
+        },
+        "quantidade_de_mudancas": {
+          "type": "integer",
+          "example": 20
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Change"
+          }
+        }
+      }
+    },
+    "inline_response_200": {
+      "type": "object",
+      "properties": {
+        "date": {
+          "type": "string",
+          "example": "18-11-2021 00:00:47"
+        },
+        "status": {
+          "type": "string",
+          "example": "sucesso"
+        },
+        "baseline": {
+          "type": "integer",
+          "example": 20
+        },
+        "reports": {
+          "type": "integer",
+          "example": 100
+        }
+      }
+    },
+    "inline_response_401_error": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "Authorization Error"
+        },
+        "message": {
+          "type": "string",
+          "example": "não autorizado ou token inválido"
+        }
+      }
+    },
+    "inline_response_401": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/definitions/inline_response_401_error"
+        }
+      }
+    },
+    "inline_response_400_validation_body": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string",
+          "example": "body"
+        },
+        "keys": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "field1",
+              "field2",
+              "fieldN"
+            ]
+          }
+        },
+        "message": {
+          "type": "string",
+          "example": "\"field\" is required"
+        }
+      }
+    },
+    "inline_response_400_validation": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "$ref": "#/definitions/inline_response_400_validation_body"
+        }
+      }
+    },
+    "inline_response_400": {
+      "type": "object",
+      "properties": {
+        "statusCode": {
+          "type": "number",
+          "example": 400
+        },
+        "error": {
+          "type": "string",
+          "example": "Bad Request"
+        },
+        "message": {
+          "type": "string",
+          "example": "Validation failed"
+        },
+        "validation": {
+          "$ref": "#/definitions/inline_response_400_validation"
+        }
+      }
+    },
+    "inline_response_200_1": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "example": "sucesso!"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/History"
+          }
+        }
+      }
+    },
+    "inline_response_200_2": {
+      "type": "object",
+      "properties": {
+        "quantidade_de_mudancas": {
+          "type": "integer",
+          "example": 20
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Change"
+          }
+        }
+      }
+    },
+    "inline_response_200_3": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StatusAll"
+          }
+        }
+      }
+    },
+    "inline_response_200_4": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/HistoryAll"
+          }
+        }
+      }
+    },
+    "inline_response_200_5": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ChangeAll"
+          }
+        }
+      }
+    }
+  },
+  "responses": {
+    "AuthorizationError": {
+      "description": "token não informado, invalido, ou o token não tem permissão para realizar a operação",
+      "schema": {
+        "$ref": "#/definitions/inline_response_401"
+      }
+    },
+    "CelebrateError": {
+      "description": "campo inválido ou não informado",
+      "schema": {
+        "$ref": "#/definitions/inline_response_400"
+      }
+    }
+  }
+}
