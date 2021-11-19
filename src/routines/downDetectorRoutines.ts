@@ -97,6 +97,8 @@ export default async function routinesRequests(serverIo: Server, browser: puppet
   if (!!requests && requests.length > 0) {
     const routine = await downDetectorRoutineExecutionRepository.get(updateTime)
 
+    console.log(routine);
+
     if (!!routine && routine.execution === 2) {
       return
     } else {

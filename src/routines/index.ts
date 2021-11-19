@@ -4,6 +4,10 @@ import CronJob from 'cron'
 
 import routinesRequests from './downDetectorRoutines'
 
+import {
+  downDetectorRoutineExecutionRepository
+} from './../repositories'
+
 let runOneMinuteRoutines = true
 let runThreeMinutesRoutines = true
 let runFiveMinutesRoutines = true
@@ -94,18 +98,36 @@ export async function fifteenMinuteRoutines(serverIo: Server, browser: puppeteer
 export default async (serverIo: Server) => {
   const browser = await runBrowser()
   
-  // const oneMinuteJob = new CronJob.CronJob('* * * * * ', async () => {
-  //   await routinesRequests(serverIo, browser, 1)
-  // })
+  const oneMinuteJob = new CronJob.CronJob('* * * * * ', async () => {
+    await routinesRequests(serverIo, browser, 1)
+  })
 
-  // oneMinuteJob.start()
+  const ThreeMinutesJob = new CronJob.CronJob('*/3 * * * * ', async () => {
+    await routinesRequests(serverIo, browser, 3)
+  })
+  
+  const FiveMinutesJob = new CronJob.CronJob('*/5 * * * * ', async () => {
+    await routinesRequests(serverIo, browser, 5)
+  })
+  
+  const TeenMinutesJob = new CronJob.CronJob('*/10 * * * * ', async () => {
+    await routinesRequests(serverIo, browser, 10)
+  })
+  
+  const FifteenMinutesJob = new CronJob.CronJob('*/15 * * * * ', async () => {
+    await routinesRequests(serverIo, browser, 15)
+  })
 
+  oneMinuteJob.start()
+  ThreeMinutesJob.start()
+  FiveMinutesJob.start()
+  TeenMinutesJob.start()
+  FifteenMinutesJob.start()
+  // await downDetectorRoutineExecutionRepository.update(1, 1)
+  // await downDetectorRoutineExecutionRepository.update(3, 1)
+  // await downDetectorRoutineExecutionRepository.update(5, 1)
+  // await downDetectorRoutineExecutionRepository.update(10, 1)
+  // await downDetectorRoutineExecutionRepository.update(15, 1)
 
-  setInterval(() => {
-    oneMinuteRoutines(serverIo, browser)
-    threeMinuteRoutines(serverIo, browser)
-    fiveMinuteRoutines(serverIo, browser)
-    teenMinuteRoutines(serverIo, browser)
-    fifteenMinuteRoutines(serverIo, browser)
-  }, 5000)
+  // console.log('ok');
 }
