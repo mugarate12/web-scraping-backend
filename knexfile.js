@@ -48,7 +48,7 @@ module.exports = {
     },
     pool: {
       min: 2,
-      max: 50
+      max: 2000
     },
     migrations: {
       directory: path.resolve(__dirname, 'src', 'database', 'migrations')
