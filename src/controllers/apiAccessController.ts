@@ -134,7 +134,8 @@ export default class ApiAccessController {
       const lastRegistryOfHistory = await downDetectorHistRepository.index({
         serviceURL: serviceURL,
         orderBy: { property: 'id', orientation: 'desc' },
-        limit: 1
+        limit: 1,
+        dates: []
       })
 
       const lastRegistryOfChange = await downDetectorChangeRepository.index({
@@ -408,7 +409,8 @@ export default class ApiAccessController {
     const lastRegistryOfHistory = await downDetectorHistRepository.index({
       serviceURL: serviceURL,
       orderBy: { property: 'hist_date', orientation: 'desc' },
-      limit: 1
+      limit: 1,
+      dates: []
     })
 
     if (lastRegistryOfChange.length === 0 || lastRegistryOfHistory.length === 0) {      

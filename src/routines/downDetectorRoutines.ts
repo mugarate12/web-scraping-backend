@@ -48,37 +48,115 @@ function haveBaselineOrReportsInHour(histories: Array<any>, baseline: number, re
   return have
 }
 
+async function haveDocumentWithDate(downDetectorReport: {
+  date: string;
+  baseline: number;
+  notificationCount: number;
+}) {
+  let have = false
+
+  await downDetectorHistRepository.get(downDetectorReport.date)
+    .then(history => {
+      if (!!history) {
+        have = true
+      }
+    })
+
+  return have
+}
+
 async function updateOrCreateMonitoringService(downDetectorResult: downDetectorSearchResult) {
   const normalizedData = normalizeDownDetectorResult(downDetectorResult)
-  
-  const registryDataPromises = normalizedData.map(async (downDetectorReport) => {
+  const actualDate = moment().format('YYYY-MM-DD')
+  const lessOneDay = moment().subtract(1, 'days').format('YYYY-MM-DD')
+
+  // const histories = await downDetectorHistRepository.index({
+  //   serviceURL: downDetectorResult.url,
+  //   dates: [ actualDate, lessOneDay ]
+  // })
+
+  const validDatesWithUndefinedRequests = normalizedData.map(async (downDetectorReport) => {
+    const have = await haveDocumentWithDate(downDetectorReport)
+
+    if (have) {
+      return undefined
+    } else {
+      return downDetectorReport
+    }
+  })
+  const validDatesWithUndefined = await Promise.all(validDatesWithUndefinedRequests)
+
+  const validDatesFiltered = validDatesWithUndefined.filter((report) => report !== undefined)
+  const validNumberOfBaselinesAndReportsWithUndefinedRequests = validDatesFiltered.map(async (report) => {
     let createRegistry = false
 
-    await downDetectorHistRepository.index({
-      serviceURL: downDetectorResult.url,
-      dates: [ downDetectorReport.date.split(':')[0] ]
-    })
-      .then(response => {
-        createRegistry = !haveBaselineOrReportsInHour(response, downDetectorReport.baseline, downDetectorReport.notificationCount)
-      })
-      .catch(error => {
-        console.log(error)
-      })
-    
+    if (!!report) {
+      await downDetectorHistRepository.get(report.date.split(':')[0])
+        .then(history => {
+          if (!!history) {
+            createRegistry = true
+          }
+        })
+        .catch(error => {
+          console.log('get error');
+        })
+    }
+
     if (createRegistry) {
-      await downDetectorHistRepository.create({
-        site_d: downDetectorResult.url,
-        hist_date: downDetectorReport.date,
-        baseline: downDetectorReport.baseline,
-        notification_count: downDetectorReport.notificationCount
-      })
-        .catch(error => {})
+      return report
+    } else {
+      return undefined
     }
   })
 
-  await downDetectorController.updateChangeHistory(downDetectorResult)
+  const validNumberOfBaselinesAndReportsWithUndefined = await Promise.all(validNumberOfBaselinesAndReportsWithUndefinedRequests)
+  const validNumberOfBaselinesAndReports = validNumberOfBaselinesAndReportsWithUndefined.filter(report => report !== undefined)
 
-  await Promise.all(registryDataPromises)
+  let insertions: Array<{
+    site_d: string,
+    hist_date: string,
+    baseline: number,
+    notification_count: number
+  }> = []
+
+  validNumberOfBaselinesAndReports.forEach((report) => {
+    if (!!report) {
+      insertions.push({
+        site_d: downDetectorResult.url,
+        hist_date: report.date,
+        baseline: report.baseline,
+        notification_count: report.notificationCount
+      })
+    }
+  })
+
+  let insertionsWithoutDuplicateDate: Array<{
+    site_d: string,
+    hist_date: string,
+    baseline: number,
+    notification_count: number
+  }> = []
+
+  insertions.forEach((report) => {
+    let have = false
+
+    insertionsWithoutDuplicateDate.forEach(insertion => {
+      if (insertion.hist_date === report.hist_date) {
+        have = true
+      }
+    })
+
+    if (!have) {
+      insertionsWithoutDuplicateDate.push(report)
+    }
+  })
+
+  if (insertionsWithoutDuplicateDate.length > 0) {
+    await downDetectorHistRepository.createInMassive(insertionsWithoutDuplicateDate)
+      .catch(error => {
+        console.log(error);
+      })
+  }
 }
 
 async function emitUpdatedMonitoring(serverIo: Server) {
@@ -107,7 +185,7 @@ export default async function routinesRequests(serverIo: Server, browser: puppet
 
     sleep(200)
 
-    console.log(`requisitando serviços de update em ${updateTime} minuto(s)`)
+    console.log(`requisitando serviços de update em ${updateTime} minuto(s) \n`)
 
     await downDetectorController.emitExecutionRoutine(serverIo, updateTime)
     
@@ -125,11 +203,11 @@ export default async function routinesRequests(serverIo: Server, browser: puppet
 
     await Promise.all(requestsResultsPromises)
 
-    await downDetectorController.createOrUpdateServiceUpdateTime(updateTime)
-    await downDetectorController.emitUpdateTime(serverIo)
+    // await downDetectorController.createOrUpdateServiceUpdateTime(updateTime)
+    // await downDetectorController.emitUpdateTime(serverIo)
     await downDetectorRoutineExecutionRepository.update(updateTime, 1)
     // await emitUpdatedMonitoring(serverIo)
 
-    console.log('requisições finalizadas')
+    console.log('\nrequisições finalizadas')
   }
 }

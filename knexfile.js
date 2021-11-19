@@ -48,8 +48,11 @@ module.exports = {
       propagateCreateError: false
     },
     pool: {
-      min: 2,
-      max: 100,
+      min: 0,
+      max: 10,
+    },
+    sl: {
+      rejectUnauthorized: false
     },
     migrations: {
       directory: path.resolve(__dirname, 'src', 'database', 'migrations')

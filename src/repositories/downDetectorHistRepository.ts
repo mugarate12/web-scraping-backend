@@ -27,7 +27,7 @@ export interface indexDownDetectorHistIndexOptions {
     orientation: 'desc' | 'asc'
   },
   limit?: number,
-  dates?: Array<string>
+  dates: Array<string>
 }
 
 export default class DownDetectorHistRepository {
@@ -87,10 +87,28 @@ export default class DownDetectorHistRepository {
         return
       })
       .catch(error => {
-        throw new AppError('Database Error', 406, error.message, true)
+        console.log(error);
       })
   }
 
+  public createInMassive = async (insertions: Array<createDownDetectorHistInterface>) => {
+    let approved = false
+    let insertionsCopy = insertions
+
+    const requests = insertions.map(async (insertion) => {
+      return this.reference()
+        .insert(insertion)
+        .then(() => {
+          return
+        })
+        .catch(error => {})
+    })
+
+    await Promise.all(requests)
+    return
+  }
+
+  // refatorar
   public index = async ({
     serviceURL,
     orderBy,
@@ -99,6 +117,16 @@ export default class DownDetectorHistRepository {
   }: indexDownDetectorHistIndexOptions) => {
     return connection.raw(this.IndexRaw({ serviceURL, dates, orderBy, limit }))
       .then(downDetectorHists => downDetectorHists[0])
+      .catch(error => {
+        throw new AppError('Database Error', 406, error.message, true)
+      })
+  }
+
+  public get = async (date: string) => {
+    return this.reference()
+      .where({ hist_date: date })
+      .first()
+      .then(history => history)
       .catch(error => {
         throw new AppError('Database Error', 406, error.message, true)
       })
