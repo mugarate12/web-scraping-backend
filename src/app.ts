@@ -7,7 +7,6 @@ import { Server } from 'socket.io'
 import swaggerUI from 'swagger-ui-express'
 
 import routes from './routes'
-import routines from './routines'
 import RunSockets from './sockets'
 
 let publicAccessDocuments
@@ -45,9 +44,6 @@ app.use('/public/docs', swaggerUI.serve, swaggerUI.setup(publicAccessDocuments))
 
 // celebrate errors
 app.use(errors())
-
-// run routines
-// routines(io)
 
 // sockets
 RunSockets(io)
