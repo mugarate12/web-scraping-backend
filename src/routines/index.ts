@@ -27,15 +27,15 @@ async function sleep(milliseconds: number) {
 
 // rotina de um minuto
 export async function oneMinuteRoutines(serverIo: Server, browser: puppeteer.Browser) {
-  await routinesRequests(serverIo, browser, 1)
-  // if (runOneMinuteRoutines) {
-  //   runOneMinuteRoutines = false
-
-  //   await sleep(convertMinutesToMilliseconds(1))
+  if (runOneMinuteRoutines) {
+    runOneMinuteRoutines = false
     
-
-  //   runOneMinuteRoutines = true
-  // }
+    await routinesRequests(serverIo, browser, 1)
+    
+    await sleep(convertMinutesToMilliseconds(1))
+    
+    runOneMinuteRoutines = true
+  }
 }
 
 // rotina de três minutos
@@ -94,18 +94,18 @@ export async function fifteenMinuteRoutines(serverIo: Server, browser: puppeteer
 export default async (serverIo: Server) => {
   const browser = await runBrowser()
   
-  const oneMinuteJob = new CronJob.CronJob('* * * * * ', async () => {
-    await routinesRequests(serverIo, browser, 1)
-  })
+  // const oneMinuteJob = new CronJob.CronJob('* * * * * ', async () => {
+  //   await routinesRequests(serverIo, browser, 1)
+  // })
 
-  oneMinuteJob.start()
+  // oneMinuteJob.start()
 
 
-  // setInterval(() => {
-  //   oneMinuteRoutines(serverIo, browser)
-  //   threeMinuteRoutines(serverIo, browser)
-  //   fiveMinuteRoutines(serverIo, browser)
-  //   teenMinuteRoutines(serverIo, browser)
-  //   fifteenMinuteRoutines(serverIo, browser)
-  // }, 5000)
+  setInterval(() => {
+    oneMinuteRoutines(serverIo, browser)
+    threeMinuteRoutines(serverIo, browser)
+    fiveMinuteRoutines(serverIo, browser)
+    teenMinuteRoutines(serverIo, browser)
+    fifteenMinuteRoutines(serverIo, browser)
+  }, 5000)
 }
