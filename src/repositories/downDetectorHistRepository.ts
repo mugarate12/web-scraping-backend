@@ -131,4 +131,20 @@ export default class DownDetectorHistRepository {
         throw new AppError('Database Error', 406, error.message, true)
       })
   }
+
+  public indexWithOneDate = async ({
+    serviceURL,
+    date
+  }: { serviceURL: string, date: string }) => {
+    return this.reference()
+      .where({
+        site_d: serviceURL
+      })
+      .where('hist_date', 'like', `%${date}%`)
+      .select('*')
+      .then(histories => histories)
+      .catch(error => {
+        throw new AppError('Database Error', 406, error.message, true)
+      })
+  }
 }
