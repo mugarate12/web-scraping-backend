@@ -44,11 +44,12 @@ module.exports = {
       user: process.env.DATABASE_USER,
       password: !process.env.DATABASE_PASSWORD ? '' : process.env.DATABASE_PASSWORD,
       port: process.env.DATABASE_PORT,
-      connectTimeout: 90000
+      connectTimeout: 9000000,
+      propagateCreateError: false
     },
     pool: {
       min: 2,
-      max: 2000
+      max: 10,
     },
     migrations: {
       directory: path.resolve(__dirname, 'src', 'database', 'migrations')
