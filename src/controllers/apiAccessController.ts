@@ -397,7 +397,7 @@ export default class ApiAccessController {
     }
 
     const serviceURL = this.makeUrl(String(serviceName))
-    await downDetectorController.accessDownDetectorSingleUpdateNotRoute(String(serviceName))
+    // await downDetectorController.accessDownDetectorSingleUpdateNotRoute(String(serviceName))
 
     const lastRegistryOfChange = await downDetectorChangeRepository.index({
       identifiers: { serviceURL: serviceURL },
@@ -460,7 +460,7 @@ export default class ApiAccessController {
     }
 
     const serviceURL = this.makeUrl(String(serviceName))
-    await downDetectorController.accessDownDetectorSingleUpdateNotRoute(String(serviceName))
+    // await downDetectorController.accessDownDetectorSingleUpdateNotRoute(String(serviceName))
 
     const dates = this.createArrayOfDates({
       initialDate: !!dataInicial ? String(dataInicial) : '',
@@ -531,7 +531,7 @@ export default class ApiAccessController {
     }
 
     const serviceURL = this.makeUrl(String(serviceName))
-    await downDetectorController.accessDownDetectorSingleUpdateNotRoute(String(serviceName))
+    // await downDetectorController.accessDownDetectorSingleUpdateNotRoute(String(serviceName))
 
     const dates = this.createArrayOfDates({
       initialDate: !!dataInicial ? String(dataInicial) : '',
