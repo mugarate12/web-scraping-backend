@@ -5,6 +5,10 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 import {
+  downDetectorController
+} from './../controllers'
+
+import {
   apiAccessClientsRepository,
   apiAccessTokensRepository,
   clientsAccessRepository,
@@ -13,6 +17,7 @@ import {
   servicesRepository,
   permissionsRepository
 } from './../repositories'
+
 import { errorHandler, AppError } from './../utils/handleError'
 import createToken from '../utils/createToken'
 
@@ -124,6 +129,7 @@ export default class ApiAccessController {
 
     const dataRequests = services.map(async (service) => {
       const serviceURL = this.makeUrl(service.service_name)
+      // await downDetectorController.accessDownDetectorSingleUpdateNotRoute(service.service_name)
 
       const lastRegistryOfHistory = await downDetectorHistRepository.index({
         serviceURL: serviceURL,
@@ -172,6 +178,7 @@ export default class ApiAccessController {
 
     const historiesRequests = services.map(async (service) => {
       const serviceURL = this.makeUrl(service.service_name)
+      // await downDetectorController.accessDownDetectorSingleUpdateNotRoute(service.service_name)
       
       const lastRegistryOfChange = await downDetectorChangeRepository.index({
         identifiers: { serviceURL: serviceURL },
@@ -217,6 +224,7 @@ export default class ApiAccessController {
 
     const changesRequests = services.map(async (service) => {
       const serviceURL = this.makeUrl(service.service_name)
+      // await downDetectorController.accessDownDetectorSingleUpdateNotRoute(service.service_name)
 
       const changes = await downDetectorChangeRepository.index({
         dates,
@@ -389,6 +397,7 @@ export default class ApiAccessController {
     }
 
     const serviceURL = this.makeUrl(String(serviceName))
+    await downDetectorController.accessDownDetectorSingleUpdateNotRoute(String(serviceName))
 
     const lastRegistryOfChange = await downDetectorChangeRepository.index({
       identifiers: { serviceURL: serviceURL },
@@ -398,7 +407,7 @@ export default class ApiAccessController {
 
     const lastRegistryOfHistory = await downDetectorHistRepository.index({
       serviceURL: serviceURL,
-      orderBy: { property: 'id', orientation: 'desc' },
+      orderBy: { property: 'hist_date', orientation: 'desc' },
       limit: 1
     })
 
@@ -451,6 +460,7 @@ export default class ApiAccessController {
     }
 
     const serviceURL = this.makeUrl(String(serviceName))
+    await downDetectorController.accessDownDetectorSingleUpdateNotRoute(String(serviceName))
 
     const dates = this.createArrayOfDates({
       initialDate: !!dataInicial ? String(dataInicial) : '',
@@ -521,6 +531,8 @@ export default class ApiAccessController {
     }
 
     const serviceURL = this.makeUrl(String(serviceName))
+    await downDetectorController.accessDownDetectorSingleUpdateNotRoute(String(serviceName))
+
     const dates = this.createArrayOfDates({
       initialDate: !!dataInicial ? String(dataInicial) : '',
       finalDate: !!dataFinal ? String(dataFinal) : '',

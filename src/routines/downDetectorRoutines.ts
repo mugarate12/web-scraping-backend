@@ -35,7 +35,7 @@ function haveBaselineOrReportsInHour(histories: Array<any>, baseline: number, re
   let have = false
 
   histories.forEach((history) => {
-    if (history.baseline === baseline || history.notification_count === reports) {
+    if (history.baseline === baseline && history.notification_count === reports) {
       have = true
     }
   })
@@ -54,7 +54,7 @@ async function updateOrCreateMonitoringService(downDetectorResult: downDetectorS
       dates: [ downDetectorReport.date.split(':')[0] ]
     })
       .then(response => {
-        createRegistry = haveBaselineOrReportsInHour(response, downDetectorReport.baseline, downDetectorReport.notificationCount)
+        createRegistry = !haveBaselineOrReportsInHour(response, downDetectorReport.baseline, downDetectorReport.notificationCount)
       })
     
     if (createRegistry) {
