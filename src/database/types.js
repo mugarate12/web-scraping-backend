@@ -3,6 +3,7 @@ const API_ACCESS_TOKENS_TABLE_NAME = 'api_access_tokens'
 const CLIENTS_ACCESS_TABLE_NAME = 'clients_access'
 const DOWN_DETECTOR_CHANGE_TABLE_NAME = 'downdetector_change'
 const DOWN_DETECTOR_HIST_TABLE_NAME = 'downdetector_hist'
+const DOWN_DETECTOR_ROUTINE_EXECUTION = 'down_detector_routine_execution'
 const MONITORING_TABLE_NAME = 'monitoring'
 const PERMISSIONS_TABLE_NAME = 'permissions'
 const SERVICES_TABLE_NAME = 'services'
@@ -16,6 +17,7 @@ module.exports = {
   CLIENTS_ACCESS_TABLE_NAME,
   DOWN_DETECTOR_CHANGE_TABLE_NAME,
   DOWN_DETECTOR_HIST_TABLE_NAME,
+  DOWN_DETECTOR_ROUTINE_EXECUTION,
   MONITORING_TABLE_NAME,
   PERMISSIONS_TABLE_NAME,
   SERVICES_TABLE_NAME,
