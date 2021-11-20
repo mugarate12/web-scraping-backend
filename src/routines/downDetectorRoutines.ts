@@ -1,6 +1,14 @@
 import { Server } from 'socket.io'
 import puppeteer from 'puppeteer'
 import moment from 'moment'
+import Redis from 'promise-redis'
+
+const redis = Redis()
+const client = redis.createClient()
+
+client.on("error", (error) => {
+  console.error(error);
+})
 
 import {
   downDetectorController
@@ -197,18 +205,16 @@ export default async function routinesRequests(serverIo: Server, browser: puppet
     .catch(error => console.log('error', error))
   
   if (!!requests && requests.length > 0) {
-    sleep(200 * Math.random() * 10)
+    const RedisKey = `downDetectorRoutine_${updateTime}`
 
-    const routine = await downDetectorRoutineExecutionRepository.get(updateTime)
+    sleep(200 * Math.random() * 100)
+    const routineStatus = await client.get(RedisKey)
 
-    console.log(routine);
-
-    if (!!routine && routine.execution === 2) {
+    if (Number(routineStatus) === 2) {
       return
     } else {
-      await downDetectorRoutineExecutionRepository.update(updateTime, 2)
+      await client.set(RedisKey, 2)
     }
-
 
     console.log(`requisitando serviços de update em ${updateTime} minuto(s) \n`)
 
@@ -231,8 +237,9 @@ export default async function routinesRequests(serverIo: Server, browser: puppet
     // await downDetectorController.createOrUpdateServiceUpdateTime(updateTime)
     // await downDetectorController.emitUpdateTime(serverIo)
     await downDetectorRoutineExecutionRepository.update(updateTime, 1)
+    await client.set(RedisKey, 1)
     // await emitUpdatedMonitoring(serverIo)
 
-    console.log('\nrequisições finalizadas')
+    console.log('\nrequisições finalizadas\n')
   }
 }

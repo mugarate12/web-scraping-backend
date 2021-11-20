@@ -35,7 +35,7 @@
     "moment": "^2.29.1",
     "mysql": "^2.18.1",
     "mysql2": "^2.3.0",
-    "promise-redis": "0.0.5",
+    "promise-redis": "^0.0.5",
     "puppeteer": "^10.4.0",
     "request": "^2.88.2",
     "run-script-os": "^1.1.6",

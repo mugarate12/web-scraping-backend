@@ -92,9 +92,6 @@ export default class DownDetectorHistRepository {
   }
 
   public createInMassive = async (insertions: Array<createDownDetectorHistInterface>) => {
-    let approved = false
-    let insertionsCopy = insertions
-
     const requests = insertions.map(async (insertion) => {
       return this.reference()
         .insert(insertion)
