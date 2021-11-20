@@ -83,11 +83,14 @@ async function updateOrCreateMonitoringService(downDetectorResult: downDetectorS
       notification_count: number
     }> = []
 
-  const requests = normalizedData.map(async (report) => {
+  for (let index = 0; index < normalizedData.length; index++) {
+    const report = normalizedData[index]
+    
     const histories = await downDetectorHistRepository.indexWithOneDate({ serviceURL: downDetectorResult.url, date: report.date.split(':')[0] })
     const haveSameBaselineAndReport = haveBaselineOrReportsInHour(histories, report.baseline, report.notificationCount)
+    const haveSameDate = haveDocumentWithDate(report)
 
-    if (!haveSameBaselineAndReport) {
+    if (!haveSameBaselineAndReport && !haveSameDate) {
       insertions.push({
         site_d: downDetectorResult.url,
         hist_date: report.date,
@@ -95,100 +98,14 @@ async function updateOrCreateMonitoringService(downDetectorResult: downDetectorS
         notification_count: report.notificationCount
       })
     }
-  })
+  }
 
-  await Promise.all(requests)
-
-  await downDetectorHistRepository.createInMassive(insertions)
-    .catch(error => {
-      console.log(error);
-    })
-
-  // const actualDate = moment().format('YYYY-MM-DD')
-  // const lessOneDay = moment().subtract(1, 'days').format('YYYY-MM-DD')
-
-  // const validDatesWithUndefinedRequests = normalizedData.map(async (downDetectorReport) => {
-  //   const have = await haveDocumentWithDate(downDetectorReport)
-
-  //   if (have) {
-  //     return undefined
-  //   } else {
-  //     return downDetectorReport
-  //   }
-  // })
-  // const validDatesWithUndefined = await Promise.all(validDatesWithUndefinedRequests)
-
-  // const validDatesFiltered = validDatesWithUndefined.filter((report) => report !== undefined)
-  // const validNumberOfBaselinesAndReportsWithUndefinedRequests = validDatesFiltered.map(async (report) => {
-  //   let createRegistry = false
-
-  //   if (!!report) {
-  //     await downDetectorHistRepository.get(report.date.split(':')[0])
-  //       .then(history => {
-  //         if (!!history) {
-  //           createRegistry = true
-  //         }
-  //       })
-  //       .catch(error => {
-  //         console.log('get error');
-  //       })
-  //   }
-
-  //   if (createRegistry) {
-  //     return report
-  //   } else {
-  //     return undefined
-  //   }
-  // })
-
-  // const validNumberOfBaselinesAndReportsWithUndefined = await Promise.all(validNumberOfBaselinesAndReportsWithUndefinedRequests)
-  // const validNumberOfBaselinesAndReports = validNumberOfBaselinesAndReportsWithUndefined.filter(report => report !== undefined)
-
-  // let insertions: Array<{
-  //   site_d: string,
-  //   hist_date: string,
-  //   baseline: number,
-  //   notification_count: number
-  // }> = []
-
-  // validNumberOfBaselinesAndReports.forEach((report) => {
-  //   if (!!report) {
-  //     insertions.push({
-  //       site_d: downDetectorResult.url,
-  //       hist_date: report.date,
-  //       baseline: report.baseline,
-  //       notification_count: report.notificationCount
-  //     })
-  //   }
-  // })
-
-  // let insertionsWithoutDuplicateDate: Array<{
-  //   site_d: string,
-  //   hist_date: string,
-  //   baseline: number,
-  //   notification_count: number
-  // }> = []
-
-  // insertions.forEach((report) => {
-  //   let have = false
-
-  //   insertionsWithoutDuplicateDate.forEach(insertion => {
-  //     if (insertion.hist_date === report.hist_date) {
-  //       have = true
-  //     }
-  //   })
-
-  //   if (!have) {
-  //     insertionsWithoutDuplicateDate.push(report)
-  //   }
-  // })
-
-  // if (insertionsWithoutDuplicateDate.length > 0) {
-  //   await downDetectorHistRepository.createInMassive(insertionsWithoutDuplicateDate)
-  //     .catch(error => {
-  //       console.log(error);
-  //     })
-  // }
+  if (insertions.length > 0) {
+    await downDetectorHistRepository.createInMassive(insertions)
+      .catch(error => {
+        console.log(error);
+      })
+  }
 }
 
 async function emitUpdatedMonitoring(serverIo: Server) {
