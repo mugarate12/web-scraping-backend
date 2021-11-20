@@ -85,19 +85,13 @@ async function updateOrCreateMonitoringService(downDetectorResult: downDetectorS
 
   for (let index = 0; index < normalizedData.length; index++) {
     const report = normalizedData[index]
-    
-    const histories = await downDetectorHistRepository.indexWithOneDate({ serviceURL: downDetectorResult.url, date: report.date.split(':')[0] })
-    const haveSameBaselineAndReport = haveBaselineOrReportsInHour(histories, report.baseline, report.notificationCount)
-    const haveSameDate = haveDocumentWithDate(report)
 
-    if (!haveSameBaselineAndReport && !haveSameDate) {
-      insertions.push({
-        site_d: downDetectorResult.url,
-        hist_date: report.date,
-        baseline: report.baseline,
-        notification_count: report.notificationCount
-      })
-    }
+    insertions.push({
+      site_d: downDetectorResult.url,
+      hist_date: report.date,
+      baseline: report.baseline,
+      notification_count: report.notificationCount
+    })
   }
 
   if (insertions.length > 0) {

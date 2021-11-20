@@ -92,27 +92,20 @@ export default class DownDetectorHistRepository {
   }
 
   public createInMassive = async (insertions: Array<createDownDetectorHistInterface>) => {
-    return this.reference()
-      .insert(insertions)
-        .then(() => {
-          return
-        })
-        .catch(error => {
-          console.log(insertions[0].site_d)
-          console.log(error.message)
-          console.log('\n')
-        })
-    // const requests = insertions.map(async (insertion) => {
-    //   return this.reference()
-    //     .insert(insertion)
-    //     .then(() => {
-    //       return
-    //     })
-    //     .catch(error => {})
-    // })
-
-    // await Promise.all(requests)
-    // return
+    for (let index = 0; index < insertions.length; index++) {
+      const insertion = insertions[index];
+      
+      await this.reference()
+        .insert(insertion)
+          .then(() => {
+            return
+          })
+          .catch(error => {
+            // console.log(insertions[0].site_d)
+            // console.log(error.message)
+            // console.log('\n')
+          })
+    }
   }
 
   // refatorar
