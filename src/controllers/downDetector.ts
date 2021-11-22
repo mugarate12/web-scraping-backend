@@ -199,7 +199,6 @@ export default class DownDetectorController {
     const emitCall = 'routines_update_time' 
 
     const routinesUpdateTime = await servicesUpdateTimeRepository.index()
-    // const monitoring = await monitoringRepository.index()
   
     ioServer.emit(emitCall, routinesUpdateTime)
   }

@@ -45,35 +45,6 @@ function normalizeDownDetectorResult(downDetectorResult: downDetectorSearchResul
   return data
 }
 
-function haveBaselineOrReportsInHour(histories: Array<downDetectorHistInterface>, baseline: number, reports: number) {
-  let have = false
-
-  histories.forEach((history) => {
-    if (history.baseline === baseline && history.notification_count === reports) {
-      have = true
-    }
-  })
-
-  return have
-}
-
-async function haveDocumentWithDate(downDetectorReport: {
-  date: string;
-  baseline: number;
-  notificationCount: number;
-}) {
-  let have = false
-
-  await downDetectorHistRepository.get(downDetectorReport.date)
-    .then(history => {
-      if (!!history) {
-        have = true
-      }
-    })
-
-  return have
-}
-
 async function updateOrCreateMonitoringService(downDetectorResult: downDetectorSearchResult) {
   const normalizedData = normalizeDownDetectorResult(downDetectorResult)
   let insertions: Array<{
@@ -102,13 +73,6 @@ async function updateOrCreateMonitoringService(downDetectorResult: downDetectorS
   }
 }
 
-async function emitUpdatedMonitoring(serverIo: Server) {
-  const emittedCall = 'monitoring-updated'
-
-  const monitoring = await monitoringRepository.index()
-
-  serverIo.emit(emittedCall, monitoring)
-}
 
 export default async function routinesRequests(serverIo: Server, browser: puppeteer.Browser, updateTime: number) {  
   const requests = await servicesRepository.index({ update_time: updateTime, habilitado: 1 })
@@ -125,6 +89,7 @@ export default async function routinesRequests(serverIo: Server, browser: puppet
       return
     } else {
       await client.set(RedisKey, 2)
+      await client.expire(RedisKey, 40)
     }
 
     console.log(`requisitando serviços de update em ${updateTime} minuto(s) \n`)
@@ -145,11 +110,12 @@ export default async function routinesRequests(serverIo: Server, browser: puppet
 
     await Promise.all(requestsResultsPromises)
 
-    // await downDetectorController.createOrUpdateServiceUpdateTime(updateTime)
-    // await downDetectorController.emitUpdateTime(serverIo)
+    await downDetectorController.createOrUpdateServiceUpdateTime(updateTime)
+    await downDetectorController.emitUpdateTime(serverIo)
+
     await downDetectorRoutineExecutionRepository.update(updateTime, 1)
-    await client.set(RedisKey, 1)
-    // await emitUpdatedMonitoring(serverIo)
+
+    // await client.set(RedisKey, 1)
 
     console.log('\nrequisições finalizadas\n')
   }

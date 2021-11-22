@@ -8,7 +8,7 @@ import {
 export default function servicesSockets(ioServer: Server) {
   ioServer.on('connection', async (socket) => {
     // await services
-    console.log('conexão estabelecida')
+    // console.log('conexão estabelecida')
 
     const monitoringServices = await monitoringRepository.index()
     const routinesUpdateTime = await servicesUpdateTimeRepository.index()

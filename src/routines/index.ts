@@ -4,10 +4,6 @@ import CronJob from 'cron'
 
 import routinesRequests from './downDetectorRoutines'
 
-import {
-  downDetectorRoutineExecutionRepository
-} from './../repositories'
-
 async function runBrowser() {
   const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'], slowMo: 200 })
   return browser
@@ -45,7 +41,7 @@ export default async (serverIo: Server) => {
   const FifteenMinutesJob = new CronJob.CronJob('*/15 * * * * ', async () => {
     await routinesRequests(serverIo, browser, 15)
   })
-
+  
   oneMinuteJob.start()
   ThreeMinutesJob.start()
   FiveMinutesJob.start()
