@@ -21,6 +21,11 @@ interface getUserAccessInterface {
   permission_FK?: number
 }
 
+interface removeUserAccessInterface {
+  id?: number,
+  userID?: number
+}
+
 export default class UsersAccessRepository {
   private reference = () => connection<userAccessInterface>(USERS_ACCESS_TABLE_NAME)
 
@@ -76,6 +81,32 @@ export default class UsersAccessRepository {
     return query
       .select('*')
       .then(usersAccess => usersAccess)
+      .catch(error => {
+        throw new AppError('Database Error', 406, error.message, true)
+      })
+  }
+
+  public delete = async ({
+    id,
+    userID
+  }: removeUserAccessInterface) => {
+    let query = this.reference()
+
+    if (!!id) {
+      query = query
+        .where('id', '=', id)
+    }
+
+    if (!!userID) {
+      query = query
+        .where('user_FK', '=', userID)
+    }
+
+    return query
+      .delete()
+      .then(() => {
+        return
+      })
       .catch(error => {
         throw new AppError('Database Error', 406, error.message, true)
       })

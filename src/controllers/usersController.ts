@@ -135,6 +135,11 @@ export default class UsersController {
   public delete = async (req: Request, res: Response) => {
     const { userID } = req.params
 
+    await usersAccessRepository.delete({
+      userID: Number(userID)
+    })
+      .catch(error => error)
+
     return usersRepository.delete({ id: Number(userID) })
       .then(() => {
         return res.status(200).json({
