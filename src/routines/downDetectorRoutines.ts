@@ -65,6 +65,8 @@ async function updateOrCreateMonitoringService(downDetectorResult: downDetectorS
     })
   }
 
+  await downDetectorController.updateChangeHistory(downDetectorResult)
+
   if (insertions.length > 0) {
     await downDetectorHistRepository.createInMassive(insertions)
       .catch(error => {

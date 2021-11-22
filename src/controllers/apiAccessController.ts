@@ -495,10 +495,28 @@ export default class ApiAccessController {
     })
 
     const reportsAndBaselinesWithoutLowerValues = reportsAndBaselines.filter(history => history.reports !== 0)
+    let historiesData: Array<any> = []
+
+    reportsAndBaselinesWithoutLowerValues.forEach(history => {
+      let have = false
+      
+      historiesData.forEach(historyData => {
+        const sameHour = historyData.date.includes(history.date.split(':')[0])
+        const sameReportAndBaseline = historyData.baseline === history.baseline && history.reports === historyData.reports
+        
+        if (sameHour && sameReportAndBaseline) {
+          have = true
+        }
+      })
+
+      if (!have) {
+        historiesData.push(history)
+      }
+    })
 
     const data = {
       status,
-      data: reportsAndBaselinesWithoutLowerValues
+      data: historiesData
     }
 
     return res.status(200).json({
