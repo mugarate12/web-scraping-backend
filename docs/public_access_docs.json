@@ -13,7 +13,7 @@
     }
   },
   "host": "virtserver.swaggerhub.com",
-  "basePath": "/mateus-Cardoso/web-scraping/1.0.0",
+  "basePath": "/Flowbix/web-scraping/1.0.0",
   "tags": [
     {
       "name": "services",
