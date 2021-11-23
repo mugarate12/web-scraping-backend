@@ -12,7 +12,8 @@ interface servicesUpdateTimeInterface {
 }
 
 interface createServiceUpdateTime {
-  routine: number
+  routine: number,
+  lastExecution?: string
 }
 
 interface getServiceUpdateTime {
@@ -20,14 +21,24 @@ interface getServiceUpdateTime {
 }
 
 interface updateIdentifiers {
-  routine: number
+  routine: number,
+  lastExecution?: string
 }
 
 export default class ServicesUpdateTimeRepository {
   private reference = () => connection<servicesUpdateTimeInterface>(SERVICES_UPDATE_TIME_TABLE_NAME)
 
-  public create = async ({ routine }: createServiceUpdateTime) => {
-    const date = moment().format('YYYY-MM-DD HH:mm:ss')
+  public create = async ({ 
+    routine,
+    lastExecution
+  }: createServiceUpdateTime) => {
+    let date: string = ''
+
+    if (!!lastExecution) {
+      date = lastExecution
+    } else {
+      date = moment().format('YYYY-MM-DD HH:mm:ss')
+    }
     
     return this.reference()
       .insert({
@@ -62,8 +73,17 @@ export default class ServicesUpdateTimeRepository {
       })
   }
 
-  public update = async ({ routine }: updateIdentifiers) => {
-    const date = moment().format('YYYY-MM-DD HH:mm:ss')
+  public update = async ({ 
+    routine,
+    lastExecution
+  }: updateIdentifiers) => {
+    let date: string = ''
+
+    if (!!lastExecution) {
+      date = lastExecution
+    } else {
+      date = moment().format('YYYY-MM-DD HH:mm:ss')
+    }
 
     return this.reference()
       .where('routine', '=', routine)

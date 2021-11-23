@@ -81,6 +81,8 @@ export default async function routinesRequests(serverIo: Server, browser: puppet
     .then(services => services)
     .catch(error => console.log('error', error))
   
+  const lastExecution = moment().format('YYYY-MM-DD HH:mm:ss')
+  
   if (!!requests && requests.length > 0) {
     const RedisKey = `downDetectorRoutine_${updateTime}`
 
@@ -111,14 +113,13 @@ export default async function routinesRequests(serverIo: Server, browser: puppet
     })
 
     await Promise.all(requestsResultsPromises)
-
-    await downDetectorController.createOrUpdateServiceUpdateTime(updateTime)
-    await downDetectorController.emitUpdateTime(serverIo)
-
-    await downDetectorRoutineExecutionRepository.update(updateTime, 1)
-
+    
     // await client.set(RedisKey, 1)
-
+    
     console.log('\nrequisições finalizadas\n')
   }
+  await downDetectorController.createOrUpdateServiceUpdateTime(updateTime, lastExecution)
+  await downDetectorController.emitUpdateTime(serverIo)
+
+  await downDetectorRoutineExecutionRepository.update(updateTime, 1)
 }

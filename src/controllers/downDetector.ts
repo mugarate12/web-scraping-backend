@@ -181,7 +181,7 @@ export default class DownDetectorController {
     }
   }
 
-  public createOrUpdateServiceUpdateTime = async (routine: number) => {
+  public createOrUpdateServiceUpdateTime = async (routine: number, lastExecution: string) => {
     const routineRegistry = await servicesUpdateTimeRepository.get({ routine })
       .catch(error => {
         console.log(error)
@@ -189,9 +189,9 @@ export default class DownDetectorController {
       })
 
     if (!routineRegistry) {
-      await servicesUpdateTimeRepository.create({ routine })
+      await servicesUpdateTimeRepository.create({ routine, lastExecution })
     } else {
-      await servicesUpdateTimeRepository.update({ routine })
+      await servicesUpdateTimeRepository.update({ routine, lastExecution })
     }
   }
 
