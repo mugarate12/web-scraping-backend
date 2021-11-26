@@ -22,9 +22,16 @@ import {
   servicesRepository
 } from './../repositories'
 
+import { serviceInterface } from './../repositories/servicesRepository'
+
 import { downDetectorChangeInterface } from './../repositories/downDetectorChangeRepository'
 import { downDetectorHistInterface } from './../repositories/downDetectorHistRepository'
 import { downDetectorSearchResult } from './../interfaces/downDetector'
+
+async function runBrowser() {
+  const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'], slowMo: 200 })
+  return browser
+}
 
 async function sleep(milliseconds: number) {
   return new Promise(resolve => setTimeout(resolve, milliseconds))
@@ -75,6 +82,26 @@ async function updateOrCreateMonitoringService(downDetectorResult: downDetectorS
   }
 }
 
+function createArraysOfRequests(requests: serviceInterface[]) {
+  let arraysOfRequests: Array<Array<serviceInterface>> = []
+  let maintenanceArray: Array<serviceInterface> = []
+
+  requests.forEach((element, index) => {
+    if ((index + 1) % 10 === 0) {
+      arraysOfRequests.push(maintenanceArray)
+      maintenanceArray = []
+    }
+
+    if ((index + 1) === requests.length) {
+      maintenanceArray.push(element)
+      arraysOfRequests.push(maintenanceArray)
+    } else {
+      maintenanceArray.push(element)
+    }
+  })
+
+  return arraysOfRequests
+}
 
 export default async function routinesRequests(serverIo: Server, browser: puppeteer.Browser, updateTime: number) {  
   const requests = await servicesRepository.index({ update_time: updateTime, habilitado: 1 })
@@ -96,28 +123,37 @@ export default async function routinesRequests(serverIo: Server, browser: puppet
     //   await client.expire(RedisKey, 40)
     // }
 
-    console.log(`requisitando serviços de update em ${updateTime} minuto(s) \n`)
+    console.log(`Requisitando serviços de update em ${updateTime} minuto(s) \n`)
 
     await downDetectorController.emitExecutionRoutine(serverIo, updateTime)
+    const arraysOfRequests = createArraysOfRequests(requests)
     
-    const requestsResultsPromises = requests.map(async (request) => {
-      const result = await downDetectorController.accessDownDetectorRoutine(request.service_name, browser)
-        .catch(error => {
-          console.log(error)
-          return undefined
-        })
+    for (let index = 0; index < arraysOfRequests.length; index++) {
+      const groupOfRequests = arraysOfRequests[index]
+      const browser = await runBrowser()
       
-      if (!!result) {
-        await updateOrCreateMonitoringService(result)
-      }
-    })
+      const requestsResultsPromises = groupOfRequests.map(async (request) => {
+        const result = await downDetectorController.accessDownDetectorRoutine(request.service_name, browser)
+          .catch(error => {
+            console.log(error)
+            return undefined
+          })
+        
+        if (!!result) {
+          await updateOrCreateMonitoringService(result)
+        }
+      })
+  
+      await Promise.all(requestsResultsPromises)
 
-    await Promise.all(requestsResultsPromises)
+      browser.close()
+    }
     
     // await client.set(RedisKey, 1)
     
-    console.log('\nrequisições finalizadas\n')
+    console.log('\nRequisições finalizadas\n')
   }
+
   await downDetectorController.createOrUpdateServiceUpdateTime(updateTime, lastExecution)
   await downDetectorController.emitUpdateTime(serverIo)
 
