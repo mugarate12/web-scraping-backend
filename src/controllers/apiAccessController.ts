@@ -168,52 +168,6 @@ export default class ApiAccessController {
     return data
   }
 
-  private allServicesHistory = async () => {
-    const services = await servicesRepository.index({
-      habilitado: 1
-    })
-    
-    const dates = this.createArrayOfDates({
-      numberOfDays: 1
-    })
-
-    const historiesRequests = services.map(async (service) => {
-      const serviceURL = this.makeUrl(service.service_name)
-      // await downDetectorController.accessDownDetectorSingleUpdateNotRoute(service.service_name)
-      
-      const lastRegistryOfChange = await downDetectorChangeRepository.index({
-        identifiers: { serviceURL: serviceURL },
-        orderBy: { property: 'id', orientation: 'desc' },
-        limit: 1
-      })
-
-      const histories = await downDetectorHistRepository.index({
-        serviceURL,
-        dates
-      })
-
-      const status = this.convertStatusToString(lastRegistryOfChange[0].status_atual)
-      const reportsAndBaselines = histories.map((history) => {
-        return {
-          // date: moment(history.hist_date).format('YYYY-MM-DD HH:mm:ss'),
-          date: this.convertDate(history.hist_date),
-          reports: history.notification_count,
-          baseline: history.baseline
-        }
-      })
-
-      return {
-        service: serviceURL,
-        status,
-        data: reportsAndBaselines
-      }
-    })
-
-    const data = await Promise.all(historiesRequests)
-
-    return data
-  }
-
   private allServicesChanges = async () => {
     const services = await servicesRepository.index({
       habilitado: 1
@@ -243,7 +197,7 @@ export default class ApiAccessController {
       })
 
       const data = {
-        service: serviceURL,
+        name: service.service_name,
         quantidade_de_mudancas: changes.length,
         data: changesData
       }
@@ -434,104 +388,10 @@ export default class ApiAccessController {
     })
   }
 
-  public history = async (req: Request, res: Response) => {
-    const {
-      serviceName
-    } = req.params
-    const {
-      dataInicial,
-      dataFinal
-    } = req.query
-
-    this.verifyClientAble(res)
-
-    if (String(serviceName) === 'all') {
-      const data = await this.allServicesHistory()
-
-      return res.status(200).json({
-        data
-      })
-    }
-
-    const haveService = await this.verifyServiceExistsAndAble(String(serviceName))
-
-    if (!haveService) {
-      return res.status(406).json({
-        message: 'serviço não é monitorado por nossa base de dados ou não está habilitado'
-      })
-    }
-
-    const serviceURL = this.makeUrl(String(serviceName))
-    // await downDetectorController.accessDownDetectorSingleUpdateNotRoute(String(serviceName))
-
-    const dates = this.createArrayOfDates({
-      initialDate: !!dataInicial ? String(dataInicial) : '',
-      finalDate: !!dataFinal ? String(dataFinal) : '',
-    })
-
-    const lastRegistryOfChange = await downDetectorChangeRepository.index({
-      identifiers: { serviceURL: serviceURL },
-      orderBy: { property: 'id', orientation: 'desc' },
-      limit: 1
-    })
-
-    const histories = await downDetectorHistRepository.index({
-      serviceURL,
-      dates,
-      orderBy: {
-        property: 'hist_date',
-        orientation: 'desc'
-      }
-    })
-     
-    const status = this.convertStatusToString(lastRegistryOfChange[0].status_atual)
-    const reportsAndBaselines = histories.map((history) => {
-      return {
-        // date: moment(history.hist_date).format('YYYY-MM-DD HH:mm:ss'),
-        date: this.convertDate(history.hist_date),
-        reports: history.notification_count,
-        baseline: history.baseline
-      }
-    })
-
-    const reportsAndBaselinesWithoutLowerValues = reportsAndBaselines.filter(history => history.reports !== 0)
-    let historiesData: Array<any> = []
-
-    reportsAndBaselinesWithoutLowerValues.forEach(history => {
-      let have = false
-      
-      historiesData.forEach(historyData => {
-        const sameHour = historyData.date.includes(history.date.split(':')[0])
-        const sameReportAndBaseline = historyData.baseline === history.baseline && history.reports === historyData.reports
-        
-        if (sameHour && sameReportAndBaseline) {
-          have = true
-        }
-      })
-
-      if (!have) {
-        historiesData.push(history)
-      }
-    })
-
-    const data = {
-      status,
-      data: historiesData
-    }
-
-    return res.status(200).json({
-      ...data
-    })
-  }
-
   public changes = async (req: Request, res: Response) => {
     const {
       serviceName
     } = req.params
-    const {
-      dataInicial,
-      dataFinal
-    } = req.query
 
     this.verifyClientAble(res)
 
@@ -553,15 +413,14 @@ export default class ApiAccessController {
     const serviceURL = this.makeUrl(String(serviceName))
     // await downDetectorController.accessDownDetectorSingleUpdateNotRoute(String(serviceName))
 
-    const dates = this.createArrayOfDates({
-      initialDate: !!dataInicial ? String(dataInicial) : '',
-      finalDate: !!dataFinal ? String(dataFinal) : '',
-    })
-
     const changes = await downDetectorChangeRepository.index({
-      dates,
+      dates: [ moment().format('YYYY-MM-DD') ],
       identifiers: {
         serviceURL
+      },
+      orderBy: {
+        property: 'hist_date',
+        orientation: 'desc'
       }
     })
 
@@ -574,6 +433,7 @@ export default class ApiAccessController {
     })
 
     const data = {
+      site: String(serviceName),
       quantidade_de_mudancas: changes.length,
       data: changesData
     }

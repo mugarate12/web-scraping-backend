@@ -46,9 +46,7 @@ export default function publicAccessRoutes(routes: Router) {
 
   routes.get('/public/access/changes/:serviceName', celebrate({
     [Segments.QUERY]: Joi.object().keys({
-      token: Joi.string().required(),
-      dataInicial: Joi.string().optional(),
-      dataFinal: Joi.string().optional()
+      token: Joi.string().required()
     })
   }), publicAccessJWT, readApiInformations, apiAccessController.changes)
 } 
