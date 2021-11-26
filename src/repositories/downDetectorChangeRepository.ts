@@ -9,6 +9,7 @@ export interface downDetectorChangeInterface {
 
   site_c: string,
   hist_date: string,
+  dateUnixTime: string,
   status_atual: number,
   status_anterior: number,
   status_change: number
@@ -81,13 +82,16 @@ export default class DownDetectorChangeRepository {
     status_anterior,
     status_change
   }: createDownDetectorChangeInterface) => {
+    const unixDate = Math.round((new Date(hist_date)).getTime() / 1000)
+
     return this.reference()
       .insert({
         site_c,
         hist_date,
+        dateUnixTime: String(unixDate),
         status_atual,
         status_anterior,
-        status_change
+        status_change,
       })
       .then(() => {
         return
