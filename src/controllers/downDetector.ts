@@ -124,9 +124,10 @@ export default class DownDetectorController {
         data = result
       })
       .catch(async (error) => {
-        console.log(error)
+        console.log('erro em', serviceName)
 
         await pageInstance.reload()
+        console.log('reload');
       })
   }
     // const data = await pageInstance.evaluate(() => {
