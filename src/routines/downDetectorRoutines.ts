@@ -126,28 +126,22 @@ export default async function routinesRequests(serverIo: Server, browser: puppet
     console.log(`Requisitando serviços de update em ${updateTime} minuto(s) \n`)
 
     await downDetectorController.emitExecutionRoutine(serverIo, updateTime)
-    const arraysOfRequests = createArraysOfRequests(requests)
-    
-    for (let index = 0; index < arraysOfRequests.length; index++) {
-      const groupOfRequests = arraysOfRequests[index]
-      const browser = await runBrowser()
-      
-      const requestsResultsPromises = groupOfRequests.map(async (request) => {
-        const result = await downDetectorController.accessDownDetectorRoutine(request.service_name, browser)
-          .catch(error => {
-            console.log(error)
-            return undefined
-          })
-        
-        if (!!result) {
-          await updateOrCreateMonitoringService(result)
-        }
-      })
-  
-      await Promise.all(requestsResultsPromises)
+    // const arraysOfRequests = createArraysOfRequests(requests)
 
-      browser.close()
-    }
+    const requestsResultsPromises = requests.map(async (request) => {
+      const result = await downDetectorController.accessDownDetectorRoutine(request.service_name, browser)
+        .catch(error => {
+          console.log('error em', request.service_name)
+          console.log(error)
+          return undefined
+        })
+      
+      // if (!!result) {
+      //   await updateOrCreateMonitoringService(result)
+      // }
+    })
+
+    await Promise.all(requestsResultsPromises)
     
     // await client.set(RedisKey, 1)
     

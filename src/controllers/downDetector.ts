@@ -110,6 +110,33 @@ export default class DownDetectorController {
       url,
       ...data
     }
+    
+    const normalizedData = this.normalizeDownDetectorResult(result)
+    let insertions: Array<{
+      site_d: string,
+      hist_date: string,
+      baseline: number,
+      notification_count: number
+    }> = []
+
+    for (let index = 0; index < normalizedData.length; index++) {
+      const report = normalizedData[index]
+  
+      insertions.push({
+        site_d: result.url,
+        hist_date: report.date,
+        baseline: report.baseline,
+        notification_count: report.notificationCount
+      })
+    }
+
+    await this.updateChangeHistory(result)
+    if (insertions.length > 0) {
+      await downDetectorHistRepository.createInMassive(insertions)
+        .catch(error => {
+          console.log(error);
+        })
+    }
 
     console.log(`${serviceName} status: ${data.status}`)
 
