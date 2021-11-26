@@ -82,12 +82,12 @@ async function updateOrCreateMonitoringService(downDetectorResult: downDetectorS
   }
 }
 
-function createArraysOfRequests(requests: serviceInterface[]) {
+function createArraysOfRequests(requests: serviceInterface[], numberOfMultipleTabs: number) {
   let arraysOfRequests: Array<Array<serviceInterface>> = []
   let maintenanceArray: Array<serviceInterface> = []
 
   requests.forEach((element, index) => {
-    if ((index + 1) % 10 === 0) {
+    if ((index + 1) % numberOfMultipleTabs === 0) {
       arraysOfRequests.push(maintenanceArray)
       maintenanceArray = []
     }
@@ -112,12 +112,17 @@ export default async function routinesRequests(serverIo: Server, browser: puppet
   
   const RedisKey = `downDetectorRoutine_${updateTime}`
   const completeRedisKey = `finished_routine_${updateTime}`
+
+  console.log('routine: ', updateTime);
   
   if (!!requests && requests.length > 0) {
     sleep(200 * Math.random() * 100)
     const routineStatus = await client.get(RedisKey)
     const completeKeyStatus = await client.get(completeRedisKey)
     
+    console.log(routineStatus);
+    console.log(completeKeyStatus);
+
     if (Number(routineStatus) === 2) {
       return
     } else {
@@ -138,22 +143,33 @@ export default async function routinesRequests(serverIo: Server, browser: puppet
     console.log(`Requisitando serviços de update em ${updateTime} minuto(s) \n`)
 
     await downDetectorController.emitExecutionRoutine(serverIo, updateTime)
-    // const arraysOfRequests = createArraysOfRequests(requests)
+    const arraysOfRequests = createArraysOfRequests(requests, 5)
 
-    const requestsResultsPromises = requests.map(async (request) => {
-      const result = await downDetectorController.accessDownDetectorRoutine(request.service_name, browser)
-        .catch(error => {
-          console.log('error em', request.service_name)
-          console.log(error)
-          return undefined
-        })
-      
-      // if (!!result) {
-      //   await updateOrCreateMonitoringService(result)
-      // }
-    })
+    for (let index = 0; index < arraysOfRequests.length; index++) {
+      const fiveRequests = arraysOfRequests[index]
 
-    await Promise.all(requestsResultsPromises)
+      const requestsResultsPromises = fiveRequests.map(async (request) => {
+        const result = await downDetectorController.accessDownDetectorRoutine(request.service_name, browser)
+          .catch(error => {
+            console.log('error em', request.service_name)
+            console.log(error)
+            return undefined
+          })
+      })
+  
+      await Promise.all(requestsResultsPromises)
+    }
+
+    // const requestsResultsPromises = requests.map(async (request) => {
+    //   const result = await downDetectorController.accessDownDetectorRoutine(request.service_name, browser)
+    //     .catch(error => {
+    //       console.log('error em', request.service_name)
+    //       console.log(error)
+    //       return undefined
+    //     })
+    // })
+
+    // await Promise.all(requestsResultsPromises)
     
     // await client.set(RedisKey, 1)
     
