@@ -81,6 +81,7 @@ export default class DownDetectorController {
     await pageInstance.setDefaultNavigationTimeout(0)
     await pageInstance.goto(url)
 
+    console.log(`requisitando serviço: ${serviceName}`)
     const data = await pageInstance.evaluate(() => {
       const titleElement = document.getElementsByClassName('entry-title')[0]
       const titleTextContent = String(titleElement.textContent)
