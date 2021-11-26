@@ -1,14 +1,14 @@
 import { Server } from 'socket.io'
 import puppeteer from 'puppeteer'
 import moment from 'moment'
-// import Redis from 'promise-redis'
+import Redis from 'promise-redis'
 
-// const redis = Redis()
-// const client = redis.createClient()
+const redis = Redis()
+const client = redis.createClient()
 
-// client.on("error", (error) => {
-//   console.error(error);
-// })
+client.on("error", (error) => {
+  console.error(error);
+})
 
 import {
   downDetectorController
@@ -114,14 +114,14 @@ export default async function routinesRequests(serverIo: Server, browser: puppet
     const RedisKey = `downDetectorRoutine_${updateTime}`
 
     sleep(200 * Math.random() * 100)
-    // const routineStatus = await client.get(RedisKey)
+    const routineStatus = await client.get(RedisKey)
 
-    // if (Number(routineStatus) === 2) {
-    //   return
-    // } else {
-    //   await client.set(RedisKey, 2)
-    //   await client.expire(RedisKey, 40)
-    // }
+    if (Number(routineStatus) === 2) {
+      return
+    } else {
+      await client.set(RedisKey, 2)
+      await client.expire(RedisKey, 40)
+    }
 
     console.log(`Requisitando serviços de update em ${updateTime} minuto(s) \n`)
 

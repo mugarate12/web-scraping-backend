@@ -82,7 +82,22 @@ export default class DownDetectorController {
     await pageInstance.goto(url)
 
     console.log(`requisitando serviço: ${serviceName}`)
-    const data = await pageInstance.evaluate(() => {
+    let data: {
+      name: string;
+      title: string;
+      status: string;
+      baseline: downDetectorData[];
+      reports: downDetectorData[];
+  } = {
+    name: '',
+    title: '',
+    status: '',
+    baseline: [],
+    reports: []
+  }
+
+  while (data.baseline.length === 0) {
+    await pageInstance.evaluate(() => {
       const titleElement = document.getElementsByClassName('entry-title')[0]
       const titleTextContent = String(titleElement.textContent)
       
@@ -90,13 +105,13 @@ export default class DownDetectorController {
       const firstLetter = titleTextContent.indexOf('User')
       const textSlicedToFirstLetter = titleTextContent.slice(firstLetter, titleTextContent.length)
       const title = textSlicedToFirstLetter.slice(0, textSlicedToFirstLetter.indexOf('\n'))
-
+  
       const currentServiceProperties = window['DD']['currentServiceProperties']
       const status: string = currentServiceProperties['status']
       const series = currentServiceProperties['series']
       const baseline: Array<downDetectorData> = series['baseline']['data']
       const reports: Array<downDetectorData> = series['reports']['data']
-
+  
       return {
         name: title.split(' ')[title.split('').length - 1],
         title,
@@ -105,6 +120,38 @@ export default class DownDetectorController {
         reports
       }
     })
+      .then(result => {
+        data = result
+      })
+      .catch(async (error) => {
+        console.log(error)
+
+        await pageInstance.reload()
+      })
+  }
+    // const data = await pageInstance.evaluate(() => {
+    //   const titleElement = document.getElementsByClassName('entry-title')[0]
+    //   const titleTextContent = String(titleElement.textContent)
+      
+    //   // get title
+    //   const firstLetter = titleTextContent.indexOf('User')
+    //   const textSlicedToFirstLetter = titleTextContent.slice(firstLetter, titleTextContent.length)
+    //   const title = textSlicedToFirstLetter.slice(0, textSlicedToFirstLetter.indexOf('\n'))
+
+    //   const currentServiceProperties = window['DD']['currentServiceProperties']
+    //   const status: string = currentServiceProperties['status']
+    //   const series = currentServiceProperties['series']
+    //   const baseline: Array<downDetectorData> = series['baseline']['data']
+    //   const reports: Array<downDetectorData> = series['reports']['data']
+
+    //   return {
+    //     name: title.split(' ')[title.split('').length - 1],
+    //     title,
+    //     status,
+    //     baseline,
+    //     reports
+    //   }
+    // })
 
     const result: downDetectorSearchResult = {
       url,
