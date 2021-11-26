@@ -17,7 +17,10 @@
     "start:darwin:linux": "export NODE_ENV=production&&knex migrate:latest&&knex seed:run&&node build/src/cluster.js",
     "production": "npm run build&&npm start",
     "routines": "node build/src/runRoutines.js",
-    "dev2": "SET NODE_ENV=development&&nodemon --exec ts-node --files src/cluster.ts"
+    "dev2": "SET NODE_ENV=development&&nodemon --exec ts-node --files src/cluster.ts",
+    "rollback": "run-script-os",
+    "rollback:win32": "SET NODE_ENV=production&&knex migrate:rollback",
+    "rollback:darwin:linux": "export NODE_ENV=production&&knex migrate:rollback"
   },
   "keywords": [],
   "author": "",

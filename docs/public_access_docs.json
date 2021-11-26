@@ -67,63 +67,6 @@
         }
       }
     },
-    "/public/access/history/{serviceName}": {
-      "get": {
-        "tags": [
-          "services"
-        ],
-        "summary": "recuperar histórico atual de um serviço",
-        "parameters": [
-          {
-            "name": "serviceName",
-            "in": "path",
-            "description": "nome do serviço do qual quer o histórico",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "dataInicial",
-            "in": "query",
-            "description": "data inicial da consulta no formato (ANO-MES-DIA)",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "dataFinal",
-            "in": "query",
-            "description": "data final da consulta no formato (ANO-MES-DIA)",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "histórico recuperado com sucesso",
-            "schema": {
-              "$ref": "#/definitions/inline_response_200_1"
-            }
-          },
-          "400": {
-            "description": "campo inválido ou não informado",
-            "schema": {
-              "$ref": "#/definitions/inline_response_400"
-            }
-          },
-          "401": {
-            "description": "token não informado, invalido, ou o token não tem permissão para realizar a operação",
-            "schema": {
-              "$ref": "#/definitions/inline_response_401"
-            }
-          },
-          "406": {
-            "description": "cliente não está habilitado, necessário entrar em contato com o adminstrador do sistema",
-            "schema": {
-              "$ref": "#/definitions/inline_response_406"
-            }
-          }
-        }
-      }
-    },
     "/public/access/changes/{serviceName}": {
       "get": {
         "tags": [
@@ -137,27 +80,13 @@
             "description": "nome do serviço do qual quer o histórico de mudanças",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "dataInicial",
-            "in": "query",
-            "description": "data inicial da consulta no formato (ANO-MES-DIA)",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "dataFinal",
-            "in": "query",
-            "description": "data final da consulta no formato (ANO-MES-DIA)",
-            "required": false,
-            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "histórico de mudanças atualizado com sucesso",
             "schema": {
-              "$ref": "#/definitions/inline_response_200_2"
+              "$ref": "#/definitions/inline_response_200_1"
             }
           },
           "400": {
@@ -192,57 +121,7 @@
           "200": {
             "description": "status de todos os serviços recuperados com sucesso",
             "schema": {
-              "$ref": "#/definitions/inline_response_200_3"
-            }
-          },
-          "400": {
-            "description": "campo inválido ou não informado",
-            "schema": {
-              "$ref": "#/definitions/inline_response_400"
-            }
-          },
-          "401": {
-            "description": "token não informado, invalido, ou o token não tem permissão para realizar a operação",
-            "schema": {
-              "$ref": "#/definitions/inline_response_401"
-            }
-          },
-          "406": {
-            "description": "cliente não está habilitado, necessário entrar em contato com o adminstrador do sistema",
-            "schema": {
-              "$ref": "#/definitions/inline_response_406"
-            }
-          }
-        }
-      }
-    },
-    "/public/access/history/all": {
-      "get": {
-        "tags": [
-          "services"
-        ],
-        "summary": "recuperar histórico de todos os serviços",
-        "parameters": [
-          {
-            "name": "dataInicial",
-            "in": "query",
-            "description": "data inicial da consulta no formato (ANO-MES-DIA)",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "dataFinal",
-            "in": "query",
-            "description": "data final da consulta no formato (ANO-MES-DIA)",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "histórico de todos os serviços recuperados com sucesso",
-            "schema": {
-              "$ref": "#/definitions/inline_response_200_4"
+              "$ref": "#/definitions/inline_response_200_2"
             }
           },
           "400": {
@@ -272,27 +151,12 @@
           "services"
         ],
         "summary": "recuperar mudanças de status de todos os serviços",
-        "parameters": [
-          {
-            "name": "dataInicial",
-            "in": "query",
-            "description": "data inicial da consulta no formato (ANO-MES-DIA)",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "dataFinal",
-            "in": "query",
-            "description": "data final da consulta no formato (ANO-MES-DIA)",
-            "required": false,
-            "type": "string"
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "mudanças de status de todos os serviços recuperados com sucesso",
             "schema": {
-              "$ref": "#/definitions/inline_response_200_5"
+              "$ref": "#/definitions/inline_response_200_3"
             }
           },
           "400": {
@@ -340,42 +204,6 @@
         "reports": {
           "type": "integer",
           "example": 100
-        }
-      }
-    },
-    "History": {
-      "type": "object",
-      "properties": {
-        "date": {
-          "type": "string",
-          "example": "18-11-2021 00:00:47"
-        },
-        "baseline": {
-          "type": "integer",
-          "example": 20
-        },
-        "reports": {
-          "type": "integer",
-          "example": 100
-        }
-      }
-    },
-    "HistoryAll": {
-      "type": "object",
-      "properties": {
-        "service": {
-          "type": "string",
-          "example": "https://downdetector.com/status/facebook"
-        },
-        "status": {
-          "type": "string",
-          "example": "sucesso"
-        },
-        "data": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/History"
-          }
         }
       }
     },
@@ -517,21 +345,6 @@
     "inline_response_200_1": {
       "type": "object",
       "properties": {
-        "status": {
-          "type": "string",
-          "example": "sucesso!"
-        },
-        "data": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/History"
-          }
-        }
-      }
-    },
-    "inline_response_200_2": {
-      "type": "object",
-      "properties": {
         "quantidade_de_mudancas": {
           "type": "integer",
           "example": 20
@@ -544,7 +357,7 @@
         }
       }
     },
-    "inline_response_200_3": {
+    "inline_response_200_2": {
       "type": "object",
       "properties": {
         "data": {
@@ -555,18 +368,7 @@
         }
       }
     },
-    "inline_response_200_4": {
-      "type": "object",
-      "properties": {
-        "data": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/HistoryAll"
-          }
-        }
-      }
-    },
-    "inline_response_200_5": {
+    "inline_response_200_3": {
       "type": "object",
       "properties": {
         "data": {

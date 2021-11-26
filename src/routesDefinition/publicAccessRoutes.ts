@@ -43,15 +43,7 @@ export default function publicAccessRoutes(routes: Router) {
       token: Joi.string().required()
     })
   }), publicAccessJWT, readApiInformations, apiAccessController.status)
- 
-  routes.get('/public/access/history/:serviceName', celebrate({
-    [Segments.QUERY]: Joi.object().keys({
-      token: Joi.string().required(),
-      dataInicial: Joi.string().optional(),
-      dataFinal: Joi.string().optional()
-    })
-  }), publicAccessJWT, readApiInformations, apiAccessController.history)
-  
+
   routes.get('/public/access/changes/:serviceName', celebrate({
     [Segments.QUERY]: Joi.object().keys({
       token: Joi.string().required(),
