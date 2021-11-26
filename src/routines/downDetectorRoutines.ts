@@ -110,18 +110,30 @@ export default async function routinesRequests(serverIo: Server, browser: puppet
   
   const lastExecution = moment().format('YYYY-MM-DD HH:mm:ss')
   
+  const RedisKey = `downDetectorRoutine_${updateTime}`
+  const completeRedisKey = `finished_routine_${updateTime}`
+  
   if (!!requests && requests.length > 0) {
-    const RedisKey = `downDetectorRoutine_${updateTime}`
-
     sleep(200 * Math.random() * 100)
     const routineStatus = await client.get(RedisKey)
-
+    const completeKeyStatus = await client.get(completeRedisKey)
+    
     if (Number(routineStatus) === 2) {
       return
     } else {
       await client.set(RedisKey, 2)
       await client.expire(RedisKey, 40)
     }
+    
+    console.log('complete status:', completeKeyStatus);
+    
+    if (Number(completeKeyStatus) === 2) {
+      return
+    } else {
+      await client.set(completeRedisKey, 2)
+    }
+
+    console.log('start da execução:', lastExecution)
 
     console.log(`Requisitando serviços de update em ${updateTime} minuto(s) \n`)
 
@@ -145,6 +157,7 @@ export default async function routinesRequests(serverIo: Server, browser: puppet
     
     // await client.set(RedisKey, 1)
     
+    await client.set(completeRedisKey, 1)
     console.log('\nRequisições finalizadas\n')
   }
 
