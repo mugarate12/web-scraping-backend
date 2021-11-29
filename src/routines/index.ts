@@ -10,7 +10,7 @@ dotenv.config()
 const processName = process.env.name || 'primary'
 
 async function runBrowser() {
-  const browser = await puppeteer.launch({ headless: false, args: ['--no-sandbox'], slowMo: 200 })
+  const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'], slowMo: 200 })
   return browser
 }
 

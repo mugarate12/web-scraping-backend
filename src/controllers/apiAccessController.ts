@@ -182,15 +182,20 @@ export default class ApiAccessController {
       // await downDetectorController.accessDownDetectorSingleUpdateNotRoute(service.service_name)
 
       const changes = await downDetectorChangeRepository.index({
-        dates,
+        dates: [ moment().format('YYYY-MM-DD') ],
         identifiers: {
           serviceURL
+        },
+        orderBy: {
+          property: 'hist_date',
+          orientation: 'desc'
         }
       })
 
       const changesData = changes.map((change) => {
         return {
           // date: moment(change.hist_date).format('YYYY-MM-DD HH:mm:ss'),
+          dateUnix: Number(change.dateUnixTime),
           date: this.convertDate(change.hist_date),
           change: this.convertChangeStatusToString(change.status_change)
         }
@@ -427,6 +432,7 @@ export default class ApiAccessController {
     const changesData = changes.map((change) => {
       return {
         // date: moment(change.hist_date).format('YYYY-MM-DD HH:mm:ss'),
+        dateUnix: Number(change.dateUnixTime),
         date: this.convertDate(change.hist_date),
         change: this.convertChangeStatusToString(change.status_change)
       }
