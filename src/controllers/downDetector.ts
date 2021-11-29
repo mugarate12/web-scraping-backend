@@ -81,78 +81,54 @@ export default class DownDetectorController {
     await pageInstance.setDefaultNavigationTimeout(0)
     await pageInstance.goto(url)
 
-    console.log(`requisitando serviço: ${serviceName}`)
+    console.log(`-> executando coleta em: ${serviceName}`)
+
     let data: {
       name: string;
       title: string;
       status: string;
       baseline: downDetectorData[];
       reports: downDetectorData[];
-  } = {
-    name: '',
-    title: '',
-    status: '',
-    baseline: [],
-    reports: []
-  }
+    } = {
+      name: '',
+      title: '',
+      status: '',
+      baseline: [],
+      reports: []
+    }
 
-  while (data.baseline.length === 0) {
-    await pageInstance.evaluate(() => {
-      const titleElement = document.getElementsByClassName('entry-title')[0]
-      const titleTextContent = String(titleElement.textContent)
-      
-      // get title
-      const firstLetter = titleTextContent.indexOf('User')
-      const textSlicedToFirstLetter = titleTextContent.slice(firstLetter, titleTextContent.length)
-      const title = textSlicedToFirstLetter.slice(0, textSlicedToFirstLetter.indexOf('\n'))
-  
-      const currentServiceProperties = window['DD']['currentServiceProperties']
-      const status: string = currentServiceProperties['status']
-      const series = currentServiceProperties['series']
-      const baseline: Array<downDetectorData> = series['baseline']['data']
-      const reports: Array<downDetectorData> = series['reports']['data']
-  
-      return {
-        name: title.split(' ')[title.split('').length - 1],
-        title,
-        status,
-        baseline,
-        reports
-      }
-    })
-      .then(result => {
-        data = result
+    while (data.baseline.length === 0) {
+      await pageInstance.evaluate(() => {
+        const titleElement = document.getElementsByClassName('entry-title')[0]
+        const titleTextContent = String(titleElement.textContent)
+        
+        // get title
+        const firstLetter = titleTextContent.indexOf('User')
+        const textSlicedToFirstLetter = titleTextContent.slice(firstLetter, titleTextContent.length)
+        const title = textSlicedToFirstLetter.slice(0, textSlicedToFirstLetter.indexOf('\n'))
+    
+        const currentServiceProperties = window['DD']['currentServiceProperties']
+        const status: string = currentServiceProperties['status']
+        const series = currentServiceProperties['series']
+        const baseline: Array<downDetectorData> = series['baseline']['data']
+        const reports: Array<downDetectorData> = series['reports']['data']
+    
+        return {
+          name: title.split(' ')[title.split('').length - 1],
+          title,
+          status,
+          baseline,
+          reports
+        }
       })
-      .catch(async (error) => {
-        console.log('erro em', serviceName)
-
-        await pageInstance.reload()
-        console.log('reload');
-      })
-  }
-    // const data = await pageInstance.evaluate(() => {
-    //   const titleElement = document.getElementsByClassName('entry-title')[0]
-    //   const titleTextContent = String(titleElement.textContent)
-      
-    //   // get title
-    //   const firstLetter = titleTextContent.indexOf('User')
-    //   const textSlicedToFirstLetter = titleTextContent.slice(firstLetter, titleTextContent.length)
-    //   const title = textSlicedToFirstLetter.slice(0, textSlicedToFirstLetter.indexOf('\n'))
-
-    //   const currentServiceProperties = window['DD']['currentServiceProperties']
-    //   const status: string = currentServiceProperties['status']
-    //   const series = currentServiceProperties['series']
-    //   const baseline: Array<downDetectorData> = series['baseline']['data']
-    //   const reports: Array<downDetectorData> = series['reports']['data']
-
-    //   return {
-    //     name: title.split(' ')[title.split('').length - 1],
-    //     title,
-    //     status,
-    //     baseline,
-    //     reports
-    //   }
-    // })
+        .then(result => {
+          data = result
+        })
+        .catch(async (error) => {
+          console.log(`!!! erro na coleta em ${serviceName}, recarregando página`);
+          await pageInstance.reload()
+        })
+    }
 
     const result: downDetectorSearchResult = {
       url,
@@ -179,6 +155,7 @@ export default class DownDetectorController {
     }
 
     await this.updateChangeHistory(result)
+    
     if (insertions.length > 0) {
       await downDetectorHistRepository.createInMassive(insertions)
         .catch(error => {
@@ -186,7 +163,7 @@ export default class DownDetectorController {
         })
     }
 
-    console.log(`${serviceName} status: ${data.status}`)
+    // console.log(`${serviceName} status: ${data.status}`)
 
     pageInstance.close()
 

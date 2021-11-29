@@ -52,4 +52,8 @@ routines(io)
 // sockets
 RunSockets(io)
 
-export default server
+const PORT = !process.env.PORT ? 3333 :  process.env.PORT
+
+server.listen(PORT, () => {
+  console.log(`listening on port ${PORT}`)
+})

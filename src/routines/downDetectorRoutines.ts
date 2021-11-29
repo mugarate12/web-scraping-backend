@@ -113,24 +113,16 @@ export default async function routinesRequests(serverIo: Server, browser: puppet
   const RedisKey = `downDetectorRoutine_${updateTime}`
   const completeRedisKey = `finished_routine_${updateTime}`
 
-  console.log('routine: ', updateTime);
   
   if (!!requests && requests.length > 0) {
     sleep(200 * Math.random() * 100)
     const routineStatus = await client.get(RedisKey)
     const completeKeyStatus = await client.get(completeRedisKey)
-    
-    console.log(routineStatus);
-    console.log(completeKeyStatus);
 
-    if (Number(routineStatus) === 2) {
-      return
-    } else {
-      await client.set(RedisKey, 2)
-      await client.expire(RedisKey, 40)
-    }
-    
-    console.log('complete status:', completeKeyStatus);
+    // console.log('routine: ', updateTime, ' routine status: ', routineStatus);
+    // console.log(completeKeyStatus);
+
+    // console.log('complete status:', completeKeyStatus);
     
     if (Number(completeKeyStatus) === 2) {
       return
@@ -138,43 +130,46 @@ export default async function routinesRequests(serverIo: Server, browser: puppet
       await client.set(completeRedisKey, 2)
     }
 
-    console.log('start da execução:', lastExecution)
+    console.log('--> start da execução:', lastExecution)
 
-    console.log(`Requisitando serviços de update em ${updateTime} minuto(s) \n`)
+    console.log(`--> Requisitando serviços de update em ${updateTime} minuto(s) \n`)
+    console.log(`--> Requisitando ${requests.length} serviços`)
 
     await downDetectorController.emitExecutionRoutine(serverIo, updateTime)
-    const arraysOfRequests = createArraysOfRequests(requests, 5)
+    // const arraysOfRequests = createArraysOfRequests(requests, 10)
 
-    for (let index = 0; index < arraysOfRequests.length; index++) {
-      const fiveRequests = arraysOfRequests[index]
+    // for (let index = 0; index < arraysOfRequests.length; index++) {
+    //   const fiveRequests = arraysOfRequests[index]
 
-      const requestsResultsPromises = fiveRequests.map(async (request) => {
-        const result = await downDetectorController.accessDownDetectorRoutine(request.service_name, browser)
-          .catch(error => {
-            console.log('error em', request.service_name)
-            console.log(error)
-            return undefined
-          })
-      })
+    //   const requestsResultsPromises = fiveRequests.map(async (request) => {
+    //     await downDetectorController.accessDownDetectorRoutine(request.service_name, browser)
+    //       .catch(error => {
+    //         console.log('error em', request.service_name)
+    //         console.log(error)
+    //         return undefined
+    //       })
+    //   })
   
-      await Promise.all(requestsResultsPromises)
-    }
+    //   await Promise.all(requestsResultsPromises)
+    // }
 
-    // const requestsResultsPromises = requests.map(async (request) => {
-    //   const result = await downDetectorController.accessDownDetectorRoutine(request.service_name, browser)
-    //     .catch(error => {
-    //       console.log('error em', request.service_name)
-    //       console.log(error)
-    //       return undefined
-    //     })
-    // })
+    const requestsResultsPromises = requests.map(async (request) => {
+      const result = await downDetectorController.accessDownDetectorRoutine(request.service_name, browser)
+        .catch(error => {
+          console.log('error em', request.service_name)
+          console.log(error)
+          return undefined
+        })
 
-    // await Promise.all(requestsResultsPromises)
+      console.log(`-> ${request.service_name} da rotina ${updateTime} minuto(s), status: ${result?.status}`)
+    })
+
+    await Promise.all(requestsResultsPromises)
     
     // await client.set(RedisKey, 1)
     
     await client.set(completeRedisKey, 1)
-    console.log('\nRequisições finalizadas\n')
+    console.log(`\n--> Requisições da rotina de ${updateTime} minuto(s) finalizadas\n`)
   }
 
   await downDetectorController.createOrUpdateServiceUpdateTime(updateTime, lastExecution)

@@ -4,23 +4,49 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
+
     "predev": "run-script-os",
     "predev:win32": "SET NODE_ENV=development&&knex migrate:rollback --all&&knex migrate:latest&&knex seed:run",
     "predev:darwin:linux": "export NODE_ENV=development&&knex migrate:rollback --all&&knex migrate:latest&&knex seed:run",
+    
     "dev": "run-script-os",
-    "dev:win32": "SET NODE_ENV=development&&nodemon --exec ts-node --files src/cluster.ts",
-    "dev:darwin:linux": "export NODE_ENV=development&&nodemon --exec ts-node --files src/server.ts",
+    "dev:win32": "SET NODE_ENV=development&&nodemon --exec ts-node --files src/app.ts",
+    "dev:darwin:linux": "export NODE_ENV=development&&nodemon --exec ts-node --files src/app.ts",
+    
+    "dev-without-rollback": "run-script-os",
+    "dev-without-rollback:win32": "SET NODE_ENV=development&&knex migrate:latest&&knex seed:run&&nodemon --exec ts-node --files src/app.ts",
+    "dev-without-rollback:darwin:linux": "export NODE_ENV=development&&knex migrate:latest&&knex seed:run&&nodemon --exec ts-node --files src/app.ts",
+
+    "redis-server": "run-script-os",
+    "redis-server:win32": "",
+    "redis-server:darwin:linux": "redis-server &",
+
+    "set-redis-keys": "run-script-os",
+    "set-redis-keys:win32": "",
+    "set-redis-keys:darwin:linux": "redis-cli set finished_routine_1 1&&redis-cli set finished_routine_3 1&&redis-cli set finished_routine_5 1&&redis-cli set finished_routine_10 1&&redis-cli set finished_routine_15 1",
+
     "start": "run-script-os",
-    "start:win32": "SET NODE_ENV=production&&knex migrate:latest&&knex seed:run&&node build/src/cluster.js",
-    "start:darwin:linux": "export NODE_ENV=production&&knex migrate:latest&&knex seed:run&&node build/src/cluster.js",
-    "production": "npm run build&&npm start",
-    "routines": "node build/src/runRoutines.js",
-    "dev2": "SET NODE_ENV=development&&nodemon --exec ts-node --files src/cluster.ts",
-    "rollback": "run-script-os",
-    "rollback:win32": "SET NODE_ENV=production&&knex migrate:rollback",
-    "rollback:darwin:linux": "export NODE_ENV=production&&knex migrate:rollback"
+    "start:win32": "SET NODE_ENV=production&&knex migrate:latest&&knex seed:run&&pm2 start pm2.json",
+    "start:darwin:linux": "export NODE_ENV=production&&knex migrate:latest&&knex seed:run&&pm2 start pm2.json",
+
+    "show-logs": "pm2 logs --lines 1000",
+    "clear-logs": "pm2 flush",
+
+    "development": "npm run redis-server&&npm run set-redis-keys&&npm run dev",
+    "development-without-rollback": "run-script-os",
+
+    "development-without-rollback:win32": "SET NODE_ENV=development&&npm run redis-server&&npm run set-redis-keys&&npm run dev-without-rollback",
+    "development-without-rollback:darwin:linux": "export NODE_ENV=development&&npm run redis-server&&npm run set-redis-keys&&npm run dev-without-rollback",
+
+    "production": "npm run build&&npm run redis-server&&npm run set-redis-keys&&pm2 flush&&npm start",
+    "stop-production": "pm2 stop pm2.json",
+
+    "dev2": "SET NODE_ENV=development&&nodemon --exec ts-node --files src/app.ts",
+
+    "rollback-database": "run-script-os",
+    "rollback-database:win32": "SET NODE_ENV=production&&knex migrate:rollback",
+    "rollback-database:darwin:linux": "export NODE_ENV=production&&knex migrate:rollback"
   },
   "keywords": [],
   "author": "",
