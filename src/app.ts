@@ -53,6 +53,13 @@ routines(io)
 RunSockets(io)
 
 const PORT = !process.env.PORT ? 3333 :  process.env.PORT
+const processName = process.env.name || 'primary'
+
+console.log(processName)
+// process.env.NUMBER_OF_PROCESSORS
+// process.env.NODE_APP_INSTANCE
+// console.log(process.env.NUMBER_OF_PROCESSORS)
+// console.log(process.env.NODE_APP_INSTANCE)
 
 server.listen(PORT, () => {
   console.log(`listening on port ${PORT}`)

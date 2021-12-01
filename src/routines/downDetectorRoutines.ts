@@ -2,7 +2,9 @@ import { Server } from 'socket.io'
 import puppeteer from 'puppeteer'
 import moment from 'moment'
 import Redis from 'promise-redis'
+import dotenv from 'dotenv'
 
+dotenv.config()
 const redis = Redis()
 const client = redis.createClient()
 
@@ -28,6 +30,8 @@ import { downDetectorChangeInterface } from './../repositories/downDetectorChang
 import { downDetectorHistInterface } from './../repositories/downDetectorHistRepository'
 import { downDetectorSearchResult } from './../interfaces/downDetector'
 
+const processName = process.env.name || 'primary'
+
 async function runBrowser() {
   const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'], slowMo: 200 })
   return browser
@@ -35,51 +39,6 @@ async function runBrowser() {
 
 async function sleep(milliseconds: number) {
   return new Promise(resolve => setTimeout(resolve, milliseconds))
-}
-
-function normalizeDownDetectorResult(downDetectorResult: downDetectorSearchResult) {
-  const baselines = downDetectorResult.baseline
-  const reports = downDetectorResult.reports
-
-  const data = baselines.map((baseline, index) => {
-    return {
-      date: moment(baseline.x).format('YYYY-MM-DD HH:mm:ss'),
-      baseline: baseline.y,
-      notificationCount: reports[index].y
-    }
-  })
-
-  return data
-}
-
-async function updateOrCreateMonitoringService(downDetectorResult: downDetectorSearchResult) {
-  const normalizedData = normalizeDownDetectorResult(downDetectorResult)
-  let insertions: Array<{
-      site_d: string,
-      hist_date: string,
-      baseline: number,
-      notification_count: number
-    }> = []
-
-  for (let index = 0; index < normalizedData.length; index++) {
-    const report = normalizedData[index]
-
-    insertions.push({
-      site_d: downDetectorResult.url,
-      hist_date: report.date,
-      baseline: report.baseline,
-      notification_count: report.notificationCount
-    })
-  }
-
-  await downDetectorController.updateChangeHistory(downDetectorResult)
-
-  if (insertions.length > 0) {
-    await downDetectorHistRepository.createInMassive(insertions)
-      .catch(error => {
-        console.log(error);
-      })
-  }
 }
 
 function createArraysOfRequests(requests: serviceInterface[], numberOfMultipleTabs: number) {
@@ -103,6 +62,68 @@ function createArraysOfRequests(requests: serviceInterface[], numberOfMultipleTa
   return arraysOfRequests
 }
 
+function createHeadquarterOfServices(requests: serviceInterface[]) {
+  let headquarter: Array<serviceInterface[]> = []
+  
+  const numberOfProcessors = Number(process.env.NUMBER_OF_PROCESSORS)
+
+  const numberOfItemsPerProcess = requests.length / numberOfProcessors
+  const firstNumber = Number(String(numberOfItemsPerProcess)[0])
+
+  console.log('número de processos: ', numberOfProcessors)
+
+
+  for (let index = 0; index < numberOfProcessors; index++) {
+    // const element = array[index];
+    if (index === 0) {
+      headquarter.push(requests.slice(0, firstNumber))
+    } else {
+      const initial = firstNumber * index
+      const final = firstNumber * (index + 1)
+
+      headquarter.push(requests.slice(initial, final))
+    }
+  }
+
+  const items = firstNumber * numberOfProcessors
+  if (items < requests.length) {
+    headquarter.push(requests.slice(items, requests.length))
+  }
+
+  console.log(headquarter.length);
+  return headquarter
+}
+
+function createArrayOfRequestToProcess(headquarter: Array<serviceInterface[]>, requests: serviceInterface[]) {
+  let processRequests: serviceInterface[] = []
+
+  const processName = process.env.name || 'primary'
+  const numberOfProcessors = Number(process.env.NUMBER_OF_PROCESSORS)
+  const appInstance = Number(process.env.INSTANCE_ID)
+
+  const numberOfItemsPerProcess = requests.length / numberOfProcessors
+  const firstNumber = Number(String(numberOfItemsPerProcess)[0])
+
+  const items = firstNumber * numberOfProcessors
+
+  if(processName.search(/primary/) !== -1) {
+      if (items < requests.length) {
+        processRequests = [ ...headquarter[0], ...headquarter[headquarter.length - 1] ]
+      } else {
+        processRequests = [ ...headquarter[0] ]
+      }
+  } else {
+    try {
+      // console.log('app instance:', appInstance);
+      processRequests = [ ...headquarter[appInstance + 1] ]
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  return processRequests
+}
+
 export default async function routinesRequests(serverIo: Server, browser: puppeteer.Browser, updateTime: number) {  
   const requests = await servicesRepository.index({ update_time: updateTime, habilitado: 1 })
     .then(services => services)
@@ -118,11 +139,6 @@ export default async function routinesRequests(serverIo: Server, browser: puppet
     sleep(200 * Math.random() * 100)
     const routineStatus = await client.get(RedisKey)
     const completeKeyStatus = await client.get(completeRedisKey)
-
-    // console.log('routine: ', updateTime, ' routine status: ', routineStatus);
-    // console.log(completeKeyStatus);
-
-    // console.log('complete status:', completeKeyStatus);
     
     if (Number(completeKeyStatus) === 2) {
       return
@@ -130,30 +146,20 @@ export default async function routinesRequests(serverIo: Server, browser: puppet
       await client.set(completeRedisKey, 2)
     }
 
-    console.log('--> start da execução:', lastExecution)
-
+    
     console.log(`--> Requisitando serviços de update em ${updateTime} minuto(s) \n`)
     console.log(`--> Requisitando ${requests.length} serviços`)
+    console.log('--> começo da execução:', moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss'))
+
+    // console.log(createHeadquarterOfServices(requests))
+    // const headquarter = createHeadquarterOfServices(requests)
+    // const req = createArrayOfRequestToProcess(headquarter, requests)
+
+    // console.log(req)
 
     await downDetectorController.emitExecutionRoutine(serverIo, updateTime)
-    // const arraysOfRequests = createArraysOfRequests(requests, 10)
 
-    // for (let index = 0; index < arraysOfRequests.length; index++) {
-    //   const fiveRequests = arraysOfRequests[index]
-
-    //   const requestsResultsPromises = fiveRequests.map(async (request) => {
-    //     await downDetectorController.accessDownDetectorRoutine(request.service_name, browser)
-    //       .catch(error => {
-    //         console.log('error em', request.service_name)
-    //         console.log(error)
-    //         return undefined
-    //       })
-    //   })
-  
-    //   await Promise.all(requestsResultsPromises)
-    // }
-
-    const requestsResultsPromises = requests.map(async (request) => {
+    const requestsResultsPromises = requests.map(async (request, index) => {
       const result = await downDetectorController.accessDownDetectorRoutine(request.service_name, browser)
         .catch(error => {
           console.log('error em', request.service_name)
@@ -161,7 +167,7 @@ export default async function routinesRequests(serverIo: Server, browser: puppet
           return undefined
         })
 
-      console.log(`-> ${request.service_name} da rotina ${updateTime} minuto(s), status: ${result?.status}`)
+      // console.log(`-> (${index + 1}) ${request.service_name} da rotina ${updateTime} minuto(s), status: ${result?.status}`)
     })
 
     await Promise.all(requestsResultsPromises)
@@ -169,6 +175,7 @@ export default async function routinesRequests(serverIo: Server, browser: puppet
     // await client.set(RedisKey, 1)
     
     await client.set(completeRedisKey, 1)
+    console.log(`final da execução: ${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}`)
     console.log(`\n--> Requisições da rotina de ${updateTime} minuto(s) finalizadas\n`)
   }
 

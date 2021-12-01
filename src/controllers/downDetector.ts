@@ -26,6 +26,36 @@ export default class DownDetectorController {
     return new Promise(resolve => setTimeout(resolve, milliseconds))
   }
 
+  private updateHistoryAndChange = async (result: downDetectorSearchResult) => {
+    const normalizedData = this.normalizeDownDetectorResult(result)
+    let insertions: Array<{
+      site_d: string,
+      hist_date: string,
+      baseline: number,
+      notification_count: number
+    }> = []
+
+    for (let index = 0; index < normalizedData.length; index++) {
+      const report = normalizedData[index]
+  
+      insertions.push({
+        site_d: result.url,
+        hist_date: report.date,
+        baseline: report.baseline,
+        notification_count: report.notificationCount
+      })
+    }
+
+    await this.updateChangeHistory(result)
+    
+    if (insertions.length > 0) {
+      await downDetectorHistRepository.createInMassive(insertions)
+        .catch(error => {
+          console.log(error);
+        })
+    }
+  }
+
   public accessDownDetector = async (req: Request, res: Response) => {
     const { serviceName } = req.params
     
@@ -81,7 +111,7 @@ export default class DownDetectorController {
     await pageInstance.setDefaultNavigationTimeout(0)
     await pageInstance.goto(url)
 
-    console.log(`-> executando coleta em: ${serviceName}`)
+    // console.log(`-> executando coleta em: ${serviceName}`)
 
     let data: {
       name: string;
@@ -125,7 +155,7 @@ export default class DownDetectorController {
           data = result
         })
         .catch(async (error) => {
-          console.log(`!!! erro na coleta em ${serviceName}, recarregando página`);
+          // console.log(`!!! erro na coleta em ${serviceName}, recarregando página`);
           await pageInstance.reload()
         })
     }
@@ -135,33 +165,7 @@ export default class DownDetectorController {
       ...data
     }
     
-    const normalizedData = this.normalizeDownDetectorResult(result)
-    let insertions: Array<{
-      site_d: string,
-      hist_date: string,
-      baseline: number,
-      notification_count: number
-    }> = []
-
-    for (let index = 0; index < normalizedData.length; index++) {
-      const report = normalizedData[index]
-  
-      insertions.push({
-        site_d: result.url,
-        hist_date: report.date,
-        baseline: report.baseline,
-        notification_count: report.notificationCount
-      })
-    }
-
-    await this.updateChangeHistory(result)
-    
-    if (insertions.length > 0) {
-      await downDetectorHistRepository.createInMassive(insertions)
-        .catch(error => {
-          console.log(error);
-        })
-    }
+    await this.updateHistoryAndChange(result)
 
     // console.log(`${serviceName} status: ${data.status}`)
 
