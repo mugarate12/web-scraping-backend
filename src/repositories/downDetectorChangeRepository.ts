@@ -35,6 +35,18 @@ export interface indexDownDetectorChangeIndexOptions {
   dates?: Array<string>
 }
 
+interface indexWithDateInterface {
+  identifiers?: {
+    serviceURL?: string
+  },
+  orderBy?: {
+    property: string,
+    orientation: 'desc' | 'asc'
+  },
+  limit?: number,
+  date: string
+}
+
 export default class DownDetectorChangeRepository {
   private reference = () => connection<downDetectorChangeInterface>(DOWN_DETECTOR_CHANGE_TABLE_NAME)
 
@@ -75,6 +87,40 @@ export default class DownDetectorChangeRepository {
     return sql
   }
 
+  private indexWithDate = async ({
+    identifiers,
+    orderBy,
+    limit,
+    date
+  }: indexWithDateInterface) => {
+    let query = this.reference()
+
+    query = query
+      .where('hist_date', 'like', `%${date}%`)
+
+    if (!!identifiers && !!identifiers.serviceURL) {
+      query = query
+        .where('site_c', '=', identifiers.serviceURL)
+    }
+
+    if (!!orderBy) {
+      query = query
+        .orderBy(orderBy.property, orderBy.orientation)
+    }
+
+    if (!!limit) {
+      query = query
+        .limit(limit)
+    }
+
+    return await query
+      .select('*')
+      .then(changes => changes)
+      .catch(error => {
+        throw new AppError('Database Error', 406, error.message, true)
+      })
+  }
+
   public create = async ({
     site_c,
     hist_date,
@@ -107,10 +153,49 @@ export default class DownDetectorChangeRepository {
     limit,
     dates
   }: indexDownDetectorChangeIndexOptions) => {
-    return connection.raw(this.indexRaw({ identifiers, orderBy, limit, dates}))
-      .then(downDetectorChanges => downDetectorChanges[0])
-      .catch(error => {
-        throw new AppError('Database Error', 406, error.message, true)
-      })
+    let changes: downDetectorChangeInterface[] = []
+    
+    if (!!dates) {
+      for (let index = 0; index < dates.length; index++) {
+        const date = dates[index]
+        
+        const change = await this.indexWithDate({
+          identifiers,
+          orderBy,
+          limit,
+          date
+        })
+
+        console.log(change);
+
+        changes = [ ...change ]
+      }
+
+      return changes
+    } else {
+      let query = this.reference()
+  
+      if (!!identifiers && !!identifiers.serviceURL) {
+        query = query
+          .where('site_c', '=', identifiers.serviceURL)
+      }
+  
+      if (!!orderBy) {
+        query = query
+          .orderBy(orderBy.property, orderBy.orientation)
+      }
+  
+      if (!!limit) {
+        query = query
+          .limit(limit)
+      }
+
+      return query
+        .select('*')
+        .then(changes => changes)
+        .catch(error => {
+          throw new AppError('Database Error', 406, error.message, true)
+        })
+    }
   }
 }
