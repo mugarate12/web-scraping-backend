@@ -6,6 +6,7 @@
       "exec_mode": "cluster",
       "name": "primary",
       "instance_var": "INSTANCE_ID",
+      "watch": true,
       "env_production": {
         "name": "prod-primary",
         "PORT": 3333,
@@ -23,6 +24,7 @@
       "exec_mode": "cluster",
       "name": "replica",
       "instance_var": "INSTANCE_ID",
+      "watch": true,
       "env_production": {
         "name": "prod-replica",
         "PORT": 3333,

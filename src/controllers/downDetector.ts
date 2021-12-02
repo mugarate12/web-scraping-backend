@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import puppeteer from 'puppeteer'
 import moment from 'moment'
 import { Server } from 'socket.io'
+import axios from 'axios'
 
 import { downDetectorData } from './../interfaces/downDetector'
 import {
@@ -15,6 +16,7 @@ import { downDetectorSearchResult } from './../interfaces/downDetector'
 
 export default class DownDetectorController {
   private url = 'https://downdetector.com/status/facebook/'
+  private apiKey = 'e797b8f0c894bbcf9017ee47f7bbbf1e'
 
   private makeUrl = (service: string) => {
     const url = `https://downdetector.com/status/${service}`
@@ -22,8 +24,48 @@ export default class DownDetectorController {
     return url
   }
 
-  private sleep = (milliseconds: number) => {
-    return new Promise(resolve => setTimeout(resolve, milliseconds))
+  private sleep = (seconds: number) => {
+    return new Promise(resolve => setTimeout(resolve, 1000 * seconds))
+  }
+
+  private requestToSolveCaptcha = async (sitekey: string, pageURL: string) => {
+    interface successfulRequest {
+      status: number,
+      request: string
+    }
+
+    const url = `http://2captcha.com/in.php?key=${this.apiKey}&method=hcaptcha&sitekey=${sitekey}&pageurl=${pageURL}&json=true`
+
+    return await axios.get<successfulRequest>(url)
+      .then(response => {
+        return response.data
+      })
+      .catch(error => {
+        console.log('error in request solve captcha')
+        console.log(error)
+
+        return undefined
+      })
+  }
+
+  private getJsonToSolvedCaptcha = async (captchaID: number) => {
+    interface responseInterface {
+      status: number,
+      request: string
+    }
+
+    const url = `https://2captcha.com/res.php?key=${this.apiKey}&action=get&id=${captchaID}&json=true`
+
+    return await axios.get<responseInterface>(url)
+      .then(response => {
+        return response.data
+      })
+      .catch(error => {
+        console.log('get jason to solved captcha error')
+        console.log(error)
+
+        return undefined
+      })
   }
 
   private updateHistoryAndChange = async (result: downDetectorSearchResult) => {
@@ -60,8 +102,7 @@ export default class DownDetectorController {
     const { serviceName } = req.params
     
     const browser = await puppeteer.launch({ 
-      headless: true,
-      slowMo: 200
+      headless: true
     })
     const page = await browser.newPage()
 
@@ -69,37 +110,79 @@ export default class DownDetectorController {
 
     await page.setDefaultNavigationTimeout(0)
     
-    await page.goto(this.makeUrl(serviceName))
+    const url2 = `https://downdetector.com.br/fora-do-ar/${serviceName}`
+    let status: number = 200
+    let data: any = {}
+    let result: {
+      title: string;
+      status: string;
+      baseline: downDetectorData[];
+      reports: downDetectorData[];
+    } = {
+      title: '',
+      status: '',
+      baseline: [],
+      reports: []
+    }
+
+    await page.goto(url2, { waitUntil:'load'})
+      .then(response => {
+        status = response.status()
+      })
       .catch(error => {
         console.log(error)
       })
 
-    const result = await page.evaluate(() => {
-      const titleElement = document.getElementsByClassName('entry-title')[0]
-      const titleTextContent = String(titleElement.textContent)
-      
-      // get title
-      const firstLetter = titleTextContent.indexOf('User')
-      const textSlicedToFirstLetter = titleTextContent.slice(firstLetter, titleTextContent.length)
-      const title = textSlicedToFirstLetter.slice(0, textSlicedToFirstLetter.indexOf('\n'))
+      if (status !== 200) {
+        let currentStatus = status
+        
+        while (currentStatus !== 200) {
+          await this.sleep(5)
 
-      const currentServiceProperties = window['DD']['currentServiceProperties']
-      const status: string = currentServiceProperties['status']
-      const series = currentServiceProperties['series']
-      const baseline: Array<downDetectorData> = series['baseline']['data']
-      const reports: Array<downDetectorData> = series['reports']['data']
+          await page.reload()
+            .then(response => {
+              console.log(response?.status())
 
-      return {
-        title,
-        status,
-        baseline,
-        reports
+              currentStatus = Number(response?.status())
+            })
+            .catch(error => {
+              console.log(error)
+            })
+        }
+
+        const getDataResponse = await page.evaluate(() => {
+          const titleElement = document.getElementsByClassName('entry-title')[0]
+          const titleTextContent = String(titleElement.textContent)
+          
+          // get title
+          const removeBreakLines = titleTextContent.split('\n')[4]
+          const title = removeBreakLines.trim()
+          // const firstLetter = titleTextContent.indexOf('User')
+          // const textSlicedToFirstLetter = titleTextContent.slice(firstLetter, titleTextContent.length)
+          // const title = textSlicedToFirstLetter.slice(0, textSlicedToFirstLetter.indexOf('\n'))
+
+          const currentServiceProperties = window['DD']['currentServiceProperties']
+          const status: string = currentServiceProperties['status']
+          const series = currentServiceProperties['series']
+          const baseline: Array<downDetectorData> = series['baseline']['data']
+          const reports: Array<downDetectorData> = series['reports']['data']
+
+          return {
+            title,
+            status,
+            baseline,
+            reports
+          }
+        })
+
+        result = getDataResponse
       }
-    })
 
     await browser.close()
 
-    return res.json({ result })
+    return res.json({
+      result
+    })
   }
 
   public accessDownDetectorRoutine = async (serviceName: string, browser: puppeteer.Browser) => {

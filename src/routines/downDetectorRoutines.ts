@@ -167,7 +167,7 @@ export default async function routinesRequests(serverIo: Server, browser: puppet
           return undefined
         })
 
-      // console.log(`-> (${index + 1}) ${request.service_name} da rotina ${updateTime} minuto(s), status: ${result?.status}`)
+      console.log(`-> (${index + 1}) ${request.service_name} da rotina ${updateTime} minuto(s), status: ${result?.status}`)
     })
 
     await Promise.all(requestsResultsPromises)
@@ -175,7 +175,7 @@ export default async function routinesRequests(serverIo: Server, browser: puppet
     // await client.set(RedisKey, 1)
     
     await client.set(completeRedisKey, 1)
-    console.log(`final da execução: ${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}`)
+    console.log(`--> final da execução: ${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}`)
     console.log(`\n--> Requisições da rotina de ${updateTime} minuto(s) finalizadas\n`)
   }
 
