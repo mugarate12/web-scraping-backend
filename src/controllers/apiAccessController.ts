@@ -343,6 +343,7 @@ export default class ApiAccessController {
 
     if (String(serviceName) === 'all') {
       const data = await this.allServicesStatus()
+      
       return res.status(200).json({
         data: data
       })

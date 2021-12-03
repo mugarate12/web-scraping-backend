@@ -30,6 +30,16 @@ export interface indexDownDetectorHistIndexOptions {
   dates: Array<string>
 }
 
+interface indexWithDateInterface {
+  serviceURL?: string,
+  orderBy?: {
+    property: string,
+    orientation: 'desc' | 'asc'
+  },
+  limit?: number,
+  date: string
+}
+
 export default class DownDetectorHistRepository {
   private reference = () => connection<downDetectorHistInterface>(DOWN_DETECTOR_HIST_TABLE_NAME)
 
@@ -70,6 +80,40 @@ export default class DownDetectorHistRepository {
     return sql
   }
 
+  private indexWithDate = async ({
+    serviceURL,
+    orderBy,
+    limit,
+    date
+  }: indexWithDateInterface) => {
+    let query = this.reference()
+
+    query = query
+      .where('hist_date', 'like', `%${date}%`)
+
+    if (!!serviceURL) {
+      query = query
+        .where('site_d', '=', serviceURL)
+    }
+
+    if (!!orderBy) {
+      query = query
+        .orderBy(orderBy.property, orderBy.orientation)
+    }
+
+    if (!!limit) {
+      query = query
+        .limit(limit)
+    }
+
+    return await query
+      .select('*')
+      .then(histories => histories)
+      .catch(error => {
+        throw new AppError('Database Error', 406, error.message, true)
+      })
+  }
+
   public create = async ({
     site_d,
     hist_date,
@@ -108,18 +152,54 @@ export default class DownDetectorHistRepository {
     }
   }
 
-  // refatorar
   public index = async ({
     serviceURL,
     orderBy,
     limit,
     dates
   }: indexDownDetectorHistIndexOptions) => {
-    return connection.raw(this.IndexRaw({ serviceURL, dates, orderBy, limit }))
-      .then(downDetectorHists => downDetectorHists[0])
-      .catch(error => {
-        throw new AppError('Database Error', 406, error.message, true)
-      })
+    let histories: downDetectorHistInterface[] = []
+
+    if (!!dates && dates.length > 0) {
+      for (let index = 0; index < dates.length; index++) {
+        const date = dates[index]
+        
+        const history = await this.indexWithDate({
+          serviceURL,
+          orderBy,
+          limit,
+          date
+        })
+
+        histories = [ ...history ]
+      }
+
+      return histories
+    } else {
+      let query = this.reference()
+  
+      if (!!serviceURL) {
+        query = query
+          .where('site_d', '=', serviceURL)
+      }
+  
+      if (!!orderBy) {
+        query = query
+          .orderBy(orderBy.property, orderBy.orientation)
+      }
+  
+      if (!!limit) {
+        query = query
+          .limit(limit)
+      }
+
+      return query
+        .select('*')
+        .then(histories => histories)
+        .catch(error => {
+          throw new AppError('Database Error', 406, error.message, true)
+        })
+    }
   }
 
   public get = async (date: string) => {

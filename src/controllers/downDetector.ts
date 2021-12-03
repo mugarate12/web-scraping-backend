@@ -193,6 +193,9 @@ export default class DownDetectorController {
 
     await pageInstance.setDefaultNavigationTimeout(0)
     await pageInstance.goto(url)
+      .catch(error => {
+        
+      })
 
     // console.log(`-> executando coleta em: ${serviceName}`)
 
@@ -209,6 +212,8 @@ export default class DownDetectorController {
       baseline: [],
       reports: []
     }
+
+    await this.sleep(2)
 
     while (data.baseline.length === 0) {
       await pageInstance.evaluate(() => {
@@ -253,6 +258,7 @@ export default class DownDetectorController {
     // console.log(`${serviceName} status: ${data.status}`)
 
     pageInstance.close()
+      .catch(error => {})
 
     return result
   }

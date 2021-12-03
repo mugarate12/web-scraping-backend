@@ -155,7 +155,7 @@ export default class DownDetectorChangeRepository {
   }: indexDownDetectorChangeIndexOptions) => {
     let changes: downDetectorChangeInterface[] = []
     
-    if (!!dates) {
+    if (!!dates && dates.length > 0) {
       for (let index = 0; index < dates.length; index++) {
         const date = dates[index]
         
