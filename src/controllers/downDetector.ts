@@ -102,7 +102,7 @@ export default class DownDetectorController {
     const { serviceName } = req.params
     
     const browser = await puppeteer.launch({ 
-      headless: false,
+      headless: true,
       args: [
         '--no-sandbox'
       ]
