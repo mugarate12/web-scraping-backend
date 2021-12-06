@@ -52,9 +52,11 @@ export default async function routinesRequests(serverIo: Server, browser: puppet
       await client.expire(completeRedisKey, 240)
     }
     
-    console.log(`--> Requisitando serviços de update em ${updateTime} minuto(s) \n`)
-    console.log(`--> Requisitando ${requests.length} serviços`)
-    console.log('--> começo da execução:', moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss'))
+    console.log(`
+    --> Requisitando serviços de update em ${updateTime} minuto(s)\n
+    --> Requisitando ${requests.length} serviços\n
+    --> começo da execução:', ${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}
+    `)
 
     await downDetectorController.emitExecutionRoutine(serverIo, updateTime)
 
@@ -66,14 +68,16 @@ export default async function routinesRequests(serverIo: Server, browser: puppet
           return undefined
         })
 
-      console.log(`-> (${index + 1}) ${request.service_name} da rotina ${updateTime} minuto(s), status: ${result?.status}`)
+      // console.log(`-> (${index + 1}) ${request.service_name} da rotina ${updateTime} minuto(s), status: ${result?.status}`)
     })
 
     await Promise.all(requestsResultsPromises)
     await client.set(completeRedisKey, 1)
     
-    console.log(`--> Final da execução: ${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}`)
-    console.log(`\n--> Requisições da rotina de ${updateTime} minuto(s) finalizadas\n`)
+    console.log(`
+      --> Final da execução: ${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}\n
+      --> Requisições da rotina de ${updateTime} minuto(s) finalizadas\n
+    `)
   }
 
   await downDetectorController.createOrUpdateServiceUpdateTime(updateTime, lastExecution)
