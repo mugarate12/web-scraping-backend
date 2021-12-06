@@ -32,6 +32,22 @@ import { downDetectorSearchResult } from './../interfaces/downDetector'
 
 const processName = process.env.name || 'primary'
 
+async function sleep(seconds: number) {
+  return new Promise(resolve => setTimeout(resolve,  1000 * seconds))
+}
+
+async function TimeoutOfRequestPages(minutes: number) {
+  return await new Promise((resolve, reject) => {
+    return setTimeout(() => {
+      reject()
+    }, 60000 * minutes)
+  })
+    .then(() => {}) 
+    .catch(() => {
+      // console.log('processamento ainda não acabou, encerrando');
+    })
+}
+
 export default async function routinesRequests(serverIo: Server, browser: puppeteer.Browser, updateTime: number) {  
   const requests = await servicesRepository.index({ update_time: updateTime, habilitado: 1 })
     .then(services => services)
@@ -55,7 +71,7 @@ export default async function routinesRequests(serverIo: Server, browser: puppet
     console.log(`
     --> Requisitando serviços de update em ${updateTime} minuto(s)\n
     --> Requisitando ${requests.length} serviços\n
-    --> começo da execução:', ${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}
+    --> começo da execução: ${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}
     `)
 
     await downDetectorController.emitExecutionRoutine(serverIo, updateTime)
@@ -71,7 +87,7 @@ export default async function routinesRequests(serverIo: Server, browser: puppet
       // console.log(`-> (${index + 1}) ${request.service_name} da rotina ${updateTime} minuto(s), status: ${result?.status}`)
     })
 
-    await Promise.all(requestsResultsPromises)
+    await Promise.all([ ...requestsResultsPromises, TimeoutOfRequestPages(4)])
     await client.set(completeRedisKey, 1)
     
     console.log(`
