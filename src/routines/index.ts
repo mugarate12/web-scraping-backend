@@ -2,6 +2,8 @@ import { Server } from 'socket.io'
 import puppeteer from 'puppeteer'
 import CronJob from 'cron'
 import dotenv from 'dotenv'
+import path from 'path'
+import fs from 'fs'
 
 import routinesRequests from './downDetectorRoutines'
 
@@ -11,6 +13,8 @@ const processName = process.env.name || 'primary'
 
 async function runBrowser() {
   const minimal_args = [
+    '--incognito',
+
     '--autoplay-policy=user-gesture-required',
     '--disable-background-networking',
     '--disable-background-timer-throttling',
@@ -48,8 +52,33 @@ async function runBrowser() {
     '--use-mock-keychain',
   ]
 
-  const browser = await puppeteer.launch({ headless: true, args: minimal_args })
+  const browser = await puppeteer.launch({ 
+    headless: true, 
+    args: minimal_args,
+    // userDataDir: false
+  })
+  
   return browser
+}
+
+async function closeBrowser(browser: puppeteer.Browser) {
+  let chromeTmpDataDir: string = ''
+
+  let chromeSpawnArgs = browser.process()?.spawnargs
+
+  if (!!chromeSpawnArgs) {
+    for (let i = 0; i < chromeSpawnArgs.length; i++) {
+      if (chromeSpawnArgs[i].indexOf("--user-data-dir=") === 0) {
+          chromeTmpDataDir = chromeSpawnArgs[i].replace("--user-data-dir=", "");
+      }
+    }
+  }
+
+  await browser.close()
+
+  // console.log(chromeTmpDataDir)
+  fs.rmSync(chromeTmpDataDir, { recursive: true, force: true })
+  // console.log(chromeTmpDataDir)
 }
 
 export function convertMinutesToMilliseconds(minutes: number) {
@@ -75,7 +104,7 @@ export default async (serverIo: Server) => {
       
       await routinesRequests(serverIo, browser, 1)
 
-      await browser.close()
+      closeBrowser(browser)
     })
     
     const ThreeMinutesJob = new CronJob.CronJob('*/3 * * * * ', async () => {

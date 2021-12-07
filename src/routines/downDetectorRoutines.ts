@@ -87,7 +87,7 @@ export default async function routinesRequests(serverIo: Server, browser: puppet
       // console.log(`-> (${index + 1}) ${request.service_name} da rotina ${updateTime} minuto(s), status: ${result?.status}`)
     })
 
-    await Promise.all([ ...requestsResultsPromises, TimeoutOfRequestPages(4)])
+    await Promise.all([ ...requestsResultsPromises])
     await client.set(completeRedisKey, 1)
     
     console.log(`
