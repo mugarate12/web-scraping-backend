@@ -112,7 +112,7 @@ export default async (serverIo: Server) => {
       
       await routinesRequests(serverIo, browser, 3)
 
-      await browser.close()
+      closeBrowser(browser)
     })
     
     const FiveMinutesJob = new CronJob.CronJob('*/5 * * * * ', async () => {
@@ -120,7 +120,7 @@ export default async (serverIo: Server) => {
       
       await routinesRequests(serverIo, browser, 5)
 
-      await browser.close()
+      closeBrowser(browser)
     })
     
     const TeenMinutesJob = new CronJob.CronJob('*/10 * * * * ', async () => {
@@ -128,7 +128,7 @@ export default async (serverIo: Server) => {
       
       await routinesRequests(serverIo, browser, 10)
 
-      await browser.close()
+      closeBrowser(browser)
     })
     
     const FifteenMinutesJob = new CronJob.CronJob('*/15 * * * * ', async () => {
@@ -136,7 +136,7 @@ export default async (serverIo: Server) => {
       
       await routinesRequests(serverIo, browser, 15)
 
-      await browser.close()
+      closeBrowser(browser)
     })
 
     oneMinuteJob.start()
