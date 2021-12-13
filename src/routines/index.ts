@@ -139,10 +139,31 @@ export default async (serverIo: Server) => {
       closeBrowser(browser)
     })
 
+    const cleanTemporaryFilesRoutine = new CronJob.CronJob('*/2 * * * * ', async () => {
+      const isLinux = process.platform === 'darwin' || process.platform === 'linux'
+
+      if (isLinux) {
+        let filesList = fs.readdirSync('/tmp')
+        
+        filesList.forEach((file) => {
+          const isTemporaryFileOfPuppeteer = file.includes('puppeteer_dev_chrome_profile-')
+
+          console.log(file)
+          console.log(isTemporaryFileOfPuppeteer)
+
+          if (isTemporaryFileOfPuppeteer) {
+            fs.rmSync(file, { recursive: true, force: true })
+          }
+        })
+      }
+    })
+
     oneMinuteJob.start()
     ThreeMinutesJob.start()
     FiveMinutesJob.start()
     TeenMinutesJob.start()
     FifteenMinutesJob.start()
+
+    cleanTemporaryFilesRoutine.start()
   }
 }
