@@ -87,6 +87,23 @@ export function convertMinutesToMilliseconds(minutes: number) {
   return oneMinuteInMilliseconds * minutes
 }
 
+function cleanTemporaryFiles() {
+  const isLinux = process.platform === 'darwin' || process.platform === 'linux'
+
+  if (isLinux) {
+    let filesList = fs.readdirSync('/tmp')
+    
+    filesList.forEach((file) => {
+      const isTemporaryFileOfPuppeteer = file.includes('puppeteer_dev_chrome_profile-')
+      const isTemporaryFileOfChromium = file.includes('.org.chromium.Chromium.')
+
+      if (isTemporaryFileOfPuppeteer || isTemporaryFileOfChromium) {
+        fs.rmSync(file, { recursive: true, force: true })
+      }
+    })
+  }
+}
+
 async function sleep(milliseconds: number) {
   return new Promise(resolve => setTimeout(resolve, milliseconds))
 }
@@ -139,24 +156,7 @@ export default async (serverIo: Server) => {
       closeBrowser(browser)
     })
 
-    const cleanTemporaryFilesRoutine = new CronJob.CronJob('*/2 * * * * ', async () => {
-      const isLinux = process.platform === 'darwin' || process.platform === 'linux'
-
-      if (isLinux) {
-        let filesList = fs.readdirSync('/tmp')
-        
-        filesList.forEach((file) => {
-          const isTemporaryFileOfPuppeteer = file.includes('puppeteer_dev_chrome_profile-')
-
-          console.log(file)
-          console.log(isTemporaryFileOfPuppeteer)
-
-          if (isTemporaryFileOfPuppeteer) {
-            fs.rmSync(file, { recursive: true, force: true })
-          }
-        })
-      }
-    })
+    const cleanTemporaryFilesRoutine = new CronJob.CronJob('*/2 * * * * ', cleanTemporaryFiles)
 
     oneMinuteJob.start()
     ThreeMinutesJob.start()
