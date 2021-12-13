@@ -101,6 +101,8 @@ function cleanTemporaryFiles() {
         fs.rmSync(file, { recursive: true, force: true })
       }
     })
+
+    console.log('arquivos temporários excluídos com sucesso!')
   }
 }
 
