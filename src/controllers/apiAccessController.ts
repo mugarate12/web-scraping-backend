@@ -28,18 +28,21 @@ export default class ApiAccessController {
     return url
   }
 
-  private convertStatusToString = (status: number) => {
+  private convertStatusToString = (status: number, serviceName: string) => {
     // initial value = 0
     // warning = 1 
     // danger = 2
     // success = 3
 
     if (status === 1) {
-      return 'atenção'
+      const message = `Relatos de usuários indicam potenciais problemas com ${serviceName}`
+      return message
     } else if (status === 2) {
-      return 'perigo'
+      const message = `Relatórios de usuários indicam problemas com ${serviceName}`
+      return message
     } else {
-      return 'sucesso'
+      const message = `Relatos de usuários indicam que não há problemas atuais com ${serviceName}`
+      return message
     }
   }
 
@@ -148,7 +151,7 @@ export default class ApiAccessController {
         return undefined
       }
 
-      const status = this.convertStatusToString(lastRegistryOfChange[0].status_atual)
+      const status = this.convertStatusToString(lastRegistryOfChange[0].status_atual, service.service_name)
       const baseline = lastRegistryOfHistory[0].baseline
       const reports = lastRegistryOfHistory[0].notification_count
       const date = this.convertDate(lastRegistryOfHistory[0].hist_date)
@@ -379,7 +382,7 @@ export default class ApiAccessController {
       })
     }
 
-    const status = this.convertStatusToString(lastRegistryOfChange[0].status_atual)
+    const status = this.convertStatusToString(lastRegistryOfChange[0].status_atual, String(serviceName))
     const baseline = lastRegistryOfHistory[0].baseline
     const reports = lastRegistryOfHistory[0].notification_count
     // const date = moment(lastRegistryOfHistory[0].hist_date).subtract(3, 'hours').format('DD-MM-YYYY HH:mm:ss')

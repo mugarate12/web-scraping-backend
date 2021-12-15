@@ -498,37 +498,13 @@ export default class DownDetectorController {
       ...data
     }
 
-    const normalizedData = this.normalizeDownDetectorResult(result)
-    const registryDataPromises = normalizedData.map(async (downDetectorReport) => {
-      let createRegistry = false
-
-      await downDetectorHistRepository.index({
-        serviceURL: this.makeUrl(serviceName),
-        dates: [ downDetectorReport.date.split(':')[0] ]
-      })
-        .then(response => {
-          // console.log('date', downDetectorReport.date.split(':')[0]);
-          // console.log('baseline', downDetectorReport.baseline);
-          // console.log('reports', downDetectorReport.notificationCount);
-          createRegistry = !this.haveBaselineOrReportsInHour(response, downDetectorReport.baseline, downDetectorReport.notificationCount)
-          // console.log('criar registro', createRegistry);
-        })
-      
-      if (createRegistry) {
-        await downDetectorHistRepository.create({
-          site_d: result.url,
-          hist_date: downDetectorReport.date,
-          baseline: downDetectorReport.baseline,
-          notification_count: downDetectorReport.notificationCount
-        })
-          .catch(error => {})
-      }
-    })
-
-    await this.updateChangeHistory(result)
-    await Promise.all(registryDataPromises)
+    await this.updateHistoryAndChange(result)
+    // await this.updateChangeHistory(result)
+    // await Promise.all(registryDataPromises)
 
     await this.closeBrowser(browser)
+
+    console.log('cheguei aqui')
 
     return res.status(200).json({
       message: 'serviço atualizado com sucesso!'
