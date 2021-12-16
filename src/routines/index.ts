@@ -98,7 +98,7 @@ function cleanTemporaryFiles() {
       const isTemporaryFileOfPuppeteer = file.includes('puppeteer_dev_chrome_profile-')
       const isTemporaryFileOfChromium = file.includes('.org.chromium.Chromium.')
 
-      console.log('if: ', isTemporaryFileOfPuppeteer || isTemporaryFileOfChromium, 'file: ', file)
+      // console.log('if: ', isTemporaryFileOfPuppeteer || isTemporaryFileOfChromium, 'file: ', file)
 
       if (isTemporaryFileOfPuppeteer || isTemporaryFileOfChromium) {
         fs.rmSync(file, { recursive: true, force: true })
