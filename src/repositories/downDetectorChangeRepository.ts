@@ -166,8 +166,6 @@ export default class DownDetectorChangeRepository {
           date
         })
 
-        console.log(change);
-
         changes = [ ...change ]
       }
 

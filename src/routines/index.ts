@@ -92,7 +92,7 @@ function cleanTemporaryFiles() {
 
   if (isLinux) {
     let filesList = fs.readdirSync('/tmp')
-    console.log(filesList)
+    // console.log(filesList)
     
     filesList.forEach((file) => {
       const isTemporaryFileOfPuppeteer = file.includes('puppeteer_dev_chrome_profile-')
