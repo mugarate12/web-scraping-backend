@@ -35,14 +35,16 @@ export default class ApiAccessController {
     // success = 3
 
     if (status === 1) {
-      const message = `Relatos de usuários indicam potenciais problemas com ${serviceName}`
-      return message
+      // const message = `Relatos de usuários indicam potenciais problemas com ${serviceName}`
+      return 3
     } else if (status === 2) {
-      const message = `Relatórios de usuários indicam problemas com ${serviceName}`
-      return message
-    } else {
-      const message = `Relatos de usuários indicam que não há problemas atuais com ${serviceName}`
-      return message
+      // const message = `Relatórios de usuários indicam problemas com ${serviceName}`
+      return 4
+    } else if (status === 3){
+      // const message = `Relatos de usuários indicam que não há problemas atuais com ${serviceName}`
+      return 2
+    }  else {
+      return 5
     }
   }
 
