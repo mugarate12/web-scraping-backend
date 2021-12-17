@@ -21,6 +21,11 @@ interface getUserAccessInterface {
   permission_FK?: number
 }
 
+interface updateUserAccessInterface {
+  user_FK: number,
+  permissions: Array<number>,
+}
+
 interface removeUserAccessInterface {
   id?: number,
   userID?: number
@@ -84,6 +89,39 @@ export default class UsersAccessRepository {
       .catch(error => {
         throw new AppError('Database Error', 406, error.message, true)
       })
+  }
+
+  public update = async ({
+    user_FK,
+    permissions
+  }: updateUserAccessInterface) => {
+    for (let index = 0; index < permissions.length; index++) {
+      const permission = permissions[index]
+      
+      const userAccess = await this.reference()
+        .where({
+          user_FK: user_FK,
+          permission_FK: permission
+        })
+        .select('*')
+        .first()
+        .then(userAccess => userAccess)
+        .catch(error => undefined)
+
+      if (!userAccess) {
+        await this.reference()
+          .insert({
+            user_FK: user_FK,
+            permission_FK: permission
+          })
+          .then(() => {
+            return
+          })
+          .catch(error => undefined)
+      } 
+    }
+
+    return true
   }
 
   public delete = async ({

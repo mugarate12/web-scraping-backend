@@ -9,6 +9,60 @@ import {
 import { AppError, errorHandler } from './../utils/handleError'
 
 export default class UsersController {
+  private createPermissionsToUser = async (login: string, isAdmin: boolean) => {
+    const permissions = await permissionsRepository.index()
+    let permissionsIDs: Array<number> = []
+
+    permissions.forEach((permission) => {
+      const permissionToCreateServices = permission.identifier === 'ACCESS_SERVICES_CREATION'
+      const permissionToCreateUsers = permission.identifier === 'ACCESS_USERS_CREATION'
+      const permissionToApiAccessCreation = permission.identifier === 'ACCESS_API_ACCESS_CREATION'
+      const isNotAdminPermissions = !permissionToCreateUsers && !permissionToCreateServices && !permissionToApiAccessCreation
+
+      if ((permissionToCreateServices || permissionToCreateUsers || permissionToApiAccessCreation) && isAdmin) {
+        permissionsIDs.push(permission.id)
+      }
+
+      if (isNotAdminPermissions) {
+        permissionsIDs.push(permission.id)
+      }
+    })
+
+    const user = await usersRepository.get({
+      login: login
+    })
+
+    await usersAccessRepository.create({
+      user_FK: user.id,
+      permissions: permissionsIDs
+    })
+  }
+
+  private updatePermissionsToUser = async (userID: number, isAdmin: boolean) => {
+    const permissions = await permissionsRepository.index()
+    let permissionsIDs: Array<number> = []
+
+    permissions.forEach((permission) => {
+      const permissionToCreateServices = permission.identifier === 'ACCESS_SERVICES_CREATION'
+      const permissionToCreateUsers = permission.identifier === 'ACCESS_USERS_CREATION'
+      const permissionToApiAccessCreation = permission.identifier === 'ACCESS_API_ACCESS_CREATION'
+      const isNotAdminPermissions = !permissionToCreateUsers && !permissionToCreateServices && !permissionToApiAccessCreation
+
+      if ((permissionToCreateServices || permissionToCreateUsers || permissionToApiAccessCreation) && isAdmin) {
+        permissionsIDs.push(permission.id)
+      }
+
+      if (isNotAdminPermissions) {
+        permissionsIDs.push(permission.id)
+      }
+    })
+
+    await usersAccessRepository.update({
+      user_FK: userID,
+      permissions: permissionsIDs
+    })
+  }
+
   public create = async (req: Request, res: Response) => {
     const {
       login,
@@ -34,48 +88,11 @@ export default class UsersController {
       )
     }
 
-    const permissions = await permissionsRepository.index()
-    let permissionsIDs: Array<number> = []
-
-    permissions.forEach((permission) => {
-      const permissionToCreateServices = permission.identifier === 'ACCESS_SERVICES_CREATION'
-      const permissionToCreateUsers = permission.identifier === 'ACCESS_USERS_CREATION'
-      const isNotAdminPermissions = permission.identifier !== 'ACCESS_USERS_CREATION' && permission.identifier !== 'ACCESS_SERVICES_CREATION' && permission.identifier !== 'ACCESS_API_ACCESS_CREATION'
-
-      if ((permissionToCreateServices || permissionToCreateUsers) && isAdmin) {
-        permissionsIDs.push(permission.id)
-      }
-
-      if (isNotAdminPermissions) {
-        permissionsIDs.push(permission.id)
-      }
-    })
-
-    const user = await usersRepository.get({
-      login: login
-    })
-
-    await usersAccessRepository.create({
-      user_FK: user.id,
-      permissions: permissionsIDs
-    })
+    await this.createPermissionsToUser(String(login), Boolean(isAdmin))
 
     return res.status(201).json({
       message: 'usuário criado com sucesso!'
     })
-
-    return await usersRepository.create({
-      login,
-      password
-    })
-      .then(() => {
-        return res.status(201).json({
-          message: 'usuário criado com sucesso!'
-        })
-      })
-      .catch((err) => {
-        return errorHandler(err, res)
-      })
   }
 
   public index = async (req: Request, res: Response) => {
@@ -93,43 +110,43 @@ export default class UsersController {
 
   public update = async (req: Request, res: Response) => {
     const userID = Number(res.getHeader('userID'))
-    const { password } = req.body
+    const { password, isAdmin } = req.body
     const { id } = req.params
 
-    return await usersRepository.update({
-      identifiers: {
-        id: Number(id)
-      },
-      payload: {
-        password: password
-      }
-    })
-      .then(() => {
-        return res.status(200).json({
-          message: 'senha atualizada com sucesso!'
+    let haveError = false
+    let errorName = ''
+    let errorMessage = ''
+
+    if (!!password) {
+      await usersRepository.update({
+        identifiers: {
+          id: Number(id)
+        },
+        payload: {
+          password: password
+        }
+      })
+        .catch(error => {
+          haveError = true
+          errorName = 'Database Error'
+          errorMessage = 'não foi possível alterar senha, verifique as informações do usuário'
         })
+    }
+
+    if (String(isAdmin) !== 'undefined') {
+      await this.updatePermissionsToUser(Number(id), Boolean(isAdmin))
+    }
+
+    if (haveError) {
+      return errorHandler(
+        new AppError(errorName, 403, errorMessage, true),
+        res
+      )
+    } else {
+      return res.status(200).json({
+        message: 'usuário atualizado com sucesso!'
       })
-      .catch((err) => {
-        return errorHandler(err, res)
-      })
-
-    // const user = await usersRepository.get({ id: Number(id) })
-    //   .then(user => user)
-    //   .catch(error => {
-    //     return undefined
-    //   })
-
-    // if (!user) {
-    //   return errorHandler(
-    //     new AppError('Erros de usuário', 406, 'usuário não encontrado', true),
-    //     res
-    //   )
-    // }
-
-    
-    // if (bcrypt.compareSync(password, user.password)) {
-      
-    // }
+    }
   }
 
   public delete = async (req: Request, res: Response) => {

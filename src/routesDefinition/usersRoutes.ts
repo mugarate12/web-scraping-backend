@@ -27,7 +27,8 @@ export default function userRoutes(routes: Router) {
       id: Joi.number().required()
     }),
     [Segments.BODY]: Joi.object().keys({
-      password: Joi.string().required()
+      password: Joi.string().optional(),
+      isAdmin: Joi.boolean().optional()
     })
   }), authJWT, createUserPermission, usersController.update)
   
