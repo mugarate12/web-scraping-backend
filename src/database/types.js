@@ -11,6 +11,9 @@ const SERVICES_UPDATE_TIME_TABLE_NAME = 'services_update_time'
 const USERS_ACCESS_TABLE_NAME = 'users_access'
 const USERS_TABLE_NAME = 'users'
 
+const CPFL_DATA = 'cpfl_data'
+const CPFL_SEARCH = 'cpfl_search'
+
 module.exports = {
   API_ACCESS_CLIENTS_TABLE_NAME,
   API_ACCESS_TOKENS_TABLE_NAME,
@@ -23,5 +26,8 @@ module.exports = {
   SERVICES_TABLE_NAME,
   SERVICES_UPDATE_TIME_TABLE_NAME,
   USERS_ACCESS_TABLE_NAME,
-  USERS_TABLE_NAME
+  USERS_TABLE_NAME,
+
+  CPFL_DATA,
+  CPFL_SEARCH
 }
