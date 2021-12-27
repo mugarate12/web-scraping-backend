@@ -6,6 +6,7 @@ import path from 'path'
 import fs from 'fs'
 
 import routinesRequests from './downDetectorRoutines'
+import CPFLRoutine from './CPFLRoutine'
 
 dotenv.config()
 
@@ -115,11 +116,11 @@ async function sleep(milliseconds: number) {
 
 export default async (serverIo: Server) => {
   if(processName.search(/primary/) !== -1){
-    // const browserOneMinuteJob = await runBrowser()
-    // const browserThreeMinuteJob = await runBrowser()
-    // const browserFiveMinuteJob = await runBrowser()
-    // const browserTeenMinuteJob = await runBrowser()
-    // const browserFifteenMinuteJob = await runBrowser()
+    const browserOneMinuteJob = await runBrowser()
+    const browserThreeMinuteJob = await runBrowser()
+    const browserFiveMinuteJob = await runBrowser()
+    const browserTeenMinuteJob = await runBrowser()
+    const browserFifteenMinuteJob = await runBrowser()
     
     const oneMinuteJob = new CronJob.CronJob('* * * * * ', async () => {
       const browser = await runBrowser()
@@ -170,5 +171,7 @@ export default async (serverIo: Server) => {
     FifteenMinutesJob.start()
 
     cleanTemporaryFilesRoutine.start()
+
+    CPFLRoutine()
   }
 }

@@ -6,6 +6,8 @@ import {
 } from './controllers'
 
 import {
+  cpfl,
+  cpflSearch,
   publicAccess,
   services,
   session,
@@ -23,6 +25,10 @@ routes.get('/downDetector/:serviceName', celebrate({
     serviceName: Joi.string().required()
   })
 }), downDetectorController.accessDownDetector)
+
+// cpfl
+cpfl(routes)
+cpflSearch(routes)
 
 // users routes
 users(routes)

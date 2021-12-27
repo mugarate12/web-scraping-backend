@@ -1,6 +1,8 @@
 import ApiAccessClientsRepository from './api_access_clients'
 import ApiAccessTokensRepository from './api_access_tokens'
 import ClientsAccessRepository from './clientsAccessRepository'
+import CPFLDataRepository from "./CPFLDataRepository"
+import CPFLSearchRepository from "./CPFLSearchRepository"
 import DownDetectorChangeRepository from './downDetectorChangeRepository'
 import DownDetectorHistRepository from "./downDetectorHistRepository"
 import DownDetectorRoutineExecutionRepository from './downDetectorRoutineExecution'
@@ -14,6 +16,8 @@ import UsersRepository from './usersRepository'
 export const apiAccessClientsRepository = new ApiAccessClientsRepository()
 export const apiAccessTokensRepository = new ApiAccessTokensRepository()
 export const clientsAccessRepository = new ClientsAccessRepository()
+export const cpflDataRepository = new CPFLDataRepository()
+export const cpflSearchRepository = new CPFLSearchRepository()
 export const downDetectorChangeRepository = new DownDetectorChangeRepository()
 export const downDetectorHistRepository = new DownDetectorHistRepository()
 export const downDetectorRoutineExecutionRepository = new DownDetectorRoutineExecutionRepository()
