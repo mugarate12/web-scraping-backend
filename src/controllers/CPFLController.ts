@@ -108,6 +108,28 @@ export default class CPFLController {
     await this.sleep(3)
   }
 
+  private setDate = async (page: puppeteer.Page) => {
+    // PeriodoDesligamento
+    // document.getElementById('PeriodoDesligamento')
+    // document.getElementById('PeriodoDesligamento').children[2] <--  input de data limite
+
+    // const endOfMonth = moment().add(1, 'month').endOf('month').format('YYYY-MM-DD')
+    const endOfMonth = moment().add(1, 'month').endOf('month').format('DD/MM/YYYY')
+    // const lastDayOfMonth = moment().add(1, 'month').endOf('month').format('DD')
+
+    // console.log('date: ', endOfMonth)
+    // console.log('last day:', lastDayOfMonth)
+
+    await page.evaluate((endOfMonth) => {
+      const dateSelector = document.getElementById('PeriodoDesligamento')
+      const limitInput = dateSelector?.children[2]
+    
+      if (!!limitInput) {
+        limitInput['value'] = endOfMonth
+      }
+    }, endOfMonth)
+  }
+
   private searchWithCity = async (page: puppeteer.Page, code: string) => {
 
     await page.evaluate((code) => {
@@ -217,6 +239,7 @@ export default class CPFLController {
     await page.goto(url, { waitUntil: 'load' })
     
     await this.selectToCity(page)
+    await this.setDate(page)
 
     const cities = this.citiesToState(Number(this.getStateNumber(state)))
     if (!!cities) {
@@ -226,7 +249,7 @@ export default class CPFLController {
     const result = await this.getData(page)
     const dataFormatted = this.formatData(result)
 
-    this.closeBrowser(browser)
+    // this.closeBrowser(browser)
 
     return dataFormatted
   }
@@ -489,10 +512,10 @@ export default class CPFLController {
   public getCPFL = async (req: Request, res: Response) => {
     const dataFormatted = await this.get({ state: 'sp', city: 'Araraquara' })
 
-    const requests = dataFormatted.map(async (data) => {
-      await this.updateCPFLData({ data, state: 'sp', city: 'Araraquara' })
-    })
-    await Promise.all(requests)
+    // const requests = dataFormatted.map(async (data) => {
+    //   await this.updateCPFLData({ data, state: 'sp', city: 'Araraquara' })
+    // })
+    // await Promise.all(requests)
 
     return res.status(200).json({
       message: 'ok',
@@ -504,7 +527,7 @@ export default class CPFLController {
     const dataFormatted = await this.get({ state: state, city: city })
     
     const requests = dataFormatted.map(async (data) => {
-      await this.updateCPFLData({ data, state: 'sp', city: 'Araraquara' })
+      await this.updateCPFLData({ data, state: state, city: city })
     })
     await Promise.all(requests)
   }
