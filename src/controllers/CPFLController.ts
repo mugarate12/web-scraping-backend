@@ -18,7 +18,8 @@ interface CPFLDataInterface {
   contents: Array<{
     bairro: string,
     ruas: Array<string>
-  }>
+  }>,
+  reason: string
 }
 
 interface CPFLFormattedDataInterface {
@@ -28,7 +29,8 @@ interface CPFLFormattedDataInterface {
     ruas: Array<string>
   }>,
   initialHour: string,
-  finalHour: string
+  finalHour: string,
+  reason: string
 }
 
 interface updateCPFLDataInterface {
@@ -171,6 +173,7 @@ export default class CPFLController {
           // add return of this
           const data = Object.keys(content).map((key, index) => {
             const hour = content[index].getElementsByClassName('consulta__listagem__resultados__timeline__item__content__accordion__horario')[0].textContent
+            const reason = content[index].getElementsByClassName('consulta__listagem__resultados__timeline__item__content__accordion__necessidade')[0].textContent?.split(', ')[1]
 
             let districtsContents = ['']
             let streetsContents = ['']
@@ -210,7 +213,8 @@ export default class CPFLController {
             return {
               date: String(date),
               hour: String(hour),
-              contents: contents.slice(1, contents.length)
+              contents: contents.slice(1, contents.length),
+              reason: String(reason)
             }
           })
 
@@ -241,7 +245,8 @@ export default class CPFLController {
         date: cpflData.date,
         contents: cpflData.contents,
         initialHour: hours[0],
-        finalHour: hours[2]
+        finalHour: hours[2],
+        reason: cpflData.reason
       }
 
       return cpflFormattedData
@@ -417,6 +422,7 @@ export default class CPFLController {
             date: data.date,
 
             status,
+            reason: data.reason,
             
             initial_hour: `${data.date} - ${data.initialHour}`,
             final_hour: `${data.date} - ${data.finalHour}`,

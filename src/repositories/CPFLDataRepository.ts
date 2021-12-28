@@ -16,6 +16,7 @@ interface CPFLDataInterface {
   street: string,
 
   status: number,
+  reason: string,
 
   date: string,
 
@@ -34,6 +35,7 @@ interface createCPFLDataInterface {
   street: string,
 
   status: number,
+  reason: string,
 
   date: string,
   
@@ -81,9 +83,9 @@ interface updateCPFLDataInterface {
 export default class CPFLDataRepository {
   private reference = () => connection<CPFLDataInterface>(CPFL_DATA)
 
-  public create = async ({ state, city, district, street, status, date, initial_hour, final_hour, duration, final_seconds, final_maintenance }: createCPFLDataInterface) => {
+  public create = async ({ state, city, district, street, status, reason, date, initial_hour, final_hour, duration, final_seconds, final_maintenance }: createCPFLDataInterface) => {
     return await this.reference()
-      .insert({ state, city, district, street, status, date, initial_hour, final_hour, duration, final_seconds, final_maintenance })
+      .insert({ state, city, district, street, status, reason, date, initial_hour, final_hour, duration, final_seconds, final_maintenance })
       .then(() => {
         return
       })
