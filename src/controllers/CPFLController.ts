@@ -576,7 +576,7 @@ export default class CPFLController {
     const dataFormatted = await this.get({ state: 'sp', city: 'Araraquara' })
 
     const requests = dataFormatted.map(async (data) => {
-      await this.updateCPFLData({ data, state: 'sp', city: 'Araraquara' })
+      await this.updateCPFLData({ data, state: 'sp', city: 'Aguas De Lindoia' })
     })
     await Promise.all(requests)
 
@@ -630,5 +630,14 @@ export default class CPFLController {
     })
   }
 
-  public getCPFLCityJson = async (req: Request, res: Response) => {} 
+  public getCPFLCityJson = async (req: Request, res: Response) => {
+    const { state, city } = req.params
+
+    const data = await cpflDataRepository.index({ state, city })
+    const formattedData = this.formatCPFLDataToPublicAccess(data)
+
+    return res.status(200).json({
+      data: formattedData
+    })
+  } 
 }

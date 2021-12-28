@@ -56,4 +56,11 @@ export default function publicAccessRoutes(routes: Router) {
       state: Joi.string().required()
     })
   }), cpflController.getCPFLStateJson)
+  
+  routes.get('/public/access/cpfl/:state/:city', celebrate({
+    [Segments.PARAMS]: Joi.object().keys({
+      state: Joi.string().required(),
+      city: Joi.string().required()
+    })
+  }), cpflController.getCPFLCityJson)
 } 
