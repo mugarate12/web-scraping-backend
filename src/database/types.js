@@ -13,6 +13,7 @@ const USERS_TABLE_NAME = 'users'
 
 const CPFL_DATA = 'cpfl_data'
 const CPFL_SEARCH = 'cpfl_search'
+const CPFL_SEARCH_NOW = 'cpfl_search_now'
 
 module.exports = {
   API_ACCESS_CLIENTS_TABLE_NAME,
@@ -29,5 +30,6 @@ module.exports = {
   USERS_TABLE_NAME,
 
   CPFL_DATA,
-  CPFL_SEARCH
+  CPFL_SEARCH,
+  CPFL_SEARCH_NOW
 }

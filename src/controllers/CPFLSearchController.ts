@@ -1,5 +1,9 @@
 import { Request, Response } from 'express'
-import { cpflSearchRepository } from './../repositories'
+
+import { 
+  cpflSearchRepository,
+  cpflSearchNowRepository
+} from './../repositories'
 
 import { errorHandler, AppError } from './../utils/handleError'
 
@@ -9,6 +13,8 @@ export default class CPFLSearchController {
       city,
       state
     } = req.body
+
+    await cpflSearchNowRepository.create({ city, state })
 
     return await cpflSearchRepository.create({ city, state })
       .then(() => {
