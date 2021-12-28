@@ -150,65 +150,85 @@ export default class CPFLController {
   private getData = async (page: puppeteer.Page) => {
     // let r: CPFLDataInterface = []
     let result: Array<CPFLDataInterface> = []
+    // let resultWithUndefined: Array<CPFLDataInterface | undefined> = []
 
-    result = await page.evaluate(() => {
-      let r = [{}]
+    let resultWithUndefined = await page.evaluate(() => {
       let classes = document.getElementsByClassName('consulta__listagem__resultados__timeline')
 
       const results = classes[0].children
-      const date = results[1].children[1].textContent
+      let date = ''
 
-      const groupsData = results[2]
-
-      const firstContent = results[2].children
-      return Object.keys(firstContent).map((content, index) => {
-        const hour = firstContent[index].getElementsByClassName('consulta__listagem__resultados__timeline__item__content__accordion__horario')[0].textContent
-        let districtsContents = ['']
-        let streetsContents = ['']
-        let contents = [{
-          bairro: 'exemplo',
-          ruas: ['']
-        }]
+      let result = Object.keys(results).slice(1, Object.keys(results).length).map((result => {
+        const isDateDiv = Number(result) % 2 !== 0
         
-        let data = {
-          bairro: '',
-          ruas: ['']
-        }
+        if (isDateDiv) {
+          date = String(results[Number(result)].children[1].textContent)
         
-        const districts = firstContent[index].getElementsByClassName('consulta__listagem__resultados__timeline__item__content__accordion__content__item')
-        Object.keys(districts).forEach((district, index) => {
-          const content = districts[index].getElementsByClassName('consulta__listagem__resultados__timeline__item__content__accordion__content__bairro__descricao')[0]
-          const districtContent = content.children[1].textContent
-          
-          districtsContents.push(String(districtContent))
-          data['bairro'] = String(districtContent)
+          return undefined
+        } else {
+          const content = results[Number(result)].children
 
-          const streets = districts[index].getElementsByClassName('consulta__listagem__resultados__timeline__item__content__accordion__content__bairro__content')[0].children
-          Object.keys(streets).forEach((street, index) => {
-            const streetContent = streets[index].children[1].textContent
+          // add return of this
+          const data = Object.keys(content).map((key, index) => {
+            const hour = content[index].getElementsByClassName('consulta__listagem__resultados__timeline__item__content__accordion__horario')[0].textContent
 
-            streetsContents.push(String(streetContent))
+            let districtsContents = ['']
+            let streetsContents = ['']
+            let contents = [{
+              bairro: 'exemplo',
+              ruas: ['']
+            }]
+            let data = {
+              bairro: '',
+              ruas: ['']
+            }
+
+            const districts = content[index].getElementsByClassName('consulta__listagem__resultados__timeline__item__content__accordion__content__item')
+            Object.keys(districts).forEach((district, index) => {
+              const content = districts[index].getElementsByClassName('consulta__listagem__resultados__timeline__item__content__accordion__content__bairro__descricao')[0]
+              const districtContent = String(content.children[1].textContent)
+              
+              districtsContents.push(String(districtContent))
+              data['bairro'] = String(districtContent)
+
+              const streets = districts[index].getElementsByClassName('consulta__listagem__resultados__timeline__item__content__accordion__content__bairro__content')[0].children
+              Object.keys(streets).forEach((street, index) => {
+                const streetContent = String(streets[index].children[1].textContent)
+                
+                streetsContents.push(String(streetContent))
+              })
+
+              data['ruas'] = streetsContents.slice(1, streetsContents.length)
+            })
+
+            contents.push(data)
+            data = {
+              bairro: '',
+              ruas: ['']
+            }
+
+            return {
+              date: String(date),
+              hour: String(hour),
+              contents: contents.slice(1, contents.length)
+            }
           })
 
-          data['ruas'] = streetsContents.slice(1, streetsContents.length)
-        })
-
-        contents.push(data)
-        data = {
-          bairro: '',
-          ruas: ['']
+          return data
         }
+      }))
 
-        return {
-          date: String(date),
-          hour: String(hour),
-          contents: contents.slice(1, contents.length)
-        }
-      })
+      return result
     })
       .catch(error => {
         return []
       })
+
+    resultWithUndefined.forEach((possibleResult) => {
+      if (!!possibleResult) {
+        result = [ ...result, ...possibleResult ]
+      }
+    })
     
     return result
   }
@@ -329,10 +349,23 @@ export default class CPFLController {
   }
 
   private updateCPFLData = async ({ data, state, city }: updateCPFLDataInterface) => {
-    const duration = this.getDurationInSeconds(
+    let duration = this.getDurationInSeconds(
       this.formatDateToGetDuration(data.date, data.initialHour),
       this.formatDateToGetDuration(data.date, data.finalHour)
     )
+
+    const moreThanHalfDay = Number(data.initialHour.split(':')[0]) > 12
+    const nextDayhour  = Number(data.finalHour.split(':')[0]) < 12
+
+    if (moreThanHalfDay && nextDayhour) {
+      const newDate = moment(this.formatDateToGetDuration(data.date, data.finalHour)).add(1, 'day').format('DD/MM/YYYY HH:mm')
+      const date = newDate.split(' ')[0]
+
+      duration = this.getDurationInSeconds(
+        this.formatDateToGetDuration(data.date, data.initialHour),
+        this.formatDateToGetDuration(date, data.finalHour)
+      )
+    }
 
     const actualDate = moment().format('DD/MM/YYYY HH:mm')
 
@@ -512,10 +545,10 @@ export default class CPFLController {
   public getCPFL = async (req: Request, res: Response) => {
     const dataFormatted = await this.get({ state: 'sp', city: 'Araraquara' })
 
-    // const requests = dataFormatted.map(async (data) => {
-    //   await this.updateCPFLData({ data, state: 'sp', city: 'Araraquara' })
-    // })
-    // await Promise.all(requests)
+    const requests = dataFormatted.map(async (data) => {
+      await this.updateCPFLData({ data, state: 'sp', city: 'Araraquara' })
+    })
+    await Promise.all(requests)
 
     return res.status(200).json({
       message: 'ok',
