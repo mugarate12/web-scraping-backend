@@ -7,7 +7,7 @@ const {
   CPFL_DATA
 } = require('./../database/types')
 
-interface CPFLDataInterface {
+export interface CPFLDataInterface {
   id: number,
 
   state: string,

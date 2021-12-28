@@ -7,6 +7,10 @@ import {
   cpflDataRepository
 } from './../repositories'
 
+import { AppError, errorHandler } from './../utils/handleError'
+
+import { CPFLDataInterface as CPFLDataDatabaseInterface } from './../repositories/CPFLDataRepository'
+
 type citiesInterface = Array<{
   value: string;
   label: string;
@@ -361,6 +365,7 @@ export default class CPFLController {
 
     const moreThanHalfDay = Number(data.initialHour.split(':')[0]) > 12
     const nextDayhour  = Number(data.finalHour.split(':')[0]) < 12
+    let finalDate = data.date
 
     if (moreThanHalfDay && nextDayhour) {
       const newDate = moment(this.formatDateToGetDuration(data.date, data.finalHour)).add(1, 'day').format('DD/MM/YYYY HH:mm')
@@ -370,6 +375,8 @@ export default class CPFLController {
         this.formatDateToGetDuration(data.date, data.initialHour),
         this.formatDateToGetDuration(date, data.finalHour)
       )
+
+      finalDate = moment(this.formatDateToGetDuration(data.date, data.finalHour)).add(1, 'day').format('DD/MM/YYYY')
     }
 
     const actualDate = moment().format('DD/MM/YYYY HH:mm')
@@ -425,7 +432,7 @@ export default class CPFLController {
             reason: data.reason,
             
             initial_hour: `${data.date} - ${data.initialHour}`,
-            final_hour: `${data.date} - ${data.finalHour}`,
+            final_hour: `${finalDate} - ${data.finalHour}`,
             duration: duration,
 
             final_maintenance: finalMaintenance,
@@ -477,6 +484,23 @@ export default class CPFLController {
     cities = this.citiesToState(Number(this.getStateNumber(state)))
 
     return cities
+  }
+
+  private formatCPFLDataToPublicAccess = (CPFLDataArray: Array<CPFLDataDatabaseInterface>) => {
+    return CPFLDataArray.map((registry) => {
+      const initalDate = registry.initial_hour.split(' - ')
+      const finalDate = registry.final_hour.split(' - ')
+
+      const duration = this.getDuration(
+        this.formatDateToGetDuration(initalDate[0], initalDate[1]),
+        this.formatDateToGetDuration(finalDate[0], finalDate[1])
+      )
+
+      return {
+        ...registry,
+        duration: duration
+      }
+    })
   }
 
   public runBrowser = async () => {
@@ -594,4 +618,17 @@ export default class CPFLController {
       data
     })
   }
+
+  public getCPFLStateJson = async (req: Request, res: Response) => {
+    const { state } = req.params
+
+    const data = await cpflDataRepository.index({ state })
+    const formattedData = this.formatCPFLDataToPublicAccess(data)
+
+    return res.status(200).json({
+      data: formattedData
+    })
+  }
+
+  public getCPFLCityJson = async (req: Request, res: Response) => {} 
 }

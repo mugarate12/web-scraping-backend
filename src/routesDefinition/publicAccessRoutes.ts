@@ -2,7 +2,8 @@ import { Router } from 'express'
 import { celebrate, Joi, Segments } from 'celebrate'
 
 import {
-  apiAccessController
+  apiAccessController,
+  cpflController
 } from './../controllers'
 
 import {
@@ -49,4 +50,10 @@ export default function publicAccessRoutes(routes: Router) {
       token: Joi.string().required()
     })
   }), publicAccessJWT, readApiInformations, apiAccessController.changes)
+
+  routes.get('/public/access/cpfl/:state', celebrate({
+    [Segments.PARAMS]: Joi.object().keys({
+      state: Joi.string().required()
+    })
+  }), cpflController.getCPFLStateJson)
 } 
