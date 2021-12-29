@@ -1,8 +1,10 @@
 import CronJob from 'cron'
 import dotenv from 'dotenv'
+import moment from 'moment'
 
 import { cpflSearchRepository, cpflSearchNowRepository } from './../repositories'
 import { cpflController } from './../controllers'
+import { FgCyan, FgBlue, Reset } from './../utils/colorsInTerminalReference'
 
 dotenv.config()
 
@@ -10,7 +12,12 @@ async function routine(updateTime: number) {
   const requests = await cpflSearchRepository.index({ able: 1, dealership: 'cpfl', update_time: updateTime })
 
   if (requests.length > 0) {
-    console.log(`iniciando rotina da CPFL`)
+    console.log(`${FgBlue}%s${Reset}`, `
+    ENERGY --> Requisitando serviços de update em ${updateTime} minuto(s)\n
+    ENERGY --> Requisitando ${requests.length} serviços\n
+    ENERGY --> começo da execução: ${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}
+    `)
+
 
     const browser = await cpflController.runBrowser()
 
@@ -22,7 +29,10 @@ async function routine(updateTime: number) {
 
     await cpflController.closeBrowser(browser)
   
-    console.log(`finalizando rotina da CPFL`)
+    console.log(`${FgBlue}%s${Reset}`, `
+      ENERGY --> Final da execução: ${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}\n
+      ENERGY --> Requisições da rotina de ${updateTime} minuto(s) finalizadas\n
+    `)
   }
 }
 
@@ -30,14 +40,11 @@ async function updateRoutine() {
   const requests = await cpflSearchRepository.index({ able: 1 })
 
   if (requests.length > 0) {
-    console.log('iniciando rotina de atualização do tempo da CPFL')
-
     for (let index = 0; index < requests.length; index++) {
       const search = requests[index]
       
       await cpflController.runUpdateTimeRoutine(search.state, search.city)
     }
-    console.log('finalizando rotina de atualização do tempo da CPFL')
   }
 }
 
@@ -45,7 +52,11 @@ async function updateServicesAdded() {
   const requests = await cpflSearchNowRepository.index()
 
   if (requests.length > 0) {
-    console.log('iniciando rotina de aquisição de um novo serviço')
+    console.log(`${FgCyan}%s${Reset}`, `
+    ENERGY --> Requisitando serviços recém adicionados\n
+    ENERGY --> Requisitando ${requests.length} serviços\n
+    ENERGY --> começo da execução: ${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}
+    `)
 
     const browser = await cpflController.runBrowser()
 
@@ -66,8 +77,10 @@ async function updateServicesAdded() {
 
     await cpflController.closeBrowser(browser)
 
-    console.log('finalizando rotina de aquisição de um novo serviço')
-  }
+    console.log(`${FgCyan}%s${Reset}`, `
+      ENERGY --> Final da execução: ${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}\n
+      ENERGY --> Requisições da rotina de serviços recém adicionados\n
+    `)  }
 }
 
 export default () => {
