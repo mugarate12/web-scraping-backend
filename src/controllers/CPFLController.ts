@@ -265,10 +265,9 @@ export default class CPFLController {
     return data
   }
 
-  private get = async ({ state, city }: getInterface) => {
+  private get = async (browser: puppeteer.Browser, { state, city }: getInterface) => {
     const url = this.makeURL(Number(this.getStateNumber(state)))
 
-    const browser = await this.runBrowser()
     const page = await this.newPage(browser)
 
     await page.goto(url, { waitUntil: 'load' })
@@ -283,8 +282,6 @@ export default class CPFLController {
 
     const result = await this.getData(page)
     const dataFormatted = this.formatData(result)
-
-    // this.closeBrowser(browser)
 
     return dataFormatted
   }
@@ -582,12 +579,15 @@ export default class CPFLController {
   }
 
   public getCPFL = async (req: Request, res: Response) => {
-    const dataFormatted = await this.get({ state: 'paulista', city: 'Araraquara' })
+    const browser = await this.runBrowser()
+    const dataFormatted = await this.get(browser, { state: 'paulista', city: 'Araraquara' })
 
     const requests = dataFormatted.map(async (data) => {
       await this.updateCPFLData({ data, state: 'paulista', city: 'Aguas De Lindoia' })
     })
     await Promise.all(requests)
+
+    await this.closeBrowser(browser)
 
     return res.status(200).json({
       message: 'ok',
@@ -595,8 +595,8 @@ export default class CPFLController {
     })
   }
 
-  public runCpflRoutine = async (state: string, city: string) => {
-    const dataFormatted = await this.get({ state: state, city: city })
+  public runCpflRoutine = async (browser: puppeteer.Browser, state: string, city: string) => {
+    const dataFormatted = await this.get(browser, { state: state, city: city })
     
     const requests = dataFormatted.map(async (data) => {
       await this.updateCPFLData({ data, state: state, city: city })

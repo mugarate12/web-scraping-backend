@@ -12,11 +12,15 @@ async function routine() {
   if (requests.length > 0) {
     console.log(`iniciando rotina da CPFL`)
 
+    const browser = await cpflController.runBrowser()
+
     for (let index = 0; index < requests.length; index++) {
       const search = requests[index]
       
-      await cpflController.runCpflRoutine(search.state, search.city)
+      await cpflController.runCpflRoutine(browser, search.state, search.city)
     }
+
+    await cpflController.closeBrowser(browser)
   
     console.log(`finalizando rotina da CPFL`)
   }
@@ -43,10 +47,12 @@ async function updateServicesAdded() {
   if (requests.length > 0) {
     console.log('iniciando rotina de aquisição de um novo serviço')
 
+    const browser = await cpflController.runBrowser()
+
     for (let index = 0; index < requests.length; index++) {
       const search = requests[index]
       
-      await cpflController.runCpflRoutine(search.state, search.city)
+      await cpflController.runCpflRoutine(browser, search.state, search.city)
     }
 
     for (let index = 0; index < requests.length; index++) {
@@ -57,6 +63,8 @@ async function updateServicesAdded() {
         city: search.city
       })
     }
+
+    await cpflController.closeBrowser(browser)
 
     console.log('finalizando rotina de aquisição de um novo serviço')
   }
