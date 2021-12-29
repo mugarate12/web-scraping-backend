@@ -112,6 +112,8 @@ export default () => {
   thirtyRoutine.start()
   fortyFiveRoutine.start()
   sixtyRoutine.start()
-  // updateTimeRoutine.start()
+
   updateServicesAddedRoutine.start()
+  
+  updateTimeRoutine.start()
 }
