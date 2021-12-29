@@ -6,8 +6,8 @@ import { cpflController } from './../controllers'
 
 dotenv.config()
 
-async function routine() {
-  const requests = await cpflSearchRepository.index({ able: 1 })
+async function routine(updateTime: number) {
+  const requests = await cpflSearchRepository.index({ able: 1, dealership: 'cpfl', update_time: updateTime })
 
   if (requests.length > 0) {
     console.log(`iniciando rotina da CPFL`)
@@ -71,8 +71,20 @@ async function updateServicesAdded() {
 }
 
 export default () => {
-  const everyHourRoutine = new CronJob.CronJob('0 * * * *', async () => {
-    await routine()
+  const fifteenRoutine = new CronJob.CronJob('*/15 * * * *', async () => {
+    await routine(15)
+  })
+  
+  const thirtyRoutine = new CronJob.CronJob('*/30 * * * *', async () => {
+    await routine(30)
+  })
+  
+  const fortyFiveRoutine = new CronJob.CronJob('*/45 * * * *', async () => {
+    await routine(45)
+  })
+  
+  const sixtyRoutine = new CronJob.CronJob('*/60 * * * *', async () => {
+    await routine(60)
   })
 
   const updateTimeRoutine = new CronJob.CronJob('* * * * *', async () => {
@@ -83,7 +95,10 @@ export default () => {
     await updateServicesAdded()
   })
 
-  everyHourRoutine.start()
+  fifteenRoutine.start()
+  thirtyRoutine.start()
+  fortyFiveRoutine.start()
+  sixtyRoutine.start()
   // updateTimeRoutine.start()
   updateServicesAddedRoutine.start()
 }
