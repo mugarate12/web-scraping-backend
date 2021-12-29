@@ -130,16 +130,7 @@ export default class CPFLController {
   }
 
   private setDate = async (page: puppeteer.Page) => {
-    // PeriodoDesligamento
-    // document.getElementById('PeriodoDesligamento')
-    // document.getElementById('PeriodoDesligamento').children[2] <--  input de data limite
-
-    // const endOfMonth = moment().add(1, 'month').endOf('month').format('YYYY-MM-DD')
     const endOfMonth = moment().add(1, 'month').endOf('month').format('DD/MM/YYYY')
-    // const lastDayOfMonth = moment().add(1, 'month').endOf('month').format('DD')
-
-    // console.log('date: ', endOfMonth)
-    // console.log('last day:', lastDayOfMonth)
 
     await page.evaluate((endOfMonth) => {
       const dateSelector = document.getElementById('PeriodoDesligamento')
@@ -511,9 +502,12 @@ export default class CPFLController {
         this.formatDateToGetDuration(finalDate[0], finalDate[1])
       )
 
+      // ['paulista', 'santa cruz', 'piratininga', 'rio grande do sul']
+
       return {
         ...registry,
-        duration: duration
+        duration: duration,
+        state: registry.state !== 'rio grande do sul' ? 'São Paulo' : 'Rio Grande do Sul'
       }
     })
   }
