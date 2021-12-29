@@ -7,7 +7,9 @@ function cpflSearchRoutes(routes: Router) {
   routes.post('/service/cpfl', celebrate({
     [Segments.BODY]: Joi.object().keys({
       state: Joi.string().required(),
-      city: Joi.string().required()
+      city: Joi.string().required(),
+      dealership: Joi.string().required(),
+      update_time: Joi.number().required()
     })
   }), cpflSearchController.create)
 

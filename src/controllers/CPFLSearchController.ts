@@ -11,12 +11,28 @@ export default class CPFLSearchController {
   public create = async (req: Request, res: Response) => {
     const {
       city,
-      state
+      state,
+      dealership,
+      update_time
     } = req.body
 
-    await cpflSearchNowRepository.create({ city, state })
+    let haveError = false
+    let responseError: AppError | undefined
 
-    return await cpflSearchRepository.create({ city, state })
+    await cpflSearchNowRepository.create({ city, state })
+      .catch((error: AppError) => {
+        haveError = true
+        responseError = error
+      })
+
+    if (haveError && !!responseError) {
+      return errorHandler(
+        new AppError(responseError.name, 403, responseError.message, true),
+        res
+      )
+    }
+
+    return await cpflSearchRepository.create({ city, state, dealership, update_time: Number(update_time) })
       .then(() => {
         return res.status(201).json({
           message: 'serviço criado com sucesso!'

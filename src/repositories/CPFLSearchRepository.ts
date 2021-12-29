@@ -11,28 +11,37 @@ export interface CPFFSearchInterface {
   id: number,
   state: string,
   city: string,
-  able: number
+  able: number,
+  dealership: string,
+  update_time: number
 }
 
 interface createCPFLSearchInterface {
   state: string,
-  city: string
+  city: string,
+  dealership: string,
+  update_time: number
 }
 
 interface indexCPFLSearchInterface {
-  able?: number
+  able?: number,
+  dealership?: string,
+  update_time?: number
 }
 
 interface getCPFLSearchInterface {
   id?: number,
   state?: string,
   city?: string,
-  able?: number
+  able?: number,
+  dealership?: string,
+  update_time?: number
 }
 
 interface updateCPFLSearchInterface {
   id: number,
-  able: number
+  able: number,
+  update_time?: number
 }
 
 interface deleteCPFLSearchInterface {
@@ -42,12 +51,14 @@ interface deleteCPFLSearchInterface {
 export default class CPFLSearchRepository {
   private reference = () => connection<CPFFSearchInterface>(CPFL_SEARCH)
 
-  public create = async ({ city, state }: createCPFLSearchInterface) => {
+  public create = async ({ city, state, dealership, update_time }: createCPFLSearchInterface) => {
     return await this.reference()
       .insert({
         city,
         state,
-        able: 1
+        able: 1,
+        dealership,
+        update_time
       })
       .then(() => {
         return
