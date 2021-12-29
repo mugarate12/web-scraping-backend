@@ -30,8 +30,10 @@ function cpflSearchRoutes(routes: Router) {
     })
   }), cpflSearchController.delete)
 
-  routes.get('/service/cpfl/states', cpflController.getStatesRequest)
-  routes.get('/service/cpfl/states/:state/cities', cpflController.getCitiesRequest)
+  routes.get('/service/cpfl/states/:dealership', cpflSearchController.getStates)
+  routes.get('/service/cpfl/states/:dealership/:state/cities', cpflSearchController.getCities)
+  routes.get('/service/cpfl/dealerships', cpflSearchController.getDealerShips)
+  routes.get('/service/cpfl/updatesTimes', cpflSearchController.getUpdatesTimes)
 }
 
 export default cpflSearchRoutes

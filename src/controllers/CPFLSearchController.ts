@@ -5,9 +5,36 @@ import {
   cpflSearchNowRepository
 } from './../repositories'
 
+import {
+  cpflController
+} from './'
+
 import { errorHandler, AppError } from './../utils/handleError'
 
+type citiesInterface = Array<{
+  value: string;
+  label: string;
+}>
+
 export default class CPFLSearchController {
+  private dealerships = [{
+    label: 'CPFL',
+    value: 'cpfl'
+  }]
+  private updates_times = [{
+    label: '15 minutos',
+    value: 15
+  }, {
+    label: '30 minutos',
+    value: 30
+  }, {
+    label: '45 minutos',
+    value: 45
+  }, {
+    label: '60 minutos',
+    value: 60
+  }]
+
   public create = async (req: Request, res: Response) => {
     const {
       city,
@@ -95,5 +122,47 @@ export default class CPFLSearchController {
           res
         )
       })
+  }
+
+  public getDealerShips = async (req: Request, res: Response) => {
+    return res.status(200).json({
+      data: this.dealerships
+    })
+  }
+
+  public getUpdatesTimes = async (req: Request, res: Response) => {
+    return res.status(200).json({
+      data: this.updates_times
+    })
+  }
+
+  public getStates = async (req: Request, res: Response) => {
+    const { dealership } = req.params
+
+    let states: Array<string> = []
+
+    if (dealership === 'cpfl') {
+      states = cpflController.states
+    }
+
+    return res.status(200).json({
+      message: 'estados recuperados com sucesso!',
+      data: states
+    })
+  }
+
+  public getCities = async (req: Request, res: Response) => {
+    const { dealership, state } = req.params
+
+    let cities: citiesInterface = []
+
+    if (dealership === 'cpfl' && state === 'sp') {
+      cities = cpflController.SPcities
+    }
+
+    return res.status(200).json({
+      message: 'cidades recuperadas com sucesso!',
+      data: cities
+    })
   }
 }
