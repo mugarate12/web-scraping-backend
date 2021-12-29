@@ -271,6 +271,7 @@ export default class CPFLController {
     const page = await this.newPage(browser)
 
     await page.goto(url, { waitUntil: 'load' })
+      .catch(error => {})
     
     await this.selectToCity(page)
     await this.setDate(page)
@@ -282,6 +283,10 @@ export default class CPFLController {
 
     const result = await this.getData(page)
     const dataFormatted = this.formatData(result)
+
+    await page.close()
+      .catch(error => {})
+
 
     return dataFormatted
   }

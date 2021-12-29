@@ -52,15 +52,21 @@ export default function publicAccessRoutes(routes: Router) {
   }), publicAccessJWT, readApiInformations, apiAccessController.changes)
 
   routes.get('/public/access/cpfl/:state', celebrate({
+    [Segments.QUERY]: Joi.object().keys({
+      token: Joi.string().required()
+    }),
     [Segments.PARAMS]: Joi.object().keys({
       state: Joi.string().required()
     })
-  }), cpflController.getCPFLStateJson)
+  }), publicAccessJWT, readApiInformations, cpflController.getCPFLStateJson)
   
   routes.get('/public/access/cpfl/:state/:city', celebrate({
+    [Segments.QUERY]: Joi.object().keys({
+      token: Joi.string().required()
+    }),
     [Segments.PARAMS]: Joi.object().keys({
       state: Joi.string().required(),
       city: Joi.string().required()
     })
-  }), cpflController.getCPFLCityJson)
+  }), publicAccessJWT, readApiInformations, cpflController.getCPFLCityJson)
 } 

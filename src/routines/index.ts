@@ -116,55 +116,11 @@ async function sleep(milliseconds: number) {
 
 export default async (serverIo: Server) => {
   if(processName.search(/primary/) !== -1){
-    const oneMinuteJob = new CronJob.CronJob('* * * * * ', async () => {
-      const browser = await runBrowser()
-      
-      await routinesRequests(serverIo, browser, 1)
-
-      closeBrowser(browser)
-    })
-    
-    const ThreeMinutesJob = new CronJob.CronJob('*/3 * * * * ', async () => {
-      const browser = await runBrowser()
-      
-      await routinesRequests(serverIo, browser, 3)
-
-      closeBrowser(browser)
-    })
-    
-    const FiveMinutesJob = new CronJob.CronJob('*/5 * * * * ', async () => {
-      const browser = await runBrowser()
-      
-      await routinesRequests(serverIo, browser, 5)
-
-      closeBrowser(browser)
-    })
-    
-    const TeenMinutesJob = new CronJob.CronJob('*/10 * * * * ', async () => {
-      const browser = await runBrowser()
-      
-      await routinesRequests(serverIo, browser, 10)
-
-      closeBrowser(browser)
-    })
-    
-    const FifteenMinutesJob = new CronJob.CronJob('*/15 * * * * ', async () => {
-      const browser = await runBrowser()
-      
-      await routinesRequests(serverIo, browser, 15)
-
-      closeBrowser(browser)
-    })
-
     const cleanTemporaryFilesRoutine = new CronJob.CronJob('*/2 * * * * ', cleanTemporaryFiles)
 
-    oneMinuteJob.start()
-    ThreeMinutesJob.start()
-    FiveMinutesJob.start()
-    TeenMinutesJob.start()
-    FifteenMinutesJob.start()
-
     cleanTemporaryFilesRoutine.start()
+
+    routinesRequests(serverIo)
 
     CPFLRoutine()
   }

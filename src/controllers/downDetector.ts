@@ -264,12 +264,10 @@ export default class DownDetectorController {
     await pageInstance.setUserAgent('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36')
 
     await pageInstance.setDefaultNavigationTimeout(0)
-    await pageInstance.goto(url)
+    await pageInstance.goto(url, { waitUntil: 'domcontentloaded' })
       .catch(error => {
         
       })
-
-    // console.log(`-> executando coleta em: ${serviceName}`)
 
     let data: {
       name: string;
@@ -326,8 +324,6 @@ export default class DownDetectorController {
     }
     
     await this.updateHistoryAndChange(result)
-
-    // console.log(`${serviceName} status: ${data.status}`)
 
     pageInstance.close()
       .catch(error => {})
