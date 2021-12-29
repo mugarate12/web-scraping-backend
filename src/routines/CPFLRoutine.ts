@@ -76,6 +76,6 @@ export default () => {
   })
 
   everyHourRoutine.start()
-  updateTimeRoutine.start()
+  // updateTimeRoutine.start()
   updateServicesAddedRoutine.start()
 }

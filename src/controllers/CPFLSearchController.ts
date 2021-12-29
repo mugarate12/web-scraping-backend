@@ -156,8 +156,14 @@ export default class CPFLSearchController {
 
     let cities: citiesInterface = []
 
-    if (dealership === 'cpfl' && state === 'sp') {
+    if (dealership === 'cpfl' && state === 'paulista') {
       cities = cpflController.SPcities
+    } else if (dealership === 'cpfl' && state === 'santa cruz') {
+      cities = cpflController.SantaCruzCities
+    } else if (dealership === 'cpfl' && state === 'piratininga') {
+      cities = cpflController.PiratiningaCities
+    } else if (dealership === 'cpfl' && state === 'rio grande do sul') {
+      cities = cpflController.RScities
     }
 
     return res.status(200).json({
