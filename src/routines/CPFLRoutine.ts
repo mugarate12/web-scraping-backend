@@ -6,7 +6,36 @@ import { cpflSearchRepository, cpflSearchNowRepository } from './../repositories
 import { cpflController } from './../controllers'
 import { FgCyan, FgBlue, Reset } from './../utils/colorsInTerminalReference'
 
+import { CPFFSearchInterface } from './../repositories/CPFLSearchRepository'
+
 dotenv.config()
+
+function createHeadquarterOfRequests(requests: CPFFSearchInterface[]) {
+  let result: Array<Array<CPFFSearchInterface>> = []
+  let array: Array<CPFFSearchInterface> = []
+
+  requests.forEach((request, index) => {
+    const haveTeenElements = (index + 1) % 5 === 0
+    const isFinalOfRequests = (index + 1) === requests.length
+    
+    if (haveTeenElements || isFinalOfRequests) {
+      array.push(request)
+      result.push(array)
+
+      array = []
+    } else {
+      array.push(request)
+    }
+  })
+
+  return result
+}
+
+function stepLog(updateTime: number, step: number) {
+  console.log(`${FgBlue}%s${Reset}`, `
+      ENERGY --> parte ${step} da rotina de ${updateTime} minuto(s) finalizada
+  `)
+}
 
 async function routine(updateTime: number) {
   const requests = await cpflSearchRepository.index({ able: 1, dealership: 'cpfl', update_time: updateTime })
@@ -18,13 +47,20 @@ async function routine(updateTime: number) {
     ENERGY --> começo da execução: ${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}
     `)
 
-
     const browser = await cpflController.runBrowser()
 
-    for (let index = 0; index < requests.length; index++) {
-      const search = requests[index]
+    const headquarter = createHeadquarterOfRequests(requests)
+
+    for (let index = 0; index < headquarter.length; index++) {
+      const arrayOfRequests = headquarter[index]
       
-      await cpflController.runCpflRoutine(browser, search.state, search.city)
+      const requestsPromises = arrayOfRequests.map(async (request) => {
+        await cpflController.runCpflRoutine(browser, request.state, request.city)
+          .catch(error => {})
+      })
+
+      await Promise.all([ ...requestsPromises ])
+      stepLog(updateTime, index + 1)
     }
 
     await cpflController.closeBrowser(browser)
