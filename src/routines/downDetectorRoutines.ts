@@ -208,17 +208,7 @@ async function routinesRequests(serverIo: Server, browser: puppeteer.Browser, up
       await Promise.all([ ...requestsResultsPromises ])
       headquarterCompleteLog(updateTime, index + 1)
     }
-
-    // const requestsResultsPromises = requests.map(async (request, index) => {
-    //   const result = await downDetectorController.accessDownDetectorRoutine(request.service_name, browser)
-    //     .catch(error => {
-    //       console.log('error em: ', request.service_name)
-    //       console.log(error)
-    //       return undefined
-    //     })
-    // })
-
-    // await Promise.all([ ...requestsResultsPromises ])
+    
     setRedisKeyToComplete(updateTime)
     
     finalRoutineLog(updateTime)

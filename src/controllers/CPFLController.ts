@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import puppeteer from 'puppeteer'
 import fs from 'fs'
 import moment from 'moment'
+import dotenv from 'dotenv'
 
 import {
   cpflDataRepository
@@ -10,6 +11,8 @@ import {
 import { AppError, errorHandler } from './../utils/handleError'
 
 import { CPFLDataInterface as CPFLDataDatabaseInterface } from './../repositories/CPFLDataRepository'
+
+dotenv.config()
 
 type citiesInterface = Array<{
   value: string;
@@ -452,6 +455,8 @@ export default class CPFLController {
   }
 
   private updateTime = async ({ state, city }: updateCPFLTimeInterface) => {
+    const convertHour = Number(process.env.CONVERT_TO_TIMEZONE)
+
     const CPFLDataOfStateAndCity = await cpflDataRepository.index({
       state,
       city
@@ -461,7 +466,7 @@ export default class CPFLController {
       const cpflData = CPFLDataOfStateAndCity[index]
       
       if (cpflData.status !== this.convertStatusStringToNumber('finished')) {
-        const actualDate = moment().format('DD/MM/YYYY HH:mm')
+        const actualDate = moment().subtract(convertHour, 'hours').format('DD/MM/YYYY HH:mm')
 
         const finalSeconds = this.getDurationInSeconds(
           this.formatDateToGetDuration(actualDate.split(' ')[0], actualDate.split(' ')[1]),
