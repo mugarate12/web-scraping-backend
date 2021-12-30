@@ -56,6 +56,22 @@ interface getInterface {
   city: string
 }
 
+type statusCountInterface = Array<{
+  name: string,
+  status_agendamento: number,
+  status_emAndamento: number,
+  status_concluidas: number
+}>
+
+type reasonsCountInterface = Array<{
+  name: string,
+  total_manutencao: number,
+  total_obra: number,
+  total_melhorias: number,
+  total_preventivas: number,
+  total_outros: number
+}>
+
 export default class CPFLController {
   public states = ['paulista', 'santa cruz', 'piratininga', 'rio grande do sul']
 
@@ -63,6 +79,23 @@ export default class CPFLController {
   public RScities: citiesInterface = [{'value': '854', 'label': 'Água Santa'}, {'value': '802', 'label': 'Agudo'}, {'value': '1074', 'label': 'Ajuricaba'}, {'value': '999', 'label': 'Alecrim'}, {'value': '894', 'label': 'Alegrete'}, {'value': '991', 'label': 'Alegria'}, {'value': '975', 'label': 'Alpestre'}, {'value': '728', 'label': 'Alto Feliz'}, {'value': '969', 'label': 'Ametista do Sul'}, {'value': '832', 'label': 'André da Rocha'}, {'value': '912', 'label': 'Anta Gorda'}, {'value': '713', 'label': 'Antônio Prado'}, {'value': '776', 'label': 'Araricá'}, {'value': '867', 'label': 'Aratiba'}, {'value': '764', 'label': 'Arroio do Meio'}, {'value': '807', 'label': 'Arroio do Tigre'}, {'value': '848', 'label': 'Arvorezinha'}, {'value': '1072', 'label': 'Augusto Pestana'}, {'value': '898', 'label': 'Áurea'}, {'value': '750', 'label': 'Barão'}, {'value': '866', 'label': 'Barão do Cotegipe'}, {'value': '1053', 'label': 'Barra do Guarita'}, {'value': '892', 'label': 'Barra do Quaraí'}, {'value': '920', 'label': 'Barra do Rio Azul'}, {'value': '1028', 'label': 'Barra Funda'}, {'value': '910', 'label': 'Barracão'}, {'value': '913', 'label': 'Barros Cassal'}, {'value': '957', 'label': 'Benjamin Constant do Sul'}, {'value': '753', 'label': 'Bento Gonçalves'}, {'value': '1040', 'label': 'Boa Vista das Missões'}, {'value': '1059', 'label': 'Boa Vista do Buricá'}, {'value': '946', 'label': 'Boa Vista do Cadeado'}, {'value': '744', 'label': 'Boa Vista do Sul'}, {'value': '702', 'label': 'Bom Jesus'}, {'value': '1007', 'label': 'Bom Princípio'}, {'value': '1048', 'label': 'Bom Progresso'}, {'value': '766', 'label': 'Bom Retiro do Sul'}, {'value': '791', 'label': 'Boqueirão do Leão'}, {'value': '886', 'label': 'Bossoroca'}, {'value': '941', 'label': 'Bozano'}, {'value': '1052', 'label': 'Braga'}, {'value': '747', 'label': 'Brochier'}, {'value': '1025', 'label': 'Caçapava do Sul'}, {'value': '874', 'label': 'Cacequi'}, {'value': '812', 'label': 'Cachoeira do Sul'}, {'value': '1011', 'label': 'Cachoeirinha'}, {'value': '907', 'label': 'Cacique Doble'}, {'value': '974', 'label': 'Caiçara'}, {'value': '846', 'label': 'Camargo'}, {'value': '699', 'label': 'Cambará do Sul'}, {'value': '716', 'label': 'Campestre da Serra'}, {'value': '992', 'label': 'Campina das Missões'}, {'value': '954', 'label': 'Campinas do Sul'}, {'value': '774', 'label': 'Campo Bom'}, {'value': '1049', 'label': 'Campo Novo'}, {'value': '816', 'label': 'Candelária'}, {'value': '994', 'label': 'Cândido Godói'}, {'value': '698', 'label': 'Canela'}, {'value': '785', 'label': 'Canoas'}, {'value': '838', 'label': 'Capão Bonito do Sul'}, {'value': '883', 'label': 'Capão do Cipó'}, {'value': '720', 'label': 'Capela de Santana'}, {'value': '762', 'label': 'Capitão'}, {'value': '729', 'label': 'Carlos Barbosa'}, {'value': '901', 'label': 'Carlos Gomes'}, {'value': '858', 'label': 'Casca'}, {'value': '828', 'label': 'Caseiros'}, {'value': '1071', 'label': 'Catuípe'}, {'value': '707', 'label': 'Caxias do Sul'}, {'value': '900', 'label': 'Centenário'}, {'value': '810', 'label': 'Cerro Branco'}, {'value': '1041', 'label': 'Cerro Grande'}, {'value': '1078', 'label': 'Cerro Largo'}, {'value': '855', 'label': 'Charrua'}, {'value': '1045', 'label': 'Chiapetta'}, {'value': '862', 'label': 'Ciríaco'}, {'value': '733', 'label': 'Colinas'}, {'value': '1036', 'label': 'Constantina'}, {'value': '756', 'label': 'Coqueiro Baixo'}, {'value': '1055', 'label': 'Coronel Bicaco'}, {'value': '743', 'label': 'Coronel Pilar'}, {'value': '841', 'label': 'Cotiporã'}, {'value': '842', 'label': 'Coxilha'}, {'value': '1061', 'label': 'Crissiumal'}, {'value': '965', 'label': 'Cristal do Sul'}, {'value': '947', 'label': 'Cruz Alta'}, {'value': '959', 'label': 'Cruzaltense'}, {'value': '760', 'label': 'Cruzeiro do Sul'}, {'value': '863', 'label': 'David Canabarro'}, {'value': '1047', 'label': 'Derrubadas'}, {'value': '1017', 'label': 'Dezesseis de Novembro'}, {'value': '932', 'label': 'Dilermando de Aguiar'}, {'value': '778', 'label': 'Dois Irmãos'}, {'value': '1058', 'label': 'Dois Irmãos das Missões'}, {'value': '839', 'label': 'Dois Lajeados'}, {'value': '986', 'label': 'Doutor Maurício Cardoso'}, {'value': '763', 'label': 'Doutor Ricardo'}, {'value': '765', 'label': 'Encantado'}, {'value': '1038', 'label': 'Engenho Velho'}, {'value': '961', 'label': 'Entre Rios do Sul'}, {'value': '1069', 'label': 'Entre-Ijuís'}, {'value': '868', 'label': 'Erebango'}, {'value': '869', 'label': 'Erechim'}, {'value': '916', 'label': 'Ernestina'}, {'value': '958', 'label': 'Erval Grande'}, {'value': '980', 'label': 'Erval Seco'}, {'value': '714', 'label': 'Esmeralda'}, {'value': '1064', 'label': 'Esperança do Sul'}, {'value': '925', 'label': 'Espumoso'}, {'value': '844', 'label': 'Estação'}, {'value': '722', 'label': 'Estância Velha'}, {'value': '786', 'label': 'Esteio'}, {'value': '732', 'label': 'Estrela'}, {'value': '804', 'label': 'Estrela Velha'}, {'value': '1075', 'label': 'Eugênio de Castro'}, {'value': '827', 'label': 'Fagundes Varela'}, {'value': '730', 'label': 'Farroupilha'}, {'value': '966', 'label': 'Faxinalzinho'}, {'value': '735', 'label': 'Fazenda Vilanova'}, {'value': '726', 'label': 'Feliz'}, {'value': '708', 'label': 'Flores da Cunha'}, {'value': '897', 'label': 'Floriano Peixoto'}, {'value': '1085', 'label': 'Fontoura Xavier'}, {'value': '1024', 'label': 'Formigueiro'}, {'value': '948', 'label': 'Fortaleza dos Valos'}, {'value': '971', 'label': 'Frederico Westphalen'}, {'value': '751', 'label': 'Garibaldi'}, {'value': '888', 'label': 'Garruchos'}, {'value': '896', 'label': 'Gaurama'}, {'value': '789', 'label': 'General Câmara'}, {'value': '853', 'label': 'Gentil'}, {'value': '870', 'label': 'Getúlio Vargas'}, {'value': '981', 'label': 'Giruá'}, {'value': '1009', 'label': 'Glorinha'}, {'value': '705', 'label': 'Gramado'}, {'value': '964', 'label': 'Gramado dos Loureiros'}, {'value': '801', 'label': 'Gramado Xavier'}, {'value': '1012', 'label': 'Gravataí'}, {'value': '829', 'label': 'Guabiju'}, {'value': '860', 'label': 'Guaporé'}, {'value': '1079', 'label': 'Guarani das Missões'}, {'value': '1004', 'label': 'Harmonia'}, {'value': '819', 'label': 'Herveiras'}, {'value': '987', 'label': 'Horizontina'}, {'value': '1065', 'label': 'Humaitá'}, {'value': '805', 'label': 'Ibarama'}, {'value': '1084', 'label': 'Ibiaçá'}, {'value': '830', 'label': 'Ibiraiaras'}, {'value': '915', 'label': 'Ibirapuitã'}, {'value': '950', 'label': 'Ibirubá'}, {'value': '770', 'label': 'Igrejinha'}, {'value': '1073', 'label': 'Ijuí'}, {'value': '851', 'label': 'Ilópolis'}, {'value': '739', 'label': 'Imigrante'}, {'value': '989', 'label': 'Independência'}, {'value': '1063', 'label': 'Inhacorá'}, {'value': '712', 'label': 'Ipê'}, {'value': '918', 'label': 'Ipiranga do Sul'}, {'value': '976', 'label': 'Iraí'}, {'value': '937', 'label': 'Itaara'}, {'value': '884', 'label': 'Itacurubi'}, {'value': '847', 'label': 'Itapuca'}, {'value': '879', 'label': 'Itaqui'}, {'value': '921', 'label': 'Itatiba do Sul'}, {'value': '939', 'label': 'Ivorá'}, {'value': '781', 'label': 'Ivoti'}, {'value': '953', 'label': 'Jacutinga'}, {'value': '877', 'label': 'Jaguari'}, {'value': '700', 'label': 'Jaquirana'}, {'value': '931', 'label': 'Jari'}, {'value': '1076', 'label': 'Jóia'}, {'value': '938', 'label': 'Júlio de Castilhos'}, {'value': '808', 'label': 'Lagoa Bonita do Sul'}, {'value': '924', 'label': 'Lagoa dos Três Cantos'}, {'value': '836', 'label': 'Lagoa Vermelha'}, {'value': '817', 'label': 'Lagoão'}, {'value': '761', 'label': 'Lajeado'}, {'value': '1037', 'label': 'Lajeado do Bugre'}, {'value': '1042', 'label': 'Liberato Salzano'}, {'value': '780', 'label': 'Lindolfo Collor'}, {'value': '725', 'label': 'Linha Nova'}, {'value': '881', 'label': 'Maçambará'}, {'value': '906', 'label': 'Machadinho'}, {'value': '895', 'label': 'Manoel Viana'}, {'value': '749', 'label': 'Maratá'}, {'value': '843', 'label': 'Marau'}, {'value': '902', 'label': 'Marcelino Ramos'}, {'value': '871', 'label': 'Mariano Moro'}, {'value': '755', 'label': 'Marques de Souza'}, {'value': '1001', 'label': 'Mata'}, {'value': '796', 'label': 'Mato Leitão'}, {'value': '904', 'label': 'Maximiliano de Almeida'}, {'value': '1056', 'label': 'Miraguaí'}, {'value': '852', 'label': 'Montauri'}, {'value': '703', 'label': 'Monte Alegre dos Campos'}, {'value': '746', 'label': 'Monte Belo do Sul'}, {'value': '719', 'label': 'Montenegro'}, {'value': '927', 'label': 'Mormaço'}, {'value': '783', 'label': 'Morro Reuter'}, {'value': '737', 'label': 'Muçum'}, {'value': '715', 'label': 'Muitos Capões'}, {'value': '823', 'label': 'Muliterno'}, {'value': '922', 'label': 'Não-Me-Toque'}, {'value': '970', 'label': 'Nonoai'}, {'value': '849', 'label': 'Nova Alvorada'}, {'value': '824', 'label': 'Nova Araçá'}, {'value': '826', 'label': 'Nova Bassano'}, {'value': '1026', 'label': 'Nova Boa Vista'}, {'value': '759', 'label': 'Nova Bréscia'}, {'value': '1060', 'label': 'Nova Candelária'}, {'value': '878', 'label': 'Nova Esperança do Sul'}, {'value': '779', 'label': 'Nova Hartz'}, {'value': '709', 'label': 'Nova Pádua'}, {'value': '1087', 'label': 'Nova Palma'}, {'value': '706', 'label': 'Nova Petrópolis'}, {'value': '831', 'label': 'Nova Prata'}, {'value': '710', 'label': 'Nova Roma do Sul'}, {'value': '787', 'label': 'Nova Santa Rita'}, {'value': '1029', 'label': 'Novo Barreiro'}, {'value': '811', 'label': 'Novo Cabrais'}, {'value': '773', 'label': 'Novo Hamburgo'}, {'value': '982', 'label': 'Novo Machado'}, {'value': '1035', 'label': 'Novo Xingú'}, {'value': '905', 'label': 'Paim Filho'}, {'value': '1030', 'label': 'Palmeira das Missões'}, {'value': '979', 'label': 'Palmitinho'}, {'value': '943', 'label': 'Panambi'}, {'value': '821', 'label': 'Paraí'}, {'value': '806', 'label': 'Paraíso do Sul'}, {'value': '723', 'label': 'Pareci Novo'}, {'value': '775', 'label': 'Parobé'}, {'value': '815', 'label': 'Passa Sete'}, {'value': '794', 'label': 'Passo do Sobrado'}, {'value': '917', 'label': 'Passo Fundo'}, {'value': '919', 'label': 'Paulo Bento'}, {'value': '742', 'label': 'Paverama'}, {'value': '942', 'label': 'Pejuçara'}, {'value': '704', 'label': 'Picada Café'}, {'value': '718', 'label': 'Pinhal da Serra'}, {'value': '928', 'label': 'Pinhal Grande'}, {'value': '978', 'label': 'Pinheirinho do Vale'}, {'value': '731', 'label': 'Pinto Bandeira'}, {'value': '1013', 'label': 'Pirapó'}, {'value': '972', 'label': 'Planalto'}, {'value': '745', 'label': 'Poço das Antas'}, {'value': '955', 'label': 'Ponte Preta'}, {'value': '721', 'label': 'Portão'}, {'value': '996', 'label': 'Porto Lucena'}, {'value': '1000', 'label': 'Porto Mauá'}, {'value': '998', 'label': 'Porto Vera Cruz'}, {'value': '995', 'label': 'Porto Xavier'}, {'value': '782', 'label': 'Presidente Lucena'}, {'value': '837', 'label': 'Protásio Alves'}, {'value': '911', 'label': 'Putinga'}, {'value': '891', 'label': 'Quaraí'}, {'value': '952', 'label': 'Quatro Irmãos'}, {'value': '933', 'label': 'Quevedos'}, {'value': '951', 'label': 'Quinze de Novembro'}, {'value': '1057', 'label': 'Redentora'}, {'value': '758', 'label': 'Relvado'}, {'value': '803', 'label': 'Restinga Seca'}, {'value': '973', 'label': 'Rio dos Índios'}, {'value': '798', 'label': 'Rio Pardo'}, {'value': '769', 'label': 'Riozinho'}, {'value': '736', 'label': 'Roca Sales'}, {'value': '1018', 'label': 'Rolador'}, {'value': '768', 'label': 'Rolante'}, {'value': '1033', 'label': 'Ronda Alta'}, {'value': '1031', 'label': 'Rondinha'}, {'value': '1080', 'label': 'Roque Gonzales'}, {'value': '890', 'label': 'Rosário do Sul'}, {'value': '1039', 'label': 'Sagrada Família'}, {'value': '945', 'label': 'Saldanha Marinho'}, {'value': '949', 'label': 'Salto do Jacuí'}, {'value': '1082', 'label': 'Salvador das Missões'}, {'value': '752', 'label': 'Salvador do Sul'}, {'value': '865', 'label': 'Sananduva'}, {'value': '944', 'label': 'Santa Bárbara do Sul'}, {'value': '754', 'label': 'Santa Clara do Sul'}, {'value': '792', 'label': 'Santa Cruz do Sul'}, {'value': '1021', 'label': 'Santa Margarida do Sul'}, {'value': '936', 'label': 'Santa Maria'}, {'value': '784', 'label': 'Santa Maria do Herval'}, {'value': '984', 'label': 'Santa Rosa'}, {'value': '740', 'label': 'Santa Tereza'}, {'value': '1019', 'label': 'Santana da Boa Vista'}, {'value': '889', 'label': 'Santana do Livramento'}, {'value': '880', 'label': 'Santiago'}, {'value': '1070', 'label': 'Santo Ângelo'}, {'value': '1010', 'label': 'Santo Antônio da Patrulha'}, {'value': '887', 'label': 'Santo Antônio das Missões'}, {'value': '856', 'label': 'Santo Antônio do Palma'}, {'value': '1050', 'label': 'Santo Augusto'}, {'value': '997', 'label': 'Santo Cristo'}, {'value': '908', 'label': 'Santo Expedito do Sul'}, {'value': '885', 'label': 'São Borja'}, {'value': '861', 'label': 'São Domingos do Sul'}, {'value': '876', 'label': 'São Francisco de Assis'}, {'value': '697', 'label': 'São Francisco de Paula'}, {'value': '1020', 'label': 'São Gabriel'}, {'value': '903', 'label': 'São João da Urtiga'}, {'value': '820', 'label': 'São João do Polêsine'}, {'value': '825', 'label': 'São Jorge'}, {'value': '1032', 'label': 'São José das Missões'}, {'value': '1005', 'label': 'São José do Hortêncio'}, {'value': '990', 'label': 'São José do Inhacorá'}, {'value': '909', 'label': 'São José do Ouro'}, {'value': '724', 'label': 'São José do Sul'}, {'value': '701', 'label': 'São José dos Ausentes'}, {'value': '772', 'label': 'São Leopoldo'}, {'value': '1016', 'label': 'São Luiz Gonzaga'}, {'value': '711', 'label': 'São Marcos'}, {'value': '1066', 'label': 'São Martinho'}, {'value': '934', 'label': 'São Martinho da Serra'}, {'value': '1002', 'label': 'São Miguel das Missões'}, {'value': '1077', 'label': 'São Nicolau'}, {'value': '1015', 'label': 'São Paulo das Missões'}, {'value': '1034', 'label': 'São Pedro das Missões'}, {'value': '1081', 'label': 'São Pedro do Butiá'}, {'value': '930', 'label': 'São Pedro do Sul'}, {'value': '1003', 'label': 'São Sebastião do Caí'}, {'value': '1023', 'label': 'São Sepé'}, {'value': '956', 'label': 'São Valentim'}, {'value': '840', 'label': 'São Valentim do Sul'}, {'value': '1046', 'label': 'São Valério do Sul'}, {'value': '1008', 'label': 'São Vendelino'}, {'value': '875', 'label': 'São Vicente do Sul'}, {'value': '777', 'label': 'Sapiranga'}, {'value': '788', 'label': 'Sapucaia do Sul'}, {'value': '1027', 'label': 'Sarandi'}, {'value': '963', 'label': 'Seberi'}, {'value': '1043', 'label': 'Sede Nova'}, {'value': '813', 'label': 'Segredo'}, {'value': '993', 'label': 'Senador Salgado Filho'}, {'value': '859', 'label': 'Serafina Corrêa'}, {'value': '793', 'label': 'Sério'}, {'value': '845', 'label': 'Sertão'}, {'value': '1067', 'label': 'Sete de Setembro'}, {'value': '873', 'label': 'Severiano de Almeida'}, {'value': '940', 'label': 'Silveira Martins'}, {'value': '800', 'label': 'Sinimbu'}, {'value': '809', 'label': 'Sobradinho'}, {'value': '914', 'label': 'Soledade'}, {'value': '741', 'label': 'Tabaí'}, {'value': '1083', 'label': 'Tapejara'}, {'value': '923', 'label': 'Tapera'}, {'value': '767', 'label': 'Taquara'}, {'value': '790', 'label': 'Taquari'}, {'value': '967', 'label': 'Taquaruçu do Sul'}, {'value': '1051', 'label': 'Tenente Portela'}, {'value': '738', 'label': 'Teutônia'}, {'value': '1086', 'label': 'Tio Hugo'}, {'value': '1062', 'label': 'Tiradentes do Sul'}, {'value': '929', 'label': 'Toropi'}, {'value': '757', 'label': 'Travesseiro'}, {'value': '872', 'label': 'Três Arroios'}, {'value': '771', 'label': 'Três Coroas'}, {'value': '988', 'label': 'Três de Maio'}, {'value': '960', 'label': 'Três Palmeiras'}, {'value': '1044', 'label': 'Três Passos'}, {'value': '962', 'label': 'Trindade do Sul'}, {'value': '748', 'label': 'Triunfo'}, {'value': '985', 'label': 'Tucunduva'}, {'value': '814', 'label': 'Tunas'}, {'value': '835', 'label': 'Tupanci do Sul'}, {'value': '935', 'label': 'Tupanciretã'}, {'value': '1006', 'label': 'Tupandi'}, {'value': '983', 'label': 'Tuparendi'}, {'value': '1014', 'label': 'Ubiretama'}, {'value': '857', 'label': 'União da Serra'}, {'value': '882', 'label': 'Unistalda'}, {'value': '893', 'label': 'Uruguaiana'}, {'value': '717', 'label': 'Vacaria'}, {'value': '818', 'label': 'Vale do Sol'}, {'value': '727', 'label': 'Vale Real'}, {'value': '797', 'label': 'Vale Verde'}, {'value': '864', 'label': 'Vanini'}, {'value': '795', 'label': 'Venâncio Aires'}, {'value': '799', 'label': 'Vera Cruz'}, {'value': '834', 'label': 'Veranópolis'}, {'value': '734', 'label': 'Vespasiano Correa'}, {'value': '899', 'label': 'Viadutos'}, {'value': '977', 'label': 'Vicente Dutra'}, {'value': '926', 'label': 'Victor Graeff'}, {'value': '833', 'label': 'Vila Flores'}, {'value': '850', 'label': 'Vila Maria'}, {'value': '1022', 'label': 'Vila Nova do Sul'}, {'value': '968', 'label': 'Vista Alegre'}, {'value': '822', 'label': 'Vista Alegre do Prata'}, {'value': '1054', 'label': 'Vista Gaúcha'}, {'value': '1068', 'label': 'Vitória das Missões'}]
   public SantaCruzCities: citiesInterface = [{'value': '184', 'label': 'Águas De Santa Bárbara'}, {'value': '317', 'label': 'Alambari'}, {'value': '235', 'label': 'Arandu'}, {'value': '218', 'label': 'Arceburgo'}, {'value': '518', 'label': 'Avaré'}, {'value': '449', 'label': 'Barra Do Jacaré'}, {'value': '419', 'label': 'Bernardino De Campos'}, {'value': '61', 'label': 'Caconde'}, {'value': '66', 'label': 'Canitar'}, {'value': '48', 'label': 'Casa Branca'}, {'value': '286', 'label': 'Cerqueira César'}, {'value': '24', 'label': 'Chavantes'}, {'value': '483', 'label': 'Divinolândia'}, {'value': '231', 'label': 'Espírito Santo Do Turvo'}, {'value': '5', 'label': 'Guareí'}, {'value': '477', 'label': 'Iaras'}, {'value': '696', 'label': 'IHM'}, {'value': '353', 'label': 'Ipaussu'}, {'value': '93', 'label': 'Itaí'}, {'value': '209', 'label': 'Itamogi'}, {'value': '374', 'label': 'Itapetininga'}, {'value': '346', 'label': 'Itobi'}, {'value': '363', 'label': 'Jacarezinho'}, {'value': '153', 'label': 'Jaguariúna'}, {'value': '390', 'label': 'Manduri'}, {'value': '288', 'label': 'Mococa'}, {'value': '41', 'label': 'Monte Santo De Minas'}, {'value': '1090', 'label': 'Muzambinho'}, {'value': '491', 'label': 'Óleo'}, {'value': '325', 'label': 'Ourinhos'}, {'value': '451', 'label': 'Paranapanema'}, {'value': '258', 'label': 'Pedreira'}, {'value': '272', 'label': 'Piraju'}, {'value': '14', 'label': 'Ribeirão Claro'}, {'value': '519', 'label': 'Santa Cruz Do Rio Pardo'}, {'value': '1088', 'label': 'Santo Antônio de Posse'}, {'value': '74', 'label': 'São José Do Rio Pardo'}, {'value': '489', 'label': 'São Miguel Arcanjo'}, {'value': '183', 'label': 'São Pedro Do Turvo'}, {'value': '423', 'label': 'São Sebastião Da Grama'}, {'value': '8', 'label': 'Sarapuí'}, {'value': '178', 'label': 'Sarutaiá'}, {'value': '34', 'label': 'Taguaí'}, {'value': '130', 'label': 'Tapiratiba'}, {'value': '327', 'label': 'Taquarituba'}, {'value': '1089', 'label': 'Tatuí'}, {'value': '365', 'label': 'Tejupá'}, {'value': '244', 'label': 'Timburi'}, {'value': '208', 'label': 'Ubirajara'}]
   public PiratiningaCities: citiesInterface = [{'value': '412', 'label': 'Alumínio'}, {'value': '285', 'label': 'Araçariguama'}, {'value': '39', 'label': 'Araçoiaba Da Serra'}, {'value': '442', 'label': 'Boituva'}, {'value': '179', 'label': 'Campo Limpo Paulista'}, {'value': '196', 'label': 'Capela Do Alto'}, {'value': '366', 'label': 'Cubatão'}, {'value': '443', 'label': 'Guarujá'}, {'value': '101', 'label': 'Ibiúna'}, {'value': '695', 'label': 'IHM'}, {'value': '84', 'label': 'Indaiatuba'}, {'value': '559', 'label': 'Iperó'}, {'value': '391', 'label': 'Itu'}, {'value': '441', 'label': 'Itupeva'}, {'value': '29', 'label': 'Jundiaí'}, {'value': '122', 'label': 'Louveira'}, {'value': '495', 'label': 'Mairinque'}, {'value': '354', 'label': 'Porto Feliz'}, {'value': '357', 'label': 'Praia Grande'}, {'value': '75', 'label': 'Salto'}, {'value': '336', 'label': 'Salto De Pirapora'}, {'value': '476', 'label': 'Santos'}, {'value': '149', 'label': 'São Roque'}, {'value': '527', 'label': 'São Vicente'}, {'value': '238', 'label': 'Sorocaba'}, {'value': '473', 'label': 'Várzea Paulista'}, {'value': '210', 'label': 'Vinhedo'}, {'value': '124', 'label': 'Votorantim'}]
+
+  public formatStatesToFrontend = (states: Array<string>) => {
+    return states.map((state) => {
+      switch (state) {
+        case 'paulista':
+          return { value: state, label: 'sp' }
+        case 'santa cruz':
+          return { value: state, label: 'sc'}
+        case 'piratininga':
+          return { value: state, label: 'pt'}
+        case 'rio grande do sul':
+          return { value: state, label: 'rs'}
+        default:
+          return { value: '', label: ''}
+      }
+    })
+  }
 
   private getStateNumber = (state: string) => {
     if (state === 'santa cruz') {
@@ -641,8 +674,32 @@ export default class CPFLController {
   public getCPFLStateJson = async (req: Request, res: Response) => {
     const { state } = req.params
 
-    const data = await cpflDataRepository.index({ state })
-    const formattedData = this.formatCPFLDataToPublicAccess(data)
+    let stateFormatted = ''
+
+    switch (state) {
+      case 'sp':
+        stateFormatted = 'paulista'
+        break;
+      case 'sc':
+        stateFormatted = 'santa cruz'
+        break;
+      case 'pt':
+        stateFormatted = 'piratininga'
+        break;
+      case 'rs':
+        stateFormatted = 'rio grande do sul'
+        break;
+      default:
+        break;
+    }
+
+    let data = await cpflDataRepository.index({ state: stateFormatted })
+    let formattedData = this.formatCPFLDataToPublicAccess(data)
+
+    if (state === 'all') {
+      data = await cpflDataRepository.index({})
+      formattedData = this.formatCPFLDataToPublicAccess(data)
+    }
 
     return res.status(200).json({
       data: formattedData
@@ -658,5 +715,204 @@ export default class CPFLController {
     return res.status(200).json({
       data: formattedData
     })
-  } 
+  }
+
+  private convertStateString = (state: string) => {
+    let stateFormatted = state
+
+    switch (state) {
+      case 'sp':
+        stateFormatted = 'paulista'
+        break;
+      case 'sc':
+        stateFormatted = 'santa cruz'
+        break;
+      case 'pt':
+        stateFormatted = 'piratininga'
+        break;
+      case 'rs':
+        stateFormatted = 'rio grande do sul'
+        break;
+      default:
+        break;
+    }
+
+    return stateFormatted
+  }
+
+  private haveCityInDataFormatted = (array: statusCountInterface, cityName: string) => {
+    let have = false
+
+    array.forEach((data => {
+      if (data.name === cityName) {
+        have = true
+      }
+    }))
+
+    return have
+  }
+  
+  private haveCityInDataFormattedReasons = (array: reasonsCountInterface, cityName: string) => {
+    let have = false
+
+    array.forEach((data => {
+      if (data.name === cityName) {
+        have = true
+      }
+    }))
+
+    return have
+  }
+
+  public getCountStatus = async (req: Request, res: Response) => {
+    const { state } = req.params
+    const { bairro, rua } = req.query
+
+    const formattedState = this.convertStateString(state)
+    const convertHour = Number(process.env.CONVERT_TO_TIMEZONE)
+    const actualDate = moment().subtract(convertHour, 'hours').format('DD/MM/YYYY')
+
+    const data = await cpflDataRepository.indexPerDate({ 
+      date: actualDate, 
+      state: formattedState !== 'undefined' && formattedState !== 'all' && formattedState.length > 0 ? formattedState : undefined,
+      district: String(bairro) !== 'undefined' ? String(bairro) : undefined,
+      street: String(rua) !== 'undefined' ? String(rua) : undefined,
+    })
+    let dataFormatted: statusCountInterface = []
+
+    data.forEach((cpflData) => {
+      const haveCity = this.haveCityInDataFormatted(dataFormatted, cpflData.city)
+
+      if (haveCity) {
+        dataFormatted.forEach((formattedData) => {
+          if (formattedData.name === cpflData.city) {
+            if (cpflData.status === 2) {
+              formattedData.status_agendamento = formattedData.status_agendamento + 1
+            } else if (cpflData.status === 3) {
+              formattedData.status_emAndamento = formattedData.status_emAndamento + 1
+            } else  {
+              formattedData.status_concluidas = formattedData.status_concluidas+ 1
+            }
+          }
+        })
+      } else {
+        if (cpflData.status === 2) {
+          dataFormatted.push({
+            name: cpflData.city,
+            status_agendamento: 1,
+            status_emAndamento: 0,
+            status_concluidas: 0
+          })
+        } else if (cpflData.status === 3) {
+          dataFormatted.push({
+            name: cpflData.city,
+            status_agendamento: 0,
+            status_emAndamento: 1,
+            status_concluidas: 0
+          })
+        } else  {
+          dataFormatted.push({
+            name: cpflData.city,
+            status_agendamento: 0,
+            status_emAndamento: 0,
+            status_concluidas: 1
+          })
+        }
+      }
+    })
+
+    return res.status(200).json({
+      data: dataFormatted
+    })
+  }
+
+  public getCountReasons = async (req: Request, res: Response) => {
+    const { state } = req.params
+    const { bairro, rua } = req.query
+
+    const formattedState = this.convertStateString(state)
+    const convertHour = Number(process.env.CONVERT_TO_TIMEZONE)
+    const actualDate = moment().subtract(convertHour, 'hours').format('DD/MM/YYYY')
+
+    const data = await cpflDataRepository.indexPerDate({ 
+      date: actualDate,
+      state: formattedState !== 'undefined' && formattedState !== 'all' && formattedState.length > 0 ? formattedState : undefined,
+      district: String(bairro) !== 'undefined' ? String(bairro) : undefined,
+      street: String(rua) !== 'undefined' ? String(rua) : undefined,
+    })
+    let dataFormatted: reasonsCountInterface = []
+
+    data.forEach((cpflData) => {
+      const haveCity = this.haveCityInDataFormattedReasons(dataFormatted, cpflData.city)
+
+      if (haveCity) {
+        dataFormatted.forEach((formattedData) => {
+          if (formattedData.name === cpflData.city) {
+            if (cpflData.reason === 'Manutencao') {
+              formattedData.total_manutencao += 1
+            } else if (cpflData.reason === 'Obra') {
+              formattedData.total_obra += 1
+            } else if (cpflData.reason === 'Preventivo') {
+              formattedData.total_preventivas += 1
+            } else if (cpflData.reason === 'Melhoria') {
+              formattedData.total_melhorias += 1
+            } else {
+              formattedData.total_outros += 1
+            }
+          }
+        })
+      } else {
+        if (cpflData.reason === 'Manutencao') {
+          dataFormatted.push({
+            name: cpflData.city,
+            total_manutencao: 1,
+            total_obra: 0,
+            total_melhorias: 0,
+            total_preventivas: 0,
+            total_outros: 0
+          })
+        } else if (cpflData.reason === 'Obra') {
+          dataFormatted.push({
+            name: cpflData.city,
+            total_manutencao: 0,
+            total_obra: 1,
+            total_melhorias: 0,
+            total_preventivas: 0,
+            total_outros: 0
+          })
+        } else if (cpflData.reason === 'Preventivo') {
+          dataFormatted.push({
+            name: cpflData.city,
+            total_manutencao: 0,
+            total_obra: 0,
+            total_melhorias: 0,
+            total_preventivas: 1,
+            total_outros: 0
+          })
+        } else if (cpflData.reason === 'Melhoria') {
+          dataFormatted.push({
+            name: cpflData.city,
+            total_manutencao: 0,
+            total_obra: 0,
+            total_melhorias: 1,
+            total_preventivas: 0,
+            total_outros: 0
+          })
+        } else {
+          dataFormatted.push({
+            name: cpflData.city,
+            total_manutencao: 0,
+            total_obra: 0,
+            total_melhorias: 0,
+            total_preventivas: 0,
+            total_outros: 1
+          })
+        }
+      }
+    })
+
+    return res.status(200).json({
+      data: dataFormatted
+    })
+  }
 }

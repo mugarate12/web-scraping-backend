@@ -69,4 +69,20 @@ export default function publicAccessRoutes(routes: Router) {
       city: Joi.string().required()
     })
   }), publicAccessJWT, readApiInformations, cpflController.getCPFLCityJson)
+
+  routes.get('/public/access/cpfl/count/status/:state', celebrate({
+    [Segments.QUERY]: Joi.object().keys({
+      token: Joi.string().required(),
+      bairro: Joi.string().optional(),
+      rua: Joi.string().optional()
+    })
+  }), publicAccessJWT, readApiInformations, cpflController.getCountStatus)
+  
+  routes.get('/public/access/cpfl/count/causas/:state', celebrate({
+    [Segments.QUERY]: Joi.object().keys({
+      token: Joi.string().required(),
+      bairro: Joi.string().optional(),
+      rua: Joi.string().optional()
+    })
+  }), publicAccessJWT, readApiInformations, cpflController.getCountReasons)
 } 

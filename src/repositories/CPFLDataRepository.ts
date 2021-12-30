@@ -1,11 +1,14 @@
 import { Knex } from 'knex'
 import moment from 'moment'
+import dotenv from 'dotenv'
 
 import { AppError } from './../utils/handleError'
 const connection: Knex<any, unknown[]> = require('./../database')
 const { 
   CPFL_DATA
 } = require('./../database/types')
+
+dotenv.config()
 
 export interface CPFLDataInterface {
   id: number,
@@ -58,6 +61,14 @@ interface indexCPFLDataInterface {
   status?: number
 }
 
+interface indexPerDateInterface {
+  state?: string,
+  district?: string,
+  street?: string,
+
+  date: string
+}
+
 interface getCPFLDataInterface {
   state: string,
   city: string,
@@ -107,6 +118,44 @@ export default class CPFLDataRepository {
     return query
       .select('*')
       .then(cpflDatas => cpflDatas)
+      .catch(error => {
+        throw new AppError('Database Error', 406, error.message, true)
+      })
+  }
+
+  public indexPerDate = async ({ state, district, street, date }: indexPerDateInterface) => {
+    let query = this.reference()
+
+    const convertHour = Number(process.env.CONVERT_TO_TIMEZONE)
+    const firstDayOfNextYear = moment()
+      .subtract(convertHour, 'hours')
+      .add(1, 'years')
+      .dayOfYear(1)
+      .format('DD/MM/YYYY')
+
+    if (Number(date.split('/')[2]) < Number(firstDayOfNextYear.split('/')[2])) {
+      query = query
+        .where('date', '>=', date)
+        .orWhere('date', '>=', firstDayOfNextYear)
+    } else {
+      query = query
+        .where('date', '>=', date)
+    }
+    
+    if (!!state) {
+      query = query.where('state', '=', state)
+    }
+    
+    if (!!district) {
+      query = query.where('district', '=', district)
+    }
+    
+    if (!!street) {
+      query = query.where('street', '=', street)
+    }
+
+    return query
+      .then(data => data)
       .catch(error => {
         throw new AppError('Database Error', 406, error.message, true)
       })

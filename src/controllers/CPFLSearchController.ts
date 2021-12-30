@@ -144,10 +144,9 @@ export default class CPFLSearchController {
     if (dealership === 'cpfl') {
       states = cpflController.states
     }
-
     return res.status(200).json({
       message: 'estados recuperados com sucesso!',
-      data: states
+      data: cpflController.formatStatesToFrontend(states)
     })
   }
 
@@ -156,13 +155,13 @@ export default class CPFLSearchController {
 
     let cities: citiesInterface = []
 
-    if (dealership === 'cpfl' && state === 'paulista') {
+    if (dealership === 'cpfl' && (state === 'paulista' || state === 'sp')) {
       cities = cpflController.SPcities
-    } else if (dealership === 'cpfl' && state === 'santa cruz') {
+    } else if (dealership === 'cpfl' && (state === 'santa cruz' || state === 'sc')) {
       cities = cpflController.SantaCruzCities
-    } else if (dealership === 'cpfl' && state === 'piratininga') {
+    } else if (dealership === 'cpfl' && (state === 'piratininga' || state === 'pt')) {
       cities = cpflController.PiratiningaCities
-    } else if (dealership === 'cpfl' && state === 'rio grande do sul') {
+    } else if (dealership === 'cpfl' && (state === 'rio grande do sul' || state === 'rs')) {
       cities = cpflController.RScities
     }
 
