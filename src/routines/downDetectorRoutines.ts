@@ -249,6 +249,12 @@ export default async (serverIo: Server) => {
     await routinesRequests(serverIo, fifteenMinutesBrowser, 15)
   })
 
+  await setRedisKeyToComplete(1)
+  await setRedisKeyToComplete(3)
+  await setRedisKeyToComplete(5)
+  await setRedisKeyToComplete(10)
+  await setRedisKeyToComplete(15)
+
   oneMinuteJob.start()
   ThreeMinutesJob.start()
   FiveMinutesJob.start()
