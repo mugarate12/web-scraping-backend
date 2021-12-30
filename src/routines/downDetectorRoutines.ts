@@ -222,45 +222,31 @@ async function routinesRequests(serverIo: Server, browser: puppeteer.Browser, up
   await downDetectorRoutineExecutionRepository.update(updateTime, 1)
 }
 
-export default (serverIo: Server) => {
-  const oneMinuteJob = new CronJob.CronJob('* * * * * ', async () => {
-    const browser = await runBrowser()
-    
-    await routinesRequests(serverIo, browser, 1)
-  
-    closeBrowser(browser)
+export default async (serverIo: Server) => {
+  const oneMinuteBrowser = await runBrowser()
+  const threeMinutesBrowser = await runBrowser()
+  const fiveMinutesBrowser = await runBrowser()
+  const teenMinutesBrowser = await runBrowser()
+  const fifteenMinutesBrowser = await runBrowser()
+
+  const oneMinuteJob = new CronJob.CronJob('* * * * * ', async () => {    
+    await routinesRequests(serverIo, oneMinuteBrowser, 1)
   })
 
-  const ThreeMinutesJob = new CronJob.CronJob('*/3 * * * * ', async () => {
-    const browser = await runBrowser()
-    
-    await routinesRequests(serverIo, browser, 3)
-
-    closeBrowser(browser)
+  const ThreeMinutesJob = new CronJob.CronJob('*/3 * * * * ', async () => {    
+    await routinesRequests(serverIo, threeMinutesBrowser, 3)
   })
 
-  const FiveMinutesJob = new CronJob.CronJob('*/5 * * * * ', async () => {
-    const browser = await runBrowser()
-    
-    await routinesRequests(serverIo, browser, 5)
-
-    closeBrowser(browser)
+  const FiveMinutesJob = new CronJob.CronJob('*/5 * * * * ', async () => {    
+    await routinesRequests(serverIo, fiveMinutesBrowser, 5)
   })
 
-  const TeenMinutesJob = new CronJob.CronJob('*/10 * * * * ', async () => {
-    const browser = await runBrowser()
-    
-    await routinesRequests(serverIo, browser, 10)
-
-    closeBrowser(browser)
+  const TeenMinutesJob = new CronJob.CronJob('*/10 * * * * ', async () => {    
+    await routinesRequests(serverIo, teenMinutesBrowser, 10)
   })
 
-  const FifteenMinutesJob = new CronJob.CronJob('*/15 * * * * ', async () => {
-    const browser = await runBrowser()
-    
-    await routinesRequests(serverIo, browser, 15)
-
-    closeBrowser(browser)
+  const FifteenMinutesJob = new CronJob.CronJob('*/15 * * * * ', async () => {    
+    await routinesRequests(serverIo, fifteenMinutesBrowser, 15)
   })
 
   oneMinuteJob.start()

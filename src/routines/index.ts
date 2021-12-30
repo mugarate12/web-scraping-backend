@@ -120,7 +120,7 @@ export default async (serverIo: Server) => {
 
     cleanTemporaryFilesRoutine.start()
 
-    routinesRequests(serverIo)
+    // routinesRequests(serverIo)
 
     CPFLRoutine()
   }
