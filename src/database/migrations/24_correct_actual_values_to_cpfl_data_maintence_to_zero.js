@@ -16,7 +16,7 @@ exports.up = async function(knex) {
   for (let index = 0; index < finalSecondsChanges.length; index++) {
     const change = finalSecondsChanges[index]
     
-    knex(CPFL_DATA)
+    await knex(CPFL_DATA)
       .where('id', '=', change.id)
       .update({
         final_seconds: 0
@@ -26,7 +26,7 @@ exports.up = async function(knex) {
   for (let index = 0; index < finalSecondsChanges.length; index++) {
     const change = finalMaintenanceChanges[index]
     
-    knex(CPFL_DATA)
+    await knex(CPFL_DATA)
       .where('id', '=', change.id)
       .update({
         final_maintenance: 0
