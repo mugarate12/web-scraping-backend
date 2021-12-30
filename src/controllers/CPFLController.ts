@@ -326,7 +326,6 @@ export default class CPFLController {
     await page.close()
       .catch(error => {})
 
-
     return dataFormatted
   }
 
@@ -432,6 +431,7 @@ export default class CPFLController {
       this.formatDateToGetDuration(actualDate.split(' ')[0], actualDate.split(' ')[1]),
       this.formatDateToGetDuration(data.date, data.initialHour)
     )
+
     const finalMaintenance = this.getDurationInSeconds(
       this.formatDateToGetDuration(actualDate.split(' ')[0], actualDate.split(' ')[1]),
       this.formatDateToGetDuration(data.date, data.finalHour)
@@ -504,15 +504,22 @@ export default class CPFLController {
       if (cpflData.status !== this.convertStatusStringToNumber('finished')) {
         const actualDate = moment().subtract(convertHour, 'hours').format('DD/MM/YYYY HH:mm')
 
-        const finalSeconds = this.getDurationInSeconds(
+        let finalSeconds = this.getDurationInSeconds(
           this.formatDateToGetDuration(actualDate.split(' ')[0], actualDate.split(' ')[1]),
           this.formatDateToGetDuration(cpflData.date, cpflData.initial_hour.split(' ')[2])
         )
-        const finalMaintenance = this.getDurationInSeconds(
+        let finalMaintenance = this.getDurationInSeconds(
           this.formatDateToGetDuration(actualDate.split(' ')[0], actualDate.split(' ')[1]),
           this.formatDateToGetDuration(cpflData.date, cpflData.final_hour.split(' ')[2])
         )
 
+        if (finalSeconds < 0) {
+          finalSeconds = 0
+        }
+
+        if (finalMaintenance < 0) {
+          finalMaintenance = 0
+        }
         const status = this.getStatus(finalSeconds, finalMaintenance)
 
         await cpflDataRepository.update({
