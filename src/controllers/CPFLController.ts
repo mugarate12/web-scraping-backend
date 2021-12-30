@@ -58,6 +58,7 @@ interface getInterface {
 
 type statusCountInterface = Array<{
   name: string,
+  state: string,
   status_agendamento: number,
   status_emAndamento: number,
   status_concluidas: number
@@ -65,6 +66,7 @@ type statusCountInterface = Array<{
 
 type reasonsCountInterface = Array<{
   name: string,
+  state: string,
   total_manutencao: number,
   total_obra: number,
   total_melhorias: number,
@@ -765,6 +767,29 @@ export default class CPFLController {
     return have
   }
 
+  private convertState = (state: string) => {
+    let stateFormatted = ''
+
+    switch (state) {
+      case 'paulista':
+        stateFormatted = 'Paulista'
+        break;
+      case 'santa cruz':
+        stateFormatted = 'Santa Cruz'
+        break;
+      case 'piratininga':
+        stateFormatted = 'Piratininga'
+        break;
+      case 'rio grande do sul':
+        stateFormatted = 'Rio Grande do Sul'
+        break;
+      default:
+        break;
+    }
+
+    return stateFormatted
+  }
+
   public getCountStatus = async (req: Request, res: Response) => {
     const { state } = req.params
     const { bairro, rua } = req.query
@@ -800,6 +825,7 @@ export default class CPFLController {
         if (cpflData.status === 2) {
           dataFormatted.push({
             name: cpflData.city,
+            state: this.convertState(cpflData.state),
             status_agendamento: 1,
             status_emAndamento: 0,
             status_concluidas: 0
@@ -807,6 +833,7 @@ export default class CPFLController {
         } else if (cpflData.status === 3) {
           dataFormatted.push({
             name: cpflData.city,
+            state: this.convertState(cpflData.state),
             status_agendamento: 0,
             status_emAndamento: 1,
             status_concluidas: 0
@@ -814,6 +841,7 @@ export default class CPFLController {
         } else  {
           dataFormatted.push({
             name: cpflData.city,
+            state: this.convertState(cpflData.state),
             status_agendamento: 0,
             status_emAndamento: 0,
             status_concluidas: 1
@@ -868,6 +896,7 @@ export default class CPFLController {
         if (cpflData.reason === 'Manutencao') {
           dataFormatted.push({
             name: cpflData.city,
+            state: this.convertState(cpflData.state),
             total_manutencao: 1,
             total_obra: 0,
             total_melhorias: 0,
@@ -878,6 +907,7 @@ export default class CPFLController {
         } else if (cpflData.reason === 'Obra') {
           dataFormatted.push({
             name: cpflData.city,
+            state: this.convertState(cpflData.state),
             total_manutencao: 0,
             total_obra: 1,
             total_melhorias: 0,
@@ -888,6 +918,7 @@ export default class CPFLController {
         } else if (cpflData.reason === 'Preventivo') {
           dataFormatted.push({
             name: cpflData.city,
+            state: this.convertState(cpflData.state),
             total_manutencao: 0,
             total_obra: 0,
             total_melhorias: 0,
@@ -898,6 +929,7 @@ export default class CPFLController {
         } else if (cpflData.reason === 'Melhoria') {
           dataFormatted.push({
             name: cpflData.city,
+            state: this.convertState(cpflData.state),
             total_manutencao: 0,
             total_obra: 0,
             total_melhorias: 1,
@@ -908,6 +940,7 @@ export default class CPFLController {
         } else if (cpflData.reason === 'Obra de Terceiros') {
           dataFormatted.push({
             name: cpflData.city,
+            state: this.convertState(cpflData.state),
             total_manutencao: 0,
             total_obra: 0,
             total_melhorias: 0,
@@ -918,6 +951,7 @@ export default class CPFLController {
         }else {
           dataFormatted.push({
             name: cpflData.city,
+            state: this.convertState(cpflData.state),
             total_manutencao: 0,
             total_obra: 0,
             total_melhorias: 0,
