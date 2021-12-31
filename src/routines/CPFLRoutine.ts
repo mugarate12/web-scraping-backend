@@ -1,6 +1,7 @@
 import CronJob from 'cron'
 import dotenv from 'dotenv'
 import moment from 'moment'
+import puppeteer from 'puppeteer'
 
 import { cpflSearchRepository, cpflSearchNowRepository } from './../repositories'
 import { cpflController } from './../controllers'
@@ -37,7 +38,7 @@ function stepLog(updateTime: number, step: number) {
   `)
 }
 
-async function routine(updateTime: number) {
+async function routine(browser: puppeteer.Browser, updateTime: number) {
   const requests = await cpflSearchRepository.index({ able: 1, dealership: 'cpfl', update_time: updateTime })
 
   if (requests.length > 0) {
@@ -47,7 +48,7 @@ async function routine(updateTime: number) {
     ENERGY --> começo da execução: ${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}
     `)
 
-    const browser = await cpflController.runBrowser()
+    // const browser = await cpflController.runBrowser()
 
     const headquarter = createHeadquarterOfRequests(requests)
 
@@ -63,7 +64,7 @@ async function routine(updateTime: number) {
       stepLog(updateTime, index + 1)
     }
 
-    await cpflController.closeBrowser(browser)
+    // await cpflController.closeBrowser(browser)
   
     console.log(`${FgBlue}%s${Reset}`, `
       ENERGY --> Final da execução: ${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}\n
@@ -84,7 +85,7 @@ async function updateRoutine() {
   }
 }
 
-async function updateServicesAdded() {
+async function updateServicesAdded(browser: puppeteer.Browser) {
   const requests = await cpflSearchNowRepository.index()
 
   if (requests.length > 0) {
@@ -94,7 +95,7 @@ async function updateServicesAdded() {
     ENERGY --> começo da execução: ${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}
     `)
 
-    const browser = await cpflController.runBrowser()
+    // const browser = await cpflController.runBrowser()
 
     for (let index = 0; index < requests.length; index++) {
       const search = requests[index]
@@ -119,21 +120,28 @@ async function updateServicesAdded() {
     `)  }
 }
 
-export default () => {
+export default async () => {
+  const fifteenMinutesBrowser = await cpflController.runBrowser()
+  const thirtyMinutesBrowser = await cpflController.runBrowser()
+  const fortyFiveMinutesBrowser = await cpflController.runBrowser()
+  const sixtyMinutesBrowser = await cpflController.runBrowser()
+
+  const serviceAddedBrowser = await cpflController.runBrowser()
+
   const fifteenRoutine = new CronJob.CronJob('*/15 * * * *', async () => {
-    await routine(15)
+    await routine(fifteenMinutesBrowser, 15)
   })
   
   const thirtyRoutine = new CronJob.CronJob('*/30 * * * *', async () => {
-    await routine(30)
+    await routine(thirtyMinutesBrowser, 30)
   })
   
   const fortyFiveRoutine = new CronJob.CronJob('*/45 * * * *', async () => {
-    await routine(45)
+    await routine(fortyFiveMinutesBrowser, 45)
   })
   
   const sixtyRoutine = new CronJob.CronJob('*/60 * * * *', async () => {
-    await routine(60)
+    await routine(sixtyMinutesBrowser, 60)
   })
 
   const updateTimeRoutine = new CronJob.CronJob('* * * * *', async () => {
@@ -141,7 +149,7 @@ export default () => {
   })
 
   const updateServicesAddedRoutine = new CronJob.CronJob('* * * * *', async () => {
-    await updateServicesAdded()
+    await updateServicesAdded(serviceAddedBrowser)
   })
 
   fifteenRoutine.start()
