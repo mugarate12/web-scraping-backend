@@ -72,6 +72,7 @@ type reasonsCountInterface = Array<{
   total_melhorias: number,
   total_preventivas: number,
   total_obraDeTerceiros: number,
+  total_documentoReserva: number,
   total_outros: number
 }>
 
@@ -892,6 +893,8 @@ export default class CPFLController {
               formattedData.total_preventivas += 1
             } else if (cpflData.reason === 'Melhoria') {
               formattedData.total_melhorias += 1
+            } else if (cpflData.reason === 'Documento Reserva') {
+              formattedData.total_documentoReserva += 1
             } else if (cpflData.reason === 'Obra de Terceiros') {
               formattedData.total_obraDeTerceiros += 1
             } else {
@@ -909,6 +912,7 @@ export default class CPFLController {
             total_melhorias: 0,
             total_preventivas: 0,
             total_obraDeTerceiros: 0,
+            total_documentoReserva: 0,
             total_outros: 0
           })
         } else if (cpflData.reason === 'Obra') {
@@ -920,6 +924,7 @@ export default class CPFLController {
             total_melhorias: 0,
             total_preventivas: 0,
             total_obraDeTerceiros: 0,
+            total_documentoReserva: 0,
             total_outros: 0
           })
         } else if (cpflData.reason === 'Preventivo') {
@@ -931,6 +936,7 @@ export default class CPFLController {
             total_melhorias: 0,
             total_preventivas: 1,
             total_obraDeTerceiros: 0,
+            total_documentoReserva: 0,
             total_outros: 0
           })
         } else if (cpflData.reason === 'Melhoria') {
@@ -942,6 +948,7 @@ export default class CPFLController {
             total_melhorias: 1,
             total_preventivas: 0,
             total_obraDeTerceiros: 0,
+            total_documentoReserva: 0,
             total_outros: 0
           })
         } else if (cpflData.reason === 'Obra de Terceiros') {
@@ -953,9 +960,10 @@ export default class CPFLController {
             total_melhorias: 0,
             total_preventivas: 0,
             total_obraDeTerceiros: 1,
+            total_documentoReserva: 0,
             total_outros: 0
           })
-        }else {
+        } else if (cpflData.reason === 'Documento Reserva') {
           dataFormatted.push({
             name: cpflData.city,
             state: this.convertState(cpflData.state),
@@ -964,6 +972,19 @@ export default class CPFLController {
             total_melhorias: 0,
             total_preventivas: 0,
             total_obraDeTerceiros: 0,
+            total_documentoReserva: 1,
+            total_outros: 0
+          })
+        } else {
+          dataFormatted.push({
+            name: cpflData.city,
+            state: this.convertState(cpflData.state),
+            total_manutencao: 0,
+            total_obra: 0,
+            total_melhorias: 0,
+            total_preventivas: 0,
+            total_obraDeTerceiros: 0,
+            total_documentoReserva: 0,
             total_outros: 1
           })
         }
