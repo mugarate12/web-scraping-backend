@@ -239,7 +239,9 @@ export default class ApiAccessController {
 
   public create = async (req: Request, res: Response) => {
     const {
-      identifier
+      identifier,
+      flow4Energy,
+      flow4Detector
     } = req.body
 
     const createClient = await apiAccessClientsRepository.create({ identifier: String(identifier) })
@@ -266,9 +268,27 @@ export default class ApiAccessController {
       identifier: 'ACCESS_API_ACCESS_VIEW'
     })
 
+    const permissionToFlow4Detector = await permissionsRepository.get({
+      identifier: 'ACCESS_API_FLOW4DETECTOR_DATA'
+    })
+
+    const permissionToFlow4Energy = await permissionsRepository.get({
+      identifier: 'ACCESS_API_FLOW4ENERGY_DATA'
+    })
+
+    let permissionsIDS = [ permissionToViewData.id ]
+
+    if (!!flow4Detector) {
+      permissionsIDS.push(permissionToFlow4Detector.id)
+    }
+    
+    if (!!flow4Energy) {
+      permissionsIDS.push(permissionToFlow4Energy.id)
+    }
+
     await clientsAccessRepository.create({
       client_FK: Number(clientID),
-      permissions: [ permissionToViewData.id ]
+      permissions: permissionsIDS
     })
       .catch(error => {
         console.log('erro ao criar permissão')
@@ -299,10 +319,38 @@ export default class ApiAccessController {
     const { clientID } = req.params
     const {
       identifier,
-      able
+      able,
+      flow4Energy,
+      flow4Detector
     } = req.body
 
-    return await apiAccessClientsRepository.update({
+    const permissionToFlow4Detector = await permissionsRepository.get({
+      identifier: 'ACCESS_API_FLOW4DETECTOR_DATA'
+    })
+
+    const permissionToFlow4Energy = await permissionsRepository.get({
+      identifier: 'ACCESS_API_FLOW4ENERGY_DATA'
+    })
+
+    let permissionsIDS: Array<number> = []
+    if (!!flow4Detector) {
+      permissionsIDS.push(permissionToFlow4Detector.id)
+    }
+    
+    if (!!flow4Energy) {
+      permissionsIDS.push(permissionToFlow4Energy.id)
+    }
+
+    await clientsAccessRepository.create({
+      client_FK: Number(clientID),
+      permissions: permissionsIDS
+    })
+      .catch(error => {
+        console.log('erro ao criar permissão')
+      })
+
+    
+    await apiAccessClientsRepository.update({
       identifiers: {
         id: Number(clientID)
       },
@@ -311,17 +359,13 @@ export default class ApiAccessController {
         able: able !== undefined ? Number(able) : undefined
       }
     })
-      .then(() => {
-        return res.status(201).json({
-          message: 'api access clients atualizado com sucesso!'
-        })
+      .catch(error => {
+        // console.log(error)
       })
-      .catch((error: AppError) => {
-        return errorHandler(
-          new AppError(error.name, 403, error.message, true),
-          res
-        )
-      })
+
+    return res.status(201).json({
+      message: 'api access clients atualizado com sucesso!'
+    })
   }
 
   public delete = async (req: Request, res: Response) => {
