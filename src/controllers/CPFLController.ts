@@ -376,11 +376,16 @@ export default class CPFLController {
    * 2 = em agendamento
    * 3 = manutenção em andamento
    * 4 = manutenção finalizada
+   * 5 = 20 minutos ou menos para a manutenção
    * @param  {number} finalSeconds is a number is seconds to actual time at time to maintenence
    * @param  {number} finalMaintenence is a number is seconds to actual time at time to final of maintenence
    */
   private getStatus = (finalSeconds: number, finalMaintenence: number) => {
     let status = 2
+
+    if (finalSeconds <= 1200 && finalSeconds > 0 && finalMaintenence > 0) {
+      status = 5
+    }
 
     if (finalSeconds <= 0 && finalMaintenence > 0) {
       status = 3
@@ -521,6 +526,7 @@ export default class CPFLController {
         if (finalMaintenance < 0) {
           finalMaintenance = 0
         }
+
         const status = this.getStatus(finalSeconds, finalMaintenance)
 
         await cpflDataRepository.update({

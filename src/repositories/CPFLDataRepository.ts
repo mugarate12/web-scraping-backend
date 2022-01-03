@@ -187,11 +187,11 @@ export default class CPFLDataRepository {
     }
 
     if (!!payload) {
-      if (!!payload.final_seconds) {
+      if (!!payload.final_seconds || Number(payload.final_seconds) === 0) {
         updatePayload.final_seconds = payload.final_seconds
       }
 
-      if (!!payload.final_maintenance) {
+      if (!!payload.final_maintenance || Number(payload.final_maintenance) === 0) {
         updatePayload.final_maintenance = payload.final_maintenance
       }
 
