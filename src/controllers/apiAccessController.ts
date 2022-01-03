@@ -227,13 +227,19 @@ export default class ApiAccessController {
     })
       .then(response => {
         if (response.able === 2) {
-          return res.status(406).json({
+          res.status(406).json({
             message: 'cliente está desabilitado, por favor, entre em contato com o administrador do sistema'
           })
+
+          return true
+        } else {
+          return false
         }
       })
       .catch(error => {
         console.log(error)
+      
+        return false
       })
   }
 
@@ -436,7 +442,10 @@ export default class ApiAccessController {
       serviceName
     } = req.params
 
-    this.verifyClientAble(res)
+    const result = await this.verifyClientAble(res)
+    if (!!result) {
+      return
+    }
 
     if (String(serviceName) === 'all') {
       const data = await this.allServicesStatus()
@@ -496,7 +505,10 @@ export default class ApiAccessController {
       serviceName
     } = req.params
 
-    this.verifyClientAble(res)
+    const result = await this.verifyClientAble(res)
+    if (!!result) {
+      return
+    }
 
     if (String(serviceName) === 'all') {
       const data = await this.allServicesChanges()

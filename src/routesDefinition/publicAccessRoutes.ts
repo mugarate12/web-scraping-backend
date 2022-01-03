@@ -11,7 +11,9 @@ import {
   createApiClients,
   publicAccessJWT,
   readApiInformationByUser,
-  readApiInformations
+  readApiInformations,
+  readFlow4DetectorInformation,
+  readFlow4EnergyInformation
 } from './../middlewares'
 
 export default function publicAccessRoutes(routes: Router) {
@@ -54,13 +56,13 @@ export default function publicAccessRoutes(routes: Router) {
     [Segments.QUERY]: Joi.object().keys({
       token: Joi.string().required()
     })
-  }), publicAccessJWT, readApiInformations, apiAccessController.status)
+  }), publicAccessJWT, readApiInformations, readFlow4DetectorInformation, apiAccessController.status)
 
   routes.get('/public/access/changes/:serviceName', celebrate({
     [Segments.QUERY]: Joi.object().keys({
       token: Joi.string().required()
     })
-  }), publicAccessJWT, readApiInformations, apiAccessController.changes)
+  }), publicAccessJWT, readApiInformations, readFlow4DetectorInformation, apiAccessController.changes)
 
 
   // CPFL ROUTES
@@ -71,7 +73,7 @@ export default function publicAccessRoutes(routes: Router) {
     [Segments.PARAMS]: Joi.object().keys({
       state: Joi.string().required()
     })
-  }), publicAccessJWT, readApiInformations, cpflController.getCPFLStateJson)
+  }), publicAccessJWT, readApiInformations, readFlow4EnergyInformation, cpflController.getCPFLStateJson)
   
   routes.get('/public/access/cpfl/:state/:city', celebrate({
     [Segments.QUERY]: Joi.object().keys({
@@ -81,7 +83,7 @@ export default function publicAccessRoutes(routes: Router) {
       state: Joi.string().required(),
       city: Joi.string().required()
     })
-  }), publicAccessJWT, readApiInformations, cpflController.getCPFLCityJson)
+  }), publicAccessJWT, readApiInformations, readFlow4EnergyInformation, cpflController.getCPFLCityJson)
 
   routes.get('/public/access/cpfl/count/status/:state', celebrate({
     [Segments.QUERY]: Joi.object().keys({
@@ -89,7 +91,7 @@ export default function publicAccessRoutes(routes: Router) {
       bairro: Joi.string().optional(),
       rua: Joi.string().optional()
     })
-  }), publicAccessJWT, readApiInformations, cpflController.getCountStatus)
+  }), publicAccessJWT, readApiInformations, readFlow4EnergyInformation, cpflController.getCountStatus)
   
   routes.get('/public/access/cpfl/count/causas/:state', celebrate({
     [Segments.QUERY]: Joi.object().keys({
@@ -97,11 +99,11 @@ export default function publicAccessRoutes(routes: Router) {
       bairro: Joi.string().optional(),
       rua: Joi.string().optional()
     })
-  }), publicAccessJWT, readApiInformations, cpflController.getCountReasons)
+  }), publicAccessJWT, readApiInformations, readFlow4EnergyInformation, cpflController.getCountReasons)
 
   routes.get('/public/access/cpfl/count/resumo/actualDate', celebrate({
     [Segments.QUERY]: Joi.object().keys({
       token: Joi.string().required()
     })
-  }), publicAccessJWT, readApiInformations, cpflController.getSummary)
+  }), publicAccessJWT, readApiInformations, readFlow4EnergyInformation, cpflController.getSummary)
 } 
