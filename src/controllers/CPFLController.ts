@@ -1003,11 +1003,18 @@ export default class CPFLController {
   }
 
   public getSummary = async (req: Request, res: Response) => {
+    const tomorrowDayDate = moment().subtract(1, 'days').format('DD/MM/YYYY')
     const actualDate = moment().format('DD/MM/YYYY')
+    const nextDayDate = moment().add(1, 'days').format('DD/MM/YYYY')
 
     const onSchedule = await cpflDataRepository.indexPerDate({
       date: actualDate,
       status: 2
+    })
+
+    const executeIn20Minutes = await cpflDataRepository.index({
+      date: actualDate,
+      status: 5
     })
 
     const inMaintenance = await cpflDataRepository.index({
@@ -1015,16 +1022,25 @@ export default class CPFLController {
       date: actualDate
     })
 
-    const maintanceScheduleToToday = await cpflDataRepository.index({
+    const maintanceSchedulein24h = await cpflDataRepository.indexPerDateWithLimit({
       status: 2,
-      date: actualDate
+      lowerLimit: actualDate,
+      higherLimit: nextDayDate
+    })
+    
+    const finishedIn24h = await cpflDataRepository.indexPerDateWithLimit({
+      status: 4,
+      lowerLimit: tomorrowDayDate,
+      higherLimit: actualDate
     })
 
     return res.status(200).json({
       data: {
         totalDeAgendamentos: onSchedule.length,
         manutencoesAgora: inMaintenance.length,
-        manutencoesEm24h: maintanceScheduleToToday.length
+        manutencoesEm24h: maintanceSchedulein24h.length,
+        concluidasEm24h: finishedIn24h.length,
+        paraIniciaremEm20min: executeIn20Minutes.length
       }
     })
   }

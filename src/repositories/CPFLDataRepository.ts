@@ -71,6 +71,13 @@ interface indexPerDateInterface {
   date: string
 }
 
+interface indexPerDateWithLimitInterface {
+  lowerLimit: string,
+  higherLimit: string,
+
+  status?: number
+}
+
 interface getCPFLDataInterface {
   state: string,
   city: string,
@@ -116,6 +123,24 @@ export default class CPFLDataRepository {
     if (!!street) query = query.where('street', '=', street)
     if (!!date) query = query.where('date', '=', date)
     if (!!status) query = query.where('status', '=', status)
+
+    return query
+      .select('*')
+      .then(cpflDatas => cpflDatas)
+      .catch(error => {
+        throw new AppError('Database Error', 406, error.message, true)
+      })
+  }
+
+  public indexPerDateWithLimit = async ({ lowerLimit, higherLimit, status }: indexPerDateWithLimitInterface) => {
+    let query = this.reference()
+
+    query = query.where('date', '>=', lowerLimit)
+      .andWhere('date', '<=', higherLimit)
+
+    if (!!status) {
+      query = query.where('status', '=', status)
+    }
 
     return query
       .select('*')
