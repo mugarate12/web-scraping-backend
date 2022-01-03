@@ -43,6 +43,13 @@ export default function publicAccessRoutes(routes: Router) {
     })
   }), authJWT, createApiClients, apiAccessController.delete)
 
+  routes.get('/public/client/permissions/:clientID', celebrate({
+    [Segments.PARAMS]: Joi.object().keys({
+      clientID: Joi.number().required()
+    })
+  }), authJWT, readApiInformationByUser, apiAccessController.getPermissions)
+
+  // DOWN DETECTOR ROUTES
   routes.get('/public/access/status/:serviceName', celebrate({
     [Segments.QUERY]: Joi.object().keys({
       token: Joi.string().required()

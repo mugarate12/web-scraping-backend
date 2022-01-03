@@ -314,6 +314,28 @@ export default class ApiAccessController {
       data: data
     })
   }
+
+  public getPermissions = async (req: Request, res: Response) => {
+    const { clientID } = req.params
+
+    const clientsAccess = await clientsAccessRepository.index(Number(clientID))
+    
+    let permissions: Array<string> = []
+    for (let index = 0; index < clientsAccess.length; index++) {
+      const clientAccess = clientsAccess[index]
+      
+      await permissionsRepository.get({ id: clientAccess.permission_FK })
+        .then(permission => {
+          if (!!permission) {
+            permissions.push(permission.identifier)
+          }
+        })
+    }
+
+    return res.status(200).json({
+      data: permissions
+    })
+  }
   
   public update = async (req: Request, res: Response) => {
     const { clientID } = req.params
@@ -334,11 +356,37 @@ export default class ApiAccessController {
 
     let permissionsIDS: Array<number> = []
     if (!!flow4Detector) {
-      permissionsIDS.push(permissionToFlow4Detector.id)
+      const havePermission = await clientsAccessRepository.get({
+        client_FK: Number(clientID),
+        permission_FK: permissionToFlow4Detector.id
+      })
+      .then(client => client)
+
+      if (!havePermission) {
+        permissionsIDS.push(permissionToFlow4Detector.id)
+      }
+    } else {
+      await clientsAccessRepository.delete({ 
+        client_FK: Number(clientID),
+        permission_FK: permissionToFlow4Detector.id
+      })
     }
     
     if (!!flow4Energy) {
-      permissionsIDS.push(permissionToFlow4Energy.id)
+      const havePermission = await clientsAccessRepository.get({
+        client_FK: Number(clientID),
+        permission_FK: permissionToFlow4Energy.id
+      })
+      .then(client => client)
+
+      if (!havePermission) {
+        permissionsIDS.push(permissionToFlow4Energy.id)
+      }
+    } else {
+      await clientsAccessRepository.delete({ 
+        client_FK: Number(clientID),
+        permission_FK: permissionToFlow4Energy.id
+      })
     }
 
     await clientsAccessRepository.create({

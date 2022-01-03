@@ -23,6 +23,7 @@ interface getClientAccessInterface {
 
 interface deleteClientAccessInterface {
   client_FK: number,
+  permission_FK?: number
 }
 
 export default class ClientsAccessRepository {
@@ -74,8 +75,13 @@ export default class ClientsAccessRepository {
       })
   }
 
-  public index = async () => {
+  public index = async (clientID?: number) => {
     let query = this.reference()
+
+    if (!!clientID) {
+      query = query
+        .where('client_FK', '=', clientID)
+    }
 
     return query
       .select('*')
@@ -86,9 +92,17 @@ export default class ClientsAccessRepository {
   }
 
   public delete = async ({
-    client_FK
+    client_FK,
+    permission_FK
   }: deleteClientAccessInterface) => {
-    return this.reference()
+    let query = this.reference()
+
+    if (!!permission_FK) {
+      query = query
+        .where('permission_FK', '=', permission_FK)
+    }
+
+    return query
       .where('client_FK', '=', client_FK)
       .delete()
       .then(() => {
