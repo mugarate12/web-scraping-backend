@@ -66,6 +66,8 @@ interface indexPerDateInterface {
   district?: string,
   street?: string,
 
+  status?: number,
+
   date: string
 }
 
@@ -123,7 +125,7 @@ export default class CPFLDataRepository {
       })
   }
 
-  public indexPerDate = async ({ state, district, street, date }: indexPerDateInterface) => {
+  public indexPerDate = async ({ status, state, district, street, date }: indexPerDateInterface) => {
     let query = this.reference()
 
     const convertHour = Number(process.env.CONVERT_TO_TIMEZONE)
@@ -152,6 +154,10 @@ export default class CPFLDataRepository {
     
     if (!!street) {
       query = query.where('street', '=', street)
+    }
+
+    if (!!status) {
+      query = query.where('status', '=', status)
     }
 
     return query

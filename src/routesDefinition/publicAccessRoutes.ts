@@ -98,4 +98,10 @@ export default function publicAccessRoutes(routes: Router) {
       rua: Joi.string().optional()
     })
   }), publicAccessJWT, readApiInformations, cpflController.getCountReasons)
+
+  routes.get('/public/access/cpfl/count/resumo/actualDate', celebrate({
+    [Segments.QUERY]: Joi.object().keys({
+      token: Joi.string().required()
+    })
+  }), publicAccessJWT, readApiInformations, cpflController.getSummary)
 } 

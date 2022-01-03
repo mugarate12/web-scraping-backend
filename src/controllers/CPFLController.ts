@@ -1001,4 +1001,31 @@ export default class CPFLController {
       data: dataFormatted
     })
   }
+
+  public getSummary = async (req: Request, res: Response) => {
+    const actualDate = moment().format('DD/MM/YYYY')
+
+    const onSchedule = await cpflDataRepository.indexPerDate({
+      date: actualDate,
+      status: 2
+    })
+
+    const inMaintenance = await cpflDataRepository.index({
+      status: 3,
+      date: actualDate
+    })
+
+    const maintanceScheduleToToday = await cpflDataRepository.index({
+      status: 2,
+      date: actualDate
+    })
+
+    return res.status(200).json({
+      data: {
+        totalDeAgendamentos: onSchedule.length,
+        manutencoesAgora: inMaintenance.length,
+        manutencoesEm24h: maintanceScheduleToToday.length
+      }
+    })
+  }
 }
