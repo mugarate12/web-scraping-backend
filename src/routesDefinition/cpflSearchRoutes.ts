@@ -3,6 +3,12 @@ import { Router } from 'express'
 
 import {  cpflController, cpflSearchController } from './../controllers'
 
+import {
+  authJWT,
+  createServicePermission,
+  readServicesPermission
+} from './../middlewares'
+
 function cpflSearchRoutes(routes: Router) {
   routes.post('/service/cpfl', celebrate({
     [Segments.BODY]: Joi.object().keys({
@@ -11,7 +17,7 @@ function cpflSearchRoutes(routes: Router) {
       dealership: Joi.string().required(),
       update_time: Joi.number().required()
     })
-  }), cpflSearchController.create)
+  }), authJWT, cpflSearchController.create)
 
   routes.get('/service/cpfl', cpflSearchController.index)
 
@@ -22,13 +28,13 @@ function cpflSearchRoutes(routes: Router) {
     [Segments.BODY]: Joi.object().keys({
       able: Joi.number().required().min(1).max(2)
     })
-  }), cpflSearchController.update)
+  }), authJWT, cpflSearchController.update)
 
   routes.delete('/service/cpfl/:id', celebrate({
     [Segments.PARAMS]: Joi.object().keys({
       id: Joi.number().required()
     })
-  }), cpflSearchController.delete)
+  }), authJWT, cpflSearchController.delete)
 
   routes.get('/service/cpfl/states/:dealership', cpflSearchController.getStates)
   routes.get('/service/cpfl/states/:dealership/:state/cities', cpflSearchController.getCities)

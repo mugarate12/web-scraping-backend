@@ -13,6 +13,7 @@ const USERS_TABLE_NAME = 'users'
 
 const CPFL_DATA = 'cpfl_data'
 const CPFL_SEARCH = 'cpfl_search'
+const CPFL_SEARCH_UPDATE_TIME = 'cpfl_search_update_time'
 const CPFL_SEARCH_NOW = 'cpfl_search_now'
 
 module.exports = {
@@ -31,5 +32,6 @@ module.exports = {
 
   CPFL_DATA,
   CPFL_SEARCH,
+  CPFL_SEARCH_UPDATE_TIME,
   CPFL_SEARCH_NOW
 }

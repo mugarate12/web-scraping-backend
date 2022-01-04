@@ -112,10 +112,10 @@ export default class CPFLSearchRepository {
   }
 
   public update = async ({ id, able }: updateCPFLSearchInterface) => {
+    console.log(id, able)
     return await this.reference()
       .where({ id })
       .update({ able })
-      .first()
       .then(() => {
         return
       })
