@@ -3,7 +3,7 @@ import dotenv from 'dotenv'
 import moment from 'moment'
 import puppeteer from 'puppeteer'
 
-import { cpflSearchRepository, cpflSearchNowRepository } from './../repositories'
+import { cpflSearchRepository, cpflSearchNowRepository, cpflSearchUpdateTimeRepository } from './../repositories'
 import { cpflController } from './../controllers'
 import { FgCyan, FgBlue, Reset } from './../utils/colorsInTerminalReference'
 
@@ -48,6 +48,7 @@ async function routine(browser: puppeteer.Browser, updateTime: number) {
     ENERGY --> começo da execução: ${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}
     `)
 
+    const lastExecution = moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')
     // const browser = await cpflController.runBrowser()
 
     const headquarter = createHeadquarterOfRequests(requests)
@@ -58,6 +59,8 @@ async function routine(browser: puppeteer.Browser, updateTime: number) {
       const requestsPromises = arrayOfRequests.map(async (request) => {
         await cpflController.runCpflRoutine(browser, request.state, request.city)
           .catch(error => {})
+
+        await cpflSearchUpdateTimeRepository.update({ cpfl_search_FK: request.id, last_execution: lastExecution })
       })
 
       await Promise.all([ ...requestsPromises ])

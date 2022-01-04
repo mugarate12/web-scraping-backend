@@ -2,7 +2,9 @@ import { Request, Response } from 'express'
 
 import { 
   cpflSearchRepository,
-  cpflSearchNowRepository
+  cpflSearchNowRepository,
+  cpflSearchUpdateTimeRepository,
+  cpflDataRepository
 } from './../repositories'
 
 import {
@@ -60,7 +62,12 @@ export default class CPFLSearchController {
     }
 
     return await cpflSearchRepository.create({ city, state, dealership, update_time: Number(update_time) })
-      .then(() => {
+      .then(async () => {
+        const search = await cpflSearchRepository.get({ state, city, update_time: Number(update_time), dealership })
+        if (!!search) {
+          cpflSearchUpdateTimeRepository.create({ cpfl_search_FK: search.id })
+        }
+
         return res.status(201).json({
           message: 'serviço criado com sucesso!'
         })
@@ -110,8 +117,11 @@ export default class CPFLSearchController {
   public delete = async (req: Request, res: Response) => {
     const { id } = req.params
 
+    await cpflSearchUpdateTimeRepository.delete({ cpfl_search_FK: Number(id) })
+    // await cpflDataRepository
+
     return await cpflSearchRepository.delete({ id: Number(id) })
-      .then(() => {
+      .then(async () => {
         return res.status(200).json({
           message: 'serviço deletado com sucesso!'
         })
@@ -169,5 +179,20 @@ export default class CPFLSearchController {
       message: 'cidades recuperadas com sucesso!',
       data: cities
     })
+  }
+
+  public getLastExecution = async (req: Request, res: Response) => {
+    return await cpflSearchUpdateTimeRepository.index()
+      .then(searchs => {
+        return res.status(200).json({
+          data: searchs
+        })
+      })
+      .catch((error: AppError) => {
+        return errorHandler(
+          new AppError(error.name, 403, error.message, true),
+          res
+        )
+      })
   }
 }

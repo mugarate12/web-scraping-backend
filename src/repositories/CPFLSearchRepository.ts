@@ -91,7 +91,7 @@ export default class CPFLSearchRepository {
       })
   }
 
-  public get = async ({ id, state, city, able }: getCPFLSearchInterface) => {
+  public get = async ({ id, state, city, able, dealership, update_time }: getCPFLSearchInterface) => {
     let query = this.reference()
 
     if (!!id) {
@@ -108,6 +108,14 @@ export default class CPFLSearchRepository {
 
     if (!!able) {
       query = query.where('able', '=', able)
+    }
+
+    if (!!dealership) {
+      query = query.where('dealership', '=', dealership)
+    }
+    
+    if (!!update_time) {
+      query = query.where('update_time', '=', update_time)
     }
 
     return await query

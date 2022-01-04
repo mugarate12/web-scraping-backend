@@ -36,6 +36,8 @@ function cpflSearchRoutes(routes: Router) {
     })
   }), authJWT, cpflSearchController.delete)
 
+  routes.get('/service/cpfl/updateTime', cpflSearchController.getLastExecution)
+
   routes.get('/service/cpfl/states/:dealership', cpflSearchController.getStates)
   routes.get('/service/cpfl/states/:dealership/:state/cities', cpflSearchController.getCities)
   routes.get('/service/cpfl/dealerships', cpflSearchController.getDealerShips)
