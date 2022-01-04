@@ -6,7 +6,7 @@
       "exec_mode": "cluster",
       "name": "primary",
       "instance_var": "INSTANCE_ID",
-      "cron_restart": "*/26 * * * *",
+      "cron_restart": "7 * * * *",
       "watch": true,
       "env_production": {
         "name": "prod-primary",
