@@ -68,11 +68,19 @@ export default class CPFLSearchRepository {
       })
   }
 
-  public index = async ({ able }: indexCPFLSearchInterface) => {
+  public index = async ({ able, dealership, update_time }: indexCPFLSearchInterface) => {
     let query = this.reference()
 
     if (!!able) {
       query = query.where('able', '=', able)
+    }
+
+    if (!!dealership) {
+      query = query.where('dealership', '=', dealership)
+    }
+
+    if (!!update_time) {
+      query = query.where('update_time', '=', update_time)
     }
 
     return await query
