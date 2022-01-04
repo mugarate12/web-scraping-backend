@@ -98,9 +98,25 @@ export default class CPFLSearchController {
 
   public update = async (req: Request, res: Response) => {
     const { id } = req.params
-    const { able } = req.body
+    const { able, updateTime } = req.body
+
+    let update: {
+      able?: number,
+      update_time?: number
+    } = {}
+
+    if (!!able) {
+      update.able = Number(able)
+    }
+
+    if (!!updateTime) {
+      update.update_time = Number(updateTime)
+    }
     
-    return await cpflSearchRepository.update({ id: Number(id), able: Number(able) })
+    return await cpflSearchRepository.update({ 
+      id: Number(id), 
+      ...update
+    })
       .then(() => {
         return res.status(200).json({
           message: 'serviço atualizado com sucesso!'

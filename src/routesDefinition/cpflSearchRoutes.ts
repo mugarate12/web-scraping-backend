@@ -26,9 +26,10 @@ function cpflSearchRoutes(routes: Router) {
       id: Joi.number().required()
     }),
     [Segments.BODY]: Joi.object().keys({
-      able: Joi.number().required().min(1).max(2)
+      updateTime: Joi.number().optional(),
+      able: Joi.number().optional().min(1).max(2)
     })
-  }), authJWT, cpflSearchController.update)
+  }), cpflSearchController.update)
 
   routes.delete('/service/cpfl/:id', celebrate({
     [Segments.PARAMS]: Joi.object().keys({

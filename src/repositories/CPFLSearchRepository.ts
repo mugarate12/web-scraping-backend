@@ -40,7 +40,7 @@ interface getCPFLSearchInterface {
 
 interface updateCPFLSearchInterface {
   id: number,
-  able: number,
+  able?: number,
   update_time?: number
 }
 
@@ -127,11 +127,23 @@ export default class CPFLSearchRepository {
       })
   }
 
-  public update = async ({ id, able }: updateCPFLSearchInterface) => {
-    console.log(id, able)
+  public update = async ({ id, able, update_time }: updateCPFLSearchInterface) => {
+    let update: {
+      able?: number,
+      update_time?: number
+    } = {}
+
+    if (!!able) {
+      update.able = Number(able)
+    }
+
+    if (!!update_time) {
+      update.update_time = Number(update_time)
+    }
+
     return await this.reference()
       .where({ id })
-      .update({ able })
+      .update({ ...update })
       .then(() => {
         return
       })
