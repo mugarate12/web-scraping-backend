@@ -12,4 +12,5 @@ exports.up = function(knex) {
 }
 
 exports.down = function(knex) {
+  return knex.schema.dropTable(SERVICES_UPDATE_TIME_TABLE_NAME)
 }

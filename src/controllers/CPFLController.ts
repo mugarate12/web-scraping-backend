@@ -1044,4 +1044,21 @@ export default class CPFLController {
       }
     })
   }
+
+  public updateManually = async (req: Request, res: Response) => {
+    const { state, city } = req.params
+
+    console.log('object')
+
+    const browser = await this.runBrowser()
+
+    await this.runCpflRoutine(browser, String(state), String(city))
+      .catch(error => {})
+
+    await this.closeBrowser(browser)
+
+    return res.status(200).json({
+      message: 'serviço atualizado com sucesso!'
+    })
+  }
 }
