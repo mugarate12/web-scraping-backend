@@ -5,7 +5,8 @@ import moment from 'moment'
 import dotenv from 'dotenv'
 
 import {
-  cpflDataRepository
+  cpflDataRepository,
+  cpflSearchRepository
 } from './../repositories'
 
 import { AppError, errorHandler } from './../utils/handleError'
@@ -671,6 +672,10 @@ export default class CPFLController {
       await this.updateCPFLData({ data, state: state, city: city })
     })
     await Promise.all(requests)
+  }
+
+  public deleteAllDataWithStatusFinished = async () => {
+    await cpflDataRepository.delete({ status: 4 })
   }
 
   public runUpdateTimeRoutine = async (state: string, city: string) => {

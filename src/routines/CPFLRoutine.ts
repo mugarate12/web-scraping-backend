@@ -123,6 +123,20 @@ async function updateServicesAdded(browser: puppeteer.Browser) {
     `)  }
 }
 
+async function deleteDataWithStatusFinished() {
+  console.log(`${FgBlue}%s${Reset}`, `
+    ENERGY --> Rotina para deletar todos os serviços que foram finalizados (status 4)\n
+    ENERGY --> começo da execução: ${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}
+    `)
+
+  await cpflController.deleteAllDataWithStatusFinished()
+
+  console.log(`${FgBlue}%s${Reset}`, `
+    ENERGY --> Rotina para deletar todos os serviços que foram finalizados (status 4)\n
+    ENERGY --> final da execução: ${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}
+    `)
+}
+
 export default async () => {
   const fifteenMinutesBrowser = await cpflController.runBrowser()
   const thirtyMinutesBrowser = await cpflController.runBrowser()
@@ -155,6 +169,10 @@ export default async () => {
     await updateServicesAdded(serviceAddedBrowser)
   })
 
+  const deleteDataWithStatusFinishedRoutine = new CronJob.CronJob('15 0 * * *', async () => {
+    await deleteDataWithStatusFinished()
+  })
+
   fifteenRoutine.start()
   thirtyRoutine.start()
   fortyFiveRoutine.start()
@@ -163,4 +181,5 @@ export default async () => {
   updateServicesAddedRoutine.start()
   
   updateTimeRoutine.start()
+  deleteDataWithStatusFinishedRoutine.start()
 }
