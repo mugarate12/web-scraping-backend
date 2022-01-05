@@ -9,6 +9,7 @@ import {
 import {
   authJWT,
   createApiClients,
+  cpflEnergyPermissions,
   publicAccessJWT,
   readApiInformationByUser,
   readApiInformations,
@@ -73,7 +74,7 @@ export default function publicAccessRoutes(routes: Router) {
     [Segments.PARAMS]: Joi.object().keys({
       state: Joi.string().required()
     })
-  }), publicAccessJWT, readApiInformations, readFlow4EnergyInformation, cpflController.getCPFLStateJson)
+  }), publicAccessJWT, readApiInformations, readFlow4EnergyInformation, cpflEnergyPermissions, cpflController.getCPFLStateJson)
   
   routes.get('/public/access/cpfl/:state/:city', celebrate({
     [Segments.QUERY]: Joi.object().keys({
@@ -91,7 +92,7 @@ export default function publicAccessRoutes(routes: Router) {
       bairro: Joi.string().optional(),
       rua: Joi.string().optional()
     })
-  }), publicAccessJWT, readApiInformations, readFlow4EnergyInformation, cpflController.getCountStatus)
+  }), publicAccessJWT, readApiInformations, readFlow4EnergyInformation, cpflEnergyPermissions, cpflController.getCountStatus)
   
   routes.get('/public/access/cpfl/count/causas/:state', celebrate({
     [Segments.QUERY]: Joi.object().keys({
@@ -99,11 +100,11 @@ export default function publicAccessRoutes(routes: Router) {
       bairro: Joi.string().optional(),
       rua: Joi.string().optional()
     })
-  }), publicAccessJWT, readApiInformations, readFlow4EnergyInformation, cpflController.getCountReasons)
+  }), publicAccessJWT, readApiInformations, readFlow4EnergyInformation, cpflEnergyPermissions, cpflController.getCountReasons)
 
   routes.get('/public/access/cpfl/count/resumo/actualDate', celebrate({
     [Segments.QUERY]: Joi.object().keys({
       token: Joi.string().required()
     })
-  }), publicAccessJWT, readApiInformations, readFlow4EnergyInformation, cpflController.getSummary)
+  }), publicAccessJWT, readApiInformations, readFlow4EnergyInformation, cpflEnergyPermissions, cpflController.getSummary)
 } 

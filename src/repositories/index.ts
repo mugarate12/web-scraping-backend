@@ -8,6 +8,7 @@ import CPFLSearchUpdateTimeRepository from './CPFLSearchUpdateTimeRepository'
 import DownDetectorChangeRepository from './downDetectorChangeRepository'
 import DownDetectorHistRepository from "./downDetectorHistRepository"
 import DownDetectorRoutineExecutionRepository from './downDetectorRoutineExecution'
+import EnergyPermissionsRepository from './EnergyPermissionsRepository'
 import MonitoringRepository from "./monitoringRepository"
 import PermissionsRepository from './permissionsRepository'
 import ServicesRepository from "./servicesRepository"
@@ -25,6 +26,7 @@ export const cpflSearchUpdateTimeRepository = new CPFLSearchUpdateTimeRepository
 export const downDetectorChangeRepository = new DownDetectorChangeRepository()
 export const downDetectorHistRepository = new DownDetectorHistRepository()
 export const downDetectorRoutineExecutionRepository = new DownDetectorRoutineExecutionRepository()
+export const energyPermissionsRepository = new EnergyPermissionsRepository()
 export const monitoringRepository = new MonitoringRepository()
 export const permissionsRepository = new PermissionsRepository()
 export const servicesRepository = new ServicesRepository()

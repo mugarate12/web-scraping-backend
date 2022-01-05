@@ -1,4 +1,5 @@
 import auth from "./authJWT"
+import CPFLEnergyPermissions from "./cpflEnergyPermissions"
 import createApiClientsMiddleware from "./createApiClients"
 import createService from './createServices'
 import createUser from "./createUser"
@@ -11,6 +12,7 @@ import viewFlow4DetectorInformation from "./viewFlow4DetectorInformation"
 import viewFlow4EnergyInformation from "./viewFlow4EnergyInformations"
 
 export const authJWT = auth
+export const cpflEnergyPermissions = CPFLEnergyPermissions
 export const createApiClients = createApiClientsMiddleware
 export const createUserPermission = createUser
 export const createServicePermission = createService

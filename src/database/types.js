@@ -16,6 +16,8 @@ const CPFL_SEARCH = 'cpfl_search'
 const CPFL_SEARCH_UPDATE_TIME = 'cpfl_search_update_time'
 const CPFL_SEARCH_NOW = 'cpfl_search_now'
 
+const ENERGY_PERMISSIONS_TABLE_NAME = 'energy_permissions'
+
 module.exports = {
   API_ACCESS_CLIENTS_TABLE_NAME,
   API_ACCESS_TOKENS_TABLE_NAME,
@@ -33,5 +35,7 @@ module.exports = {
   CPFL_DATA,
   CPFL_SEARCH,
   CPFL_SEARCH_UPDATE_TIME,
-  CPFL_SEARCH_NOW
+  CPFL_SEARCH_NOW,
+
+  ENERGY_PERMISSIONS_TABLE_NAME
 }
