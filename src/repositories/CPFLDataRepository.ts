@@ -56,6 +56,9 @@ interface indexCPFLDataInterface {
   district?: string,
   street?: string,
 
+  states?: Array<string>,
+  cities?: Array<string>,
+
   date?: string,
 
   status?: number
@@ -63,8 +66,12 @@ interface indexCPFLDataInterface {
 
 interface indexPerDateInterface {
   state?: string,
+  city?: string,
   district?: string,
   street?: string,
+
+  states?: Array<string>,
+  cities?: Array<string>,
 
   status?: number,
 
@@ -74,6 +81,9 @@ interface indexPerDateInterface {
 interface indexPerDateWithLimitInterface {
   lowerLimit: string,
   higherLimit: string,
+
+  states?: Array<string>,
+  cities?: Array<string>,
 
   status?: number
 }
@@ -123,11 +133,40 @@ export default class CPFLDataRepository {
       })
   }
 
-  public index = async ({ state, city, street, district, date, status }: indexCPFLDataInterface) => {
+  public index = async ({ state, city, street, district, date, status, states, cities }: indexCPFLDataInterface) => {
     let query = this.reference()
 
-    if (!!state) query = query.where('state', '=', state)
-    if (!!city) query = query.where('city', '=', city)
+    // if (!!state) query = query.where('state', '=', state)
+    // if (!!city) query = query.where('city', '=', city)
+
+    if (!!state && !states) {
+      query = query.where('state', '=', state)
+    }
+
+    if ((!state && !!states && states.length > 0) || (!!state && !!states && states.length > 0)) {
+      query = query.where(function() {
+        this.where('state', '=', states[0])
+
+        states.slice(1, states.length).forEach((stateValue) => {
+          this.orWhere('state', '=', stateValue)
+        })
+      })
+    }
+
+    if (!!city && !cities) {
+      if (!!city) query = query.where('city', '=', city)
+    }
+
+    if ((!city && !!cities && cities.length > 0) || (!!city && !!cities && cities.length > 0)) {
+      query = query.where(function() {
+        this.where('city', '=', cities[0])
+  
+        cities.slice(1, cities.length).forEach((cityValue) => {
+          this.orWhere('city', '=', cityValue)
+        })
+      })
+    }
+
     if (!!district) query = query.where('district', '=', district)
     if (!!street) query = query.where('street', '=', street)
     if (!!date) query = query.where('date', '=', date)
@@ -141,11 +180,34 @@ export default class CPFLDataRepository {
       })
   }
 
-  public indexPerDateWithLimit = async ({ lowerLimit, higherLimit, status }: indexPerDateWithLimitInterface) => {
+  public indexPerDateWithLimit = async ({ lowerLimit, higherLimit, status, states, cities }: indexPerDateWithLimitInterface) => {
     let query = this.reference()
 
-    query = query.where('date', '>=', lowerLimit)
-      .andWhere('date', '<=', higherLimit)
+    query = query.where(function() {
+      this
+        .where('date', '>=', lowerLimit)
+        .andWhere('date', '<=', higherLimit)
+    })
+
+    if (!!states && states.length > 0) {
+      query = query.where(function() {
+        this.where('state', '=', states[0])
+
+        states.slice(1, states.length).forEach((stateValue) => {
+          this.orWhere('state', '=', stateValue)
+        })
+      })
+    }
+
+    if (!!cities && cities.length > 0) {
+      query = query.where(function() {
+        this.where('city', '=', cities[0])
+
+        cities.slice(1, cities.length).forEach((cityValue) => {
+          this.orWhere('city', '=', cityValue)
+        })
+      })
+    }
 
     if (!!status) {
       query = query.where('status', '=', status)
@@ -159,7 +221,7 @@ export default class CPFLDataRepository {
       })
   }
 
-  public indexPerDate = async ({ status, state, district, street, date }: indexPerDateInterface) => {
+  public indexPerDate = async ({ status, state, district, street, date, states, cities }: indexPerDateInterface) => {
     let query = this.reference()
 
     const convertHour = Number(process.env.CONVERT_TO_TIMEZONE)
@@ -170,16 +232,38 @@ export default class CPFLDataRepository {
       .format('DD/MM/YYYY')
 
     if (Number(date.split('/')[2]) < Number(firstDayOfNextYear.split('/')[2])) {
-      query = query
-        .where('date', '>=', date)
-        .orWhere('date', '>=', firstDayOfNextYear)
+      query = query.where(function() {
+        this
+          .where('date', '>=', date)
+          .orWhere('date', '>=', firstDayOfNextYear)
+      })
     } else {
       query = query
         .where('date', '>=', date)
     }
     
-    if (!!state) {
+    if (!!state && !states) {
       query = query.where('state', '=', state)
+    }
+
+    if ((!state && !!states && states.length > 0) || (!!state && !!states && states.length > 0)) {
+      query = query.where(function() {
+        this.where('state', '=', states[0])
+
+        states.slice(1, states.length).forEach((stateValue) => {
+          this.orWhere('state', '=', stateValue)
+        })
+      })
+    }
+
+    if (!!cities && cities.length > 0) {
+      query = query.where(function() {
+        this.where('city', '=', cities[0])
+
+        cities.slice(1, cities.length).forEach((cityValue) => {
+          this.orWhere('city', '=', cityValue)
+        })
+      })
     }
     
     if (!!district) {
@@ -193,6 +277,8 @@ export default class CPFLDataRepository {
     if (!!status) {
       query = query.where('status', '=', status)
     }
+
+    // console.log(query.toSQL().toNative())
 
     return query
       .then(data => data)

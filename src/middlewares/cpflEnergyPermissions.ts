@@ -30,8 +30,6 @@ export default async function CPFLEnergyPermissions(req: Request, res: Response,
 		city?: string
 	} = {}
 
-	console.log('propriedades: ', userID, state, city)
-
 	if (!!state) identifiers.state = convertStateToProprierty(state)
 	if (!!city) identifiers.city = city
 
@@ -40,8 +38,6 @@ export default async function CPFLEnergyPermissions(req: Request, res: Response,
 		dealership: 'cpfl',
 	})
 
-	console.log('search:', search)
-
 	let apiAccess = false
 	if (!!search) {
 		await energyPermissionsRepository.get({
@@ -49,7 +45,6 @@ export default async function CPFLEnergyPermissions(req: Request, res: Response,
 			cpfl_search_FK: search.id
 		})
 			.then((energyPermission) => {
-				console.log('energy permission', energyPermission)
 				if (!!energyPermission) {
 					apiAccess = true
 				}

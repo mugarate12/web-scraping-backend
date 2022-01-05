@@ -6,7 +6,8 @@ import dotenv from 'dotenv'
 
 import {
   cpflDataRepository,
-  cpflSearchRepository
+  cpflSearchRepository,
+  energyPermissionsRepository
 } from './../repositories'
 
 import { AppError, errorHandler } from './../utils/handleError'
@@ -818,7 +819,45 @@ export default class CPFLController {
     return stateFormatted
   }
 
+  private statesAndCitiesPermittedOfUser = async (userID: number, formattedState: string) => {
+    if (formattedState !== 'undefined' && formattedState !== 'all' && formattedState.length > 0) {
+      return {
+        states: [ formattedState ],
+        cities: []
+      }
+    } else {
+      let states: Array<string> = []
+      let cities: Array<string> = []
+    
+      const searchs = await cpflSearchRepository.index({ dealership: 'cpfl' })
+      for (let index = 0; index < searchs.length; index++) {
+        const search = searchs[index]
+        
+        const energyPermission = await energyPermissionsRepository.get({
+          cpfl_search_FK: search.id,
+          client_FK: userID
+        })
+
+        if (!!energyPermission) {
+          if (!states.includes(search.state)) {
+            states.push(search.state)
+          }
+
+          if (!cities.includes(search.city)) {
+            cities.push(search.city)
+          }
+        }
+      }
+
+      return {
+        states,
+        cities
+      }
+    }
+  }
+
   public getCountStatus = async (req: Request, res: Response) => {
+    const userID = Number(res.getHeader('userID'))
     const { state } = req.params
     const { bairro, rua } = req.query
 
@@ -826,10 +865,16 @@ export default class CPFLController {
     const convertHour = Number(process.env.CONVERT_TO_TIMEZONE)
     const actualDate = moment().subtract(convertHour, 'hours').format('DD/MM/YYYY')
 
+    const formattedArrayOfStates = await this.statesAndCitiesPermittedOfUser(userID, formattedState)
+    const states = formattedArrayOfStates.states
+    const cities = formattedArrayOfStates.cities
+
     const data = await cpflDataRepository.indexPerDate({ 
       date: actualDate, 
       state: formattedState !== 'undefined' && formattedState !== 'all' && formattedState.length > 0 ? formattedState : undefined,
       district: String(bairro) !== 'undefined' ? String(bairro) : undefined,
+      states: states,
+      cities: cities,
       street: String(rua) !== 'undefined' ? String(rua) : undefined,
     })
     let dataFormatted: statusCountInterface = []
@@ -884,6 +929,7 @@ export default class CPFLController {
   }
 
   public getCountReasons = async (req: Request, res: Response) => {
+    const userID = Number(res.getHeader('userID'))
     const { state } = req.params
     const { bairro, rua } = req.query
 
@@ -891,9 +937,15 @@ export default class CPFLController {
     const convertHour = Number(process.env.CONVERT_TO_TIMEZONE)
     const actualDate = moment().subtract(convertHour, 'hours').format('DD/MM/YYYY')
 
+    const formattedArrayOfStates = await this.statesAndCitiesPermittedOfUser(userID, formattedState)
+    const states = formattedArrayOfStates.states
+    const cities = formattedArrayOfStates.cities
+
     const data = await cpflDataRepository.indexPerDate({ 
       date: actualDate,
       state: formattedState !== 'undefined' && formattedState !== 'all' && formattedState.length > 0 ? formattedState : undefined,
+      states: states,
+      cities: cities,
       district: String(bairro) !== 'undefined' ? String(bairro) : undefined,
       street: String(rua) !== 'undefined' ? String(rua) : undefined,
     })
@@ -1017,35 +1069,51 @@ export default class CPFLController {
   }
 
   public getSummary = async (req: Request, res: Response) => {
+    const userID = Number(res.getHeader('userID'))
+
     const tomorrowDayDate = moment().subtract(1, 'days').format('DD/MM/YYYY')
     const actualDate = moment().format('DD/MM/YYYY')
     const nextDayDate = moment().add(1, 'days').format('DD/MM/YYYY')
 
+    const formattedArrayOfStates = await this.statesAndCitiesPermittedOfUser(userID, 'all')
+    const states = formattedArrayOfStates.states
+    const cities = formattedArrayOfStates.cities
+ 
     const onSchedule = await cpflDataRepository.indexPerDate({
       date: actualDate,
-      status: 2
+      status: 2,
+      states,
+      cities
     })
 
     const executeIn20Minutes = await cpflDataRepository.index({
       date: actualDate,
-      status: 5
+      status: 5,
+      states,
+      cities
     })
 
     const inMaintenance = await cpflDataRepository.index({
       status: 3,
-      date: actualDate
+      date: actualDate,
+      states,
+      cities
     })
 
     const maintanceSchedulein24h = await cpflDataRepository.indexPerDateWithLimit({
       status: 2,
       lowerLimit: actualDate,
-      higherLimit: nextDayDate
+      higherLimit: nextDayDate,
+      states,
+      cities
     })
     
     const finishedIn24h = await cpflDataRepository.indexPerDateWithLimit({
       status: 4,
       lowerLimit: tomorrowDayDate,
-      higherLimit: actualDate
+      higherLimit: actualDate,
+      states,
+      cities
     })
 
     return res.status(200).json({
@@ -1061,8 +1129,6 @@ export default class CPFLController {
 
   public updateManually = async (req: Request, res: Response) => {
     const { state, city } = req.params
-
-    console.log('object')
 
     const browser = await this.runBrowser()
 
