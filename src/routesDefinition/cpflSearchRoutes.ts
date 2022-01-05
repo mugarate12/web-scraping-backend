@@ -15,7 +15,8 @@ function cpflSearchRoutes(routes: Router) {
       state: Joi.string().required(),
       city: Joi.string().required(),
       dealership: Joi.string().required(),
-      update_time: Joi.number().required()
+      update_time: Joi.number().required(),
+      clientsKeys: Joi.array().items(Joi.number()).required()
     })
   }), authJWT, cpflSearchController.create)
 
@@ -39,9 +40,9 @@ function cpflSearchRoutes(routes: Router) {
 
   routes.get('/service/cpfl/updateTime', cpflSearchController.getLastExecution)
 
+  routes.get('/service/cpfl/dealerships', cpflSearchController.getDealerShips)
   routes.get('/service/cpfl/states/:dealership', cpflSearchController.getStates)
   routes.get('/service/cpfl/states/:dealership/:state/cities', cpflSearchController.getCities)
-  routes.get('/service/cpfl/dealerships', cpflSearchController.getDealerShips)
   routes.get('/service/cpfl/updatesTimes', cpflSearchController.getUpdatesTimes)
 }
 

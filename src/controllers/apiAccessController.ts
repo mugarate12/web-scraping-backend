@@ -17,9 +17,16 @@ import {
   servicesRepository,
   permissionsRepository
 } from './../repositories'
+import { permissionsInterface } from './../repositories/permissionsRepository'
 
 import { errorHandler, AppError } from './../utils/handleError'
 import createToken from '../utils/createToken'
+
+type permissionsArray = Array<{
+  dealership: string,
+  state: string,
+  city: string
+}>
 
 export default class ApiAccessController {
   private makeUrl = (service: string) => {
@@ -342,6 +349,44 @@ export default class ApiAccessController {
       data: permissions
     })
   }
+
+  private setFlow4Detector = async (key: boolean, permissionsIDS: number[], clientID: number, permission: permissionsInterface) => {
+    if (!!key) {
+      const havePermission = await clientsAccessRepository.get({
+        client_FK: Number(clientID),
+        permission_FK: permission.id
+      })
+      .then(client => client)
+
+      if (!havePermission) {
+        permissionsIDS.push(permission.id)
+      }
+    } else {
+      await clientsAccessRepository.delete({ 
+        client_FK: Number(clientID),
+        permission_FK: permission.id
+      })
+    }
+  }
+  
+  private setFlow4Energy = async (key: boolean, permissionsIDS: number[], clientID: number, permission: permissionsInterface) => {
+    if (!!key) {
+      const havePermission = await clientsAccessRepository.get({
+        client_FK: Number(clientID),
+        permission_FK: permission.id
+      })
+      .then(client => client)
+
+      if (!havePermission) {
+        permissionsIDS.push(permission.id)
+      }
+    } else {
+      await clientsAccessRepository.delete({ 
+        client_FK: Number(clientID),
+        permission_FK: permission.id
+      })
+    }
+  }
   
   public update = async (req: Request, res: Response) => {
     const { clientID } = req.params
@@ -349,7 +394,8 @@ export default class ApiAccessController {
       identifier,
       able,
       flow4Energy,
-      flow4Detector
+      flow4Detector,
+      permissionsArray
     } = req.body
 
     const permissionToFlow4Detector = await permissionsRepository.get({

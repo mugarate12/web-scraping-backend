@@ -4,7 +4,8 @@ import {
   cpflSearchRepository,
   cpflSearchNowRepository,
   cpflSearchUpdateTimeRepository,
-  cpflDataRepository
+  cpflDataRepository,
+  energyPermissionsRepository
 } from './../repositories'
 
 import {
@@ -17,6 +18,8 @@ type citiesInterface = Array<{
   value: string;
   label: string;
 }>
+
+type clientsKeys = Array<number>
 
 export default class CPFLSearchController {
   private dealerships = [{
@@ -42,11 +45,14 @@ export default class CPFLSearchController {
       city,
       state,
       dealership,
-      update_time
+      update_time,
+      clientsKeys
     } = req.body
 
     let haveError = false
     let responseError: AppError | undefined
+
+    console.log(clientsKeys)
 
     await cpflSearchNowRepository.create({ city, state })
       .catch((error: AppError) => {
@@ -61,11 +67,27 @@ export default class CPFLSearchController {
       )
     }
 
+    // await cpflSearchRepository.create({ city, state, dealership, update_time: Number(update_time) })
+
     return await cpflSearchRepository.create({ city, state, dealership, update_time: Number(update_time) })
       .then(async () => {
         const search = await cpflSearchRepository.get({ state, city, update_time: Number(update_time), dealership })
+        
         if (!!search) {
           cpflSearchUpdateTimeRepository.create({ cpfl_search_FK: search.id })
+          console.log('search id', search.id)
+        
+          const requests = clientsKeys.map(async (clientKey: number) => {
+            await energyPermissionsRepository.create({
+              cpfl_search_FK: search.id,
+              client_FK: clientKey
+            })
+              .catch(error =>  {
+                console.log(error)
+              })
+          })
+
+          await Promise.all(requests)
         }
 
         return res.status(201).json({

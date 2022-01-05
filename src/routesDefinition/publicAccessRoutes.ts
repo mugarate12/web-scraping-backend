@@ -18,6 +18,7 @@ import {
 } from './../middlewares'
 
 export default function publicAccessRoutes(routes: Router) {
+  // CLIENTS ROUTES
   routes.post('/public/create', celebrate({
     [Segments.BODY]: Joi.object().keys({
       identifier: Joi.string().required(),
@@ -36,7 +37,12 @@ export default function publicAccessRoutes(routes: Router) {
       identifier: Joi.string().optional(),
       able: Joi.number().optional(),
       flow4Energy: Joi.boolean().optional(),
-      flow4Detector: Joi.boolean().optional()
+      flow4Detector: Joi.boolean().optional(),
+      permissionsArray: Joi.array().items({
+        dealership: Joi.string().required(),
+        state: Joi.string().required(),
+        city: Joi.string().required()
+      }).optional()
     })
   }), authJWT, createApiClients, apiAccessController.update)
 

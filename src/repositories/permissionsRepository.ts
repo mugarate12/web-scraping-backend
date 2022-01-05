@@ -5,7 +5,7 @@ import { AppError } from './../utils/handleError'
 const connection: Knex<any, unknown[]> = require('./../database')
 const { PERMISSIONS_TABLE_NAME } = require('./../database/types')
 
-interface permissionsInterface {
+export interface permissionsInterface {
   id: number,
   identifier: string
 }
