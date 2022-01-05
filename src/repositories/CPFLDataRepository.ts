@@ -100,6 +100,15 @@ interface updateCPFLDataInterface {
   }
 }
 
+interface deleteCPFLDataInterface {
+  state?: string,
+  city?: string,
+
+  status?: number,
+
+  date?: string
+}
+
 export default class CPFLDataRepository {
   private reference = () => connection<CPFLDataInterface>(CPFL_DATA)
 
@@ -235,6 +244,35 @@ export default class CPFLDataRepository {
       .update(updatePayload)
       .then(() => {
         return 
+      })
+      .catch(error => {
+        throw new AppError('Database Error', 406, error.message, true)
+      })
+  }
+
+  public delete = async ({ city, state, status, date }: deleteCPFLDataInterface) => {
+    let query = this.reference()
+
+    if (!!city) {
+      query = query.where('city', '=', city)
+    }
+
+    if (!!state) {
+      query = query.where('state', '=', state)
+    }
+
+    if (!!status) {
+      query = query.where('status', '=', status)
+    }
+
+    if (!!date) {
+      query = query.where('date', '=', date)
+    }
+
+    return query
+      .delete()
+      .then(() => {
+        return
       })
       .catch(error => {
         throw new AppError('Database Error', 406, error.message, true)

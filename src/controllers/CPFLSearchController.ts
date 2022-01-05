@@ -133,8 +133,14 @@ export default class CPFLSearchController {
   public delete = async (req: Request, res: Response) => {
     const { id } = req.params
 
+    const search = await cpflSearchRepository.get({ id: Number(id) })
+    
     await cpflSearchUpdateTimeRepository.delete({ cpfl_search_FK: Number(id) })
-    // await cpflDataRepository
+    if (!!search) {
+      if (search.dealership === 'cpfl') {
+        await cpflDataRepository.delete({ state: search.state, city: search.city })
+      }
+    }
 
     return await cpflSearchRepository.delete({ id: Number(id) })
       .then(async () => {
