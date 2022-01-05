@@ -433,15 +433,23 @@ export default class CPFLController {
 
     const actualDate = moment().format('DD/MM/YYYY HH:mm')
 
-    const finalSeconds = this.getDurationInSeconds(
+    let finalSeconds = this.getDurationInSeconds(
       this.formatDateToGetDuration(actualDate.split(' ')[0], actualDate.split(' ')[1]),
       this.formatDateToGetDuration(data.date, data.initialHour)
     )
 
-    const finalMaintenance = this.getDurationInSeconds(
+    let finalMaintenance = this.getDurationInSeconds(
       this.formatDateToGetDuration(actualDate.split(' ')[0], actualDate.split(' ')[1]),
       this.formatDateToGetDuration(data.date, data.finalHour)
     )
+
+    if (finalSeconds < 0) {
+      finalSeconds = 0
+    }
+
+    if (finalMaintenance < 0) {
+      finalMaintenance = 0
+    }
 
     const status = this.getStatus(finalSeconds, finalMaintenance)
 
@@ -506,38 +514,39 @@ export default class CPFLController {
 
     for (let index = 0; index < CPFLDataOfStateAndCity.length; index++) {
       const cpflData = CPFLDataOfStateAndCity[index]
+
+      // if (cpflData.status !== this.convertStatusStringToNumber('finished')) {
+      // }
       
-      if (cpflData.status !== this.convertStatusStringToNumber('finished')) {
-        const actualDate = moment().subtract(convertHour, 'hours').format('DD/MM/YYYY HH:mm')
+      const actualDate = moment().subtract(convertHour, 'hours').format('DD/MM/YYYY HH:mm')
 
-        let finalSeconds = this.getDurationInSeconds(
-          this.formatDateToGetDuration(actualDate.split(' ')[0], actualDate.split(' ')[1]),
-          this.formatDateToGetDuration(cpflData.date, cpflData.initial_hour.split(' ')[2])
-        )
-        let finalMaintenance = this.getDurationInSeconds(
-          this.formatDateToGetDuration(actualDate.split(' ')[0], actualDate.split(' ')[1]),
-          this.formatDateToGetDuration(cpflData.date, cpflData.final_hour.split(' ')[2])
-        )
+      let finalSeconds = this.getDurationInSeconds(
+        this.formatDateToGetDuration(actualDate.split(' ')[0], actualDate.split(' ')[1]),
+        this.formatDateToGetDuration(cpflData.date, cpflData.initial_hour.split(' ')[2])
+      )
+      let finalMaintenance = this.getDurationInSeconds(
+        this.formatDateToGetDuration(actualDate.split(' ')[0], actualDate.split(' ')[1]),
+        this.formatDateToGetDuration(cpflData.date, cpflData.final_hour.split(' ')[2])
+      )
 
-        if (finalSeconds < 0) {
-          finalSeconds = 0
-        }
-
-        if (finalMaintenance < 0) {
-          finalMaintenance = 0
-        }
-
-        const status = this.getStatus(finalSeconds, finalMaintenance)
-
-        await cpflDataRepository.update({
-          identifiers: { id: cpflData.id },
-          payload: {
-            final_maintenance: finalMaintenance,
-            final_seconds: finalSeconds,
-            status
-          }
-        })
+      if (finalSeconds < 0) {
+        finalSeconds = 0
       }
+
+      if (finalMaintenance < 0) {
+        finalMaintenance = 0
+      }
+
+      const status = this.getStatus(finalSeconds, finalMaintenance)
+
+      await cpflDataRepository.update({
+        identifiers: { id: cpflData.id },
+        payload: {
+          final_maintenance: finalMaintenance,
+          final_seconds: finalSeconds,
+          status
+        }
+      })
     }
   }
 
