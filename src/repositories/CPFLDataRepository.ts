@@ -242,6 +242,7 @@ export default class CPFLDataRepository {
         .where('date', '>=', date)
     }
     
+    console.log(states)
     if (!!state && !states) {
       query = query.where('state', '=', state)
     }
@@ -278,7 +279,7 @@ export default class CPFLDataRepository {
       query = query.where('status', '=', status)
     }
 
-    // console.log(query.toSQL().toNative())
+    console.log(query.toSQL().toNative())
 
     return query
       .then(data => data)

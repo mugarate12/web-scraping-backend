@@ -866,8 +866,11 @@ export default class CPFLController {
     const actualDate = moment().subtract(convertHour, 'hours').format('DD/MM/YYYY')
 
     const formattedArrayOfStates = await this.statesAndCitiesPermittedOfUser(userID, formattedState)
-    const states = formattedArrayOfStates.states
-    const cities = formattedArrayOfStates.cities
+    let states = formattedArrayOfStates.states
+    let cities = formattedArrayOfStates.cities
+
+    if (states.length === 0) states = [ 'all' ]
+    if (cities.length === 0) cities = [ 'all' ]
 
     const data = await cpflDataRepository.indexPerDate({ 
       date: actualDate, 
@@ -938,8 +941,11 @@ export default class CPFLController {
     const actualDate = moment().subtract(convertHour, 'hours').format('DD/MM/YYYY')
 
     const formattedArrayOfStates = await this.statesAndCitiesPermittedOfUser(userID, formattedState)
-    const states = formattedArrayOfStates.states
-    const cities = formattedArrayOfStates.cities
+    let states = formattedArrayOfStates.states
+    let cities = formattedArrayOfStates.cities
+
+    if (states.length === 0) states = [ 'all' ]
+    if (cities.length === 0) cities = [ 'all' ]
 
     const data = await cpflDataRepository.indexPerDate({ 
       date: actualDate,
@@ -1076,8 +1082,11 @@ export default class CPFLController {
     const nextDayDate = moment().add(1, 'days').format('DD/MM/YYYY')
 
     const formattedArrayOfStates = await this.statesAndCitiesPermittedOfUser(userID, 'all')
-    const states = formattedArrayOfStates.states
-    const cities = formattedArrayOfStates.cities
+    let states = formattedArrayOfStates.states
+    let cities = formattedArrayOfStates.cities
+
+    if (states.length === 0) states = [ 'all' ]
+    if (cities.length === 0) cities = [ 'all' ]
  
     const onSchedule = await cpflDataRepository.indexPerDate({
       date: actualDate,
