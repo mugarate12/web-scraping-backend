@@ -704,6 +704,7 @@ export default class CPFLController {
   }
 
   public getCPFLStateJson = async (req: Request, res: Response) => {
+    const userID = Number(res.getHeader('userID'))
     const { state } = req.params
 
     let stateFormatted = ''
@@ -725,11 +726,24 @@ export default class CPFLController {
         break;
     }
 
+    
     let data = await cpflDataRepository.index({ state: stateFormatted })
     let formattedData = this.formatCPFLDataToPublicAccess(data)
-
+    
     if (state === 'all') {
-      data = await cpflDataRepository.index({})
+      const formattedArrayOfStates = await this.statesAndCitiesPermittedOfUser(userID, 'all')
+      let states = formattedArrayOfStates.states
+      let cities = formattedArrayOfStates.cities
+  
+      if (states.length === 0) states = [ 'all' ]
+      if (cities.length === 0) cities = [ 'all' ]
+
+      data = await cpflDataRepository.index({
+        states,
+        cities
+      })
+
+      // data = await cpflDataRepository.index({})
       formattedData = this.formatCPFLDataToPublicAccess(data)
     }
 
