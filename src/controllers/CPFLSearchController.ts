@@ -158,10 +158,13 @@ export default class CPFLSearchController {
     const search = await cpflSearchRepository.get({ id: Number(id) })
     
     await cpflSearchUpdateTimeRepository.delete({ cpfl_search_FK: Number(id) })
+
     if (!!search) {
       if (search.dealership === 'cpfl') {
         await cpflDataRepository.delete({ state: search.state, city: search.city })
       }
+     
+      await energyPermissionsRepository.delete({ cpfl_search_FK: search.id })
     }
 
     return await cpflSearchRepository.delete({ id: Number(id) })
@@ -171,6 +174,7 @@ export default class CPFLSearchController {
         })
       })
       .catch((error: AppError) => {
+        console.log(error)
         return errorHandler(
           new AppError(error.name, 403, error.message, true),
           res
