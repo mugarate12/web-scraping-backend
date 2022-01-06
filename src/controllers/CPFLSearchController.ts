@@ -47,6 +47,15 @@ export default class CPFLSearchController {
   }, {
     label: '60 minutos',
     value: 60
+  }, {
+    label: 'Duas horas',
+    value: 120
+  }, {
+    label: 'Três horas',
+    value: 180
+  }, {
+    label: 'Cinco horas',
+    value: 300
   }]
 
   public create = async (req: Request, res: Response) => {

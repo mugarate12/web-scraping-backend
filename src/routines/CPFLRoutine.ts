@@ -143,6 +143,10 @@ export default async () => {
   const fortyFiveMinutesBrowser = await cpflController.runBrowser()
   const sixtyMinutesBrowser = await cpflController.runBrowser()
 
+  const twoHoursBrowser = await cpflController.runBrowser()
+  const threeHoursBrowser = await cpflController.runBrowser()
+  const fiveHoursBrowser = await cpflController.runBrowser()
+
   const serviceAddedBrowser = await cpflController.runBrowser()
 
   const fifteenRoutine = new CronJob.CronJob('*/15 * * * *', async () => {
@@ -160,7 +164,20 @@ export default async () => {
   const sixtyRoutine = new CronJob.CronJob('*/60 * * * *', async () => {
     await routine(sixtyMinutesBrowser, 60)
   })
+  
+  const twoHoursRoutine = new CronJob.CronJob('0 */2 * * *', async () => {
+    await routine(twoHoursBrowser, 120)
+  })
+  
+  const threeHoursRoutine = new CronJob.CronJob('0 */3 * * *', async () => {
+    await routine(threeHoursBrowser, 180)
+  })
+  
+  const fiveHoursRoutine = new CronJob.CronJob('0 */5 * * *', async () => {
+    await routine(fiveHoursBrowser, 300)
+  })
 
+  // auxiliar routines
   const updateTimeRoutine = new CronJob.CronJob('* * * * *', async () => {
     await updateRoutine()
   })
@@ -177,6 +194,9 @@ export default async () => {
   thirtyRoutine.start()
   fortyFiveRoutine.start()
   sixtyRoutine.start()
+  twoHoursRoutine.start()
+  threeHoursRoutine.start()
+  fiveHoursRoutine.start()
 
   updateServicesAddedRoutine.start()
   

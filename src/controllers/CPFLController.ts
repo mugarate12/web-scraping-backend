@@ -1158,7 +1158,7 @@ export default class CPFLController {
     await this.runCpflRoutine(browser, String(state), String(city))
       .catch(error => {})
 
-    await this.closeBrowser(browser)
+    // await this.closeBrowser(browser)
 
     return res.status(200).json({
       message: 'serviço atualizado com sucesso!'
