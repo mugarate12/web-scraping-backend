@@ -1,7 +1,10 @@
 import jwt from 'jsonwebtoken'
 import { Request, Response, NextFunction } from 'express'
+import dotenv from 'dotenv'
 
 import { AppError, errorHandler } from './../utils/handleError'
+
+dotenv.config()
 
 const JWT_SECRET = process.env.JWT_SECRET || 'Secret'
 
@@ -21,7 +24,7 @@ export default async function publicAccessJWT(req: Request, res: Response, next:
       if (error) {
         return errorHandler(new AppError('Authorization Error', 401, 'Não autorizado ou token inválido', true), res)
       }
-
+      
       res.setHeader('userID', decoded?.id)
       return next()
     })

@@ -112,5 +112,5 @@ export default function publicAccessRoutes(routes: Router) {
     [Segments.QUERY]: Joi.object().keys({
       token: Joi.string().required()
     })
-  }), publicAccessJWT, readApiInformations, readFlow4EnergyInformation, cpflEnergyPermissions, cpflController.getSummary)
+  }), publicAccessJWT, readApiInformations, readFlow4EnergyInformation, cpflController.getSummary)
 } 
