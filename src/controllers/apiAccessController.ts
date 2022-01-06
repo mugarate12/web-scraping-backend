@@ -452,25 +452,25 @@ export default class ApiAccessController {
       })
 
     
-    const requests = permissionsArray.map(async (permission: {
-      dealership: string,
-      state: string,
-      city: string
-    }) => {
-      const search = await cpflSearchRepository.get({
-        dealership: permission.dealership,
-        state: permission.state,
-        city: permission.city
-      })
+    // const requests = permissionsArray.map(async (permission: {
+    //   dealership: string,
+    //   state: string,
+    //   city: string
+    // }) => {
+    //   const search = await cpflSearchRepository.get({
+    //     dealership: permission.dealership,
+    //     state: permission.state,
+    //     city: permission.city
+    //   })
 
-      if (!!search) {
-        await energyPermissionsRepository.create({
-          cpfl_search_FK: search.id,
-          client_FK: Number(clientID)
-        })
-      }
-    })
-    await Promise.all(requests)
+    //   if (!!search) {
+    //     await energyPermissionsRepository.create({
+    //       cpfl_search_FK: search.id,
+    //       client_FK: Number(clientID)
+    //     })
+    //   }
+    // })
+    // await Promise.all(requests)
 
     
     await apiAccessClientsRepository.update({
@@ -491,6 +491,75 @@ export default class ApiAccessController {
     })
   }
 
+  public addPermissions = async (req: Request, res: Response) => {
+    const { clientID } = req.params
+    const {
+      permissionsArray
+    } = req.body
+
+    const requests = permissionsArray.map(async (permission: {
+      dealership: string,
+      state: string,
+      city: string
+    }) => {
+      const search = await cpflSearchRepository.get({
+        dealership: permission.dealership,
+        state: permission.state,
+        city: permission.city
+      })
+
+      if (!!search) {
+        await energyPermissionsRepository.create({
+          cpfl_search_FK: search.id,
+          client_FK: Number(clientID)
+        })
+      }
+    })
+    await Promise.all(requests)
+
+    return res.status(200).json({
+      message: 'cliente atualizado com sucesso!'
+    })
+  }
+
+  public removePermissions = async (req: Request, res: Response) => {
+    const { clientID } = req.params
+    const {
+      permissionsArray
+    } = req.body
+
+    const requests = permissionsArray.map(async (permission: {
+      dealership: string,
+      state: string,
+      city: string
+    }) => {
+      const search = await cpflSearchRepository.get({
+        dealership: permission.dealership,
+        state: permission.state,
+        city: permission.city
+      })
+
+      if (!!search) {
+        const energyPermission = await energyPermissionsRepository.get({
+          cpfl_search_FK: search.id,
+          client_FK: Number(clientID)
+        })
+
+        if (!!energyPermission) {
+          await energyPermissionsRepository.delete({
+            cpfl_search_FK: search.id,
+            client_FK: Number(clientID)
+          })
+        }
+      }
+    })
+    await Promise.all(requests)
+
+    return res.status(200).json({
+      message: 'cliente atualizado com sucesso!'
+    })
+  }
+
   public delete = async (req: Request, res: Response) => {
     const {
       identifier
@@ -498,6 +567,7 @@ export default class ApiAccessController {
 
     const client = await apiAccessClientsRepository.get({ identifier: String(identifier) })
     await clientsAccessRepository.delete({ client_FK: client.id })
+    await energyPermissionsRepository.delete({ client_FK: client.id })
     await apiAccessTokensRepository.delete({ api_access_client_FK: client.id })
     await apiAccessClientsRepository.delete({ id: client.id })
 

@@ -46,6 +46,33 @@ export default function publicAccessRoutes(routes: Router) {
     })
   }), authJWT, createApiClients, apiAccessController.update)
 
+  routes.put('/public/clienteKey/update/permissions/add/:clientID', celebrate({
+    [Segments.PARAMS]: Joi.object().keys({
+      clientID: Joi.number().required()
+    }),
+    [Segments.BODY]: Joi.object().keys({
+      permissionsArray: Joi.array().items({
+        dealership: Joi.string().required(),
+        state: Joi.string().required(),
+        city: Joi.string().required()
+      }).optional()
+    })
+  }), authJWT, createApiClients, apiAccessController.addPermissions)
+  
+  routes.put('/public/clienteKey/update/permissions/remove/:clientID', celebrate({
+    [Segments.PARAMS]: Joi.object().keys({
+      clientID: Joi.number().required()
+    }),
+    [Segments.BODY]: Joi.object().keys({
+      permissionsArray: Joi.array().items({
+        dealership: Joi.string().required(),
+        state: Joi.string().required(),
+        city: Joi.string().required()
+      }).optional()
+    })
+  }), authJWT, createApiClients, apiAccessController.removePermissions)
+
+
   routes.delete('/public/:identifier', celebrate({
     [Segments.PARAMS]: Joi.object().keys({
       identifier: Joi.string().required()
