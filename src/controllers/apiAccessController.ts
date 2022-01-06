@@ -14,8 +14,10 @@ import {
   clientsAccessRepository,
   downDetectorChangeRepository,
   downDetectorHistRepository,
+  energyPermissionsRepository,
   servicesRepository,
-  permissionsRepository
+  permissionsRepository,
+  cpflSearchRepository
 } from './../repositories'
 import { permissionsInterface } from './../repositories/permissionsRepository'
 
@@ -448,6 +450,27 @@ export default class ApiAccessController {
       .catch(error => {
         console.log('erro ao criar permissão')
       })
+
+    
+    const requests = permissionsArray.map(async (permission: {
+      dealership: string,
+      state: string,
+      city: string
+    }) => {
+      const search = await cpflSearchRepository.get({
+        dealership: permission.dealership,
+        state: permission.state,
+        city: permission.city
+      })
+
+      if (!!search) {
+        await energyPermissionsRepository.create({
+          cpfl_search_FK: search.id,
+          client_FK: Number(clientID)
+        })
+      }
+    })
+    await Promise.all(requests)
 
     
     await apiAccessClientsRepository.update({

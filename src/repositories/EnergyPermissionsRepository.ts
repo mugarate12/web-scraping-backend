@@ -4,7 +4,7 @@ import { AppError } from './../utils/handleError'
 const connection: Knex<any, unknown[]> = require('./../database')
 const { ENERGY_PERMISSIONS_TABLE_NAME } = require('./../database/types')
 
-interface EnergyPermissionsInterface {
+export interface EnergyPermissionsInterface {
 	id: number,
 	
 	cpfl_search_FK: number,

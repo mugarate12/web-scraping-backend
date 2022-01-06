@@ -25,6 +25,7 @@ interface createCPFLSearchInterface {
 
 interface indexCPFLSearchInterface {
   able?: number,
+  state?: string,
   dealership?: string,
   update_time?: number
 }
@@ -68,7 +69,7 @@ export default class CPFLSearchRepository {
       })
   }
 
-  public index = async ({ able, dealership, update_time }: indexCPFLSearchInterface) => {
+  public index = async ({ able, dealership, state, update_time }: indexCPFLSearchInterface) => {
     let query = this.reference()
 
     if (!!able) {
@@ -77,6 +78,10 @@ export default class CPFLSearchRepository {
 
     if (!!dealership) {
       query = query.where('dealership', '=', dealership)
+    }
+
+    if (!!state) {
+      query = query.where('state', '=', state)
     }
 
     if (!!update_time) {

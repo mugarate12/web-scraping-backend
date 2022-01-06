@@ -1,4 +1,6 @@
 import { Request, Response } from 'express'
+import dotenv from 'dotenv'
+import jwt from 'jsonwebtoken'
 
 import { 
   cpflSearchRepository,
@@ -8,11 +10,16 @@ import {
   energyPermissionsRepository
 } from './../repositories'
 
+import { CPFFSearchInterface } from './../repositories/CPFLSearchRepository'
+import { EnergyPermissionsInterface } from './../repositories/EnergyPermissionsRepository'
+
 import {
   cpflController
 } from './'
 
 import { errorHandler, AppError } from './../utils/handleError'
+
+dotenv.config()
 
 type citiesInterface = Array<{
   value: string;
@@ -20,6 +27,8 @@ type citiesInterface = Array<{
 }>
 
 type clientsKeys = Array<number>
+
+const JWT_SECRET = process.env.JWT_SECRET || 'Secret'
 
 export default class CPFLSearchController {
   private dealerships = [{
@@ -242,5 +251,53 @@ export default class CPFLSearchController {
           res
         )
       })
+  }
+
+  private haveEnergyPermission = (search: CPFFSearchInterface, energyPermissions: EnergyPermissionsInterface[]) => {
+    let have = false
+
+    energyPermissions.forEach(energyPermission => {
+      if (energyPermission.cpfl_search_FK === search.id) {
+        have = true
+      }
+    })
+
+    return have
+  }
+
+  public getCitiesToClientKeyHaveAccess = async (req: Request, res: Response) => {
+    const { dealership, state, clientKey } = req.params
+    let userID: number = 0
+    let stateFormatted: string = ''
+
+    if (dealership === 'cpfl' && (state === 'paulista' || state === 'sp')) {
+      stateFormatted = 'paulista'
+    } else if (dealership === 'cpfl' && (state === 'santa cruz' || state === 'sc')) {
+      stateFormatted = 'santa cruz'
+    } else if (dealership === 'cpfl' && (state === 'piratininga' || state === 'pt')) {
+      stateFormatted = 'piratininga'
+    } else if (dealership === 'cpfl' && (state === 'rio grande do sul' || state === 'rs')) {
+      stateFormatted = 'rio grande do sul'
+    }
+
+    await jwt.verify(clientKey, JWT_SECRET, (error, decoded) => {
+      if (error) {
+        return errorHandler(new AppError('Authorization Error', 401, 'client key não autorizado', true), res)
+      }
+
+      userID = Number(decoded?.id)
+    })
+
+    const energyPermissions = await energyPermissionsRepository.index({
+      client_FK: userID
+    })
+
+    const searchs = await cpflSearchRepository.index({ dealership, state: stateFormatted })
+    
+    const searchsOfUserHavePermission = searchs.filter(search => this.haveEnergyPermission(search, energyPermissions))
+
+    return res.status(200).json({
+      data: searchsOfUserHavePermission
+    })
   }
 }

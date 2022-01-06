@@ -44,6 +44,8 @@ function cpflSearchRoutes(routes: Router) {
   routes.get('/service/cpfl/states/:dealership', cpflSearchController.getStates)
   routes.get('/service/cpfl/states/:dealership/:state/cities', cpflSearchController.getCities)
   routes.get('/service/cpfl/updatesTimes', cpflSearchController.getUpdatesTimes)
+
+  routes.get('/service/cpfl/client/access/:dealership/:state/:clientKey', cpflSearchController.getCitiesToClientKeyHaveAccess)
 }
 
 export default cpflSearchRoutes
