@@ -22,6 +22,7 @@ export default function publicAccessRoutes(routes: Router) {
   routes.post('/public/create', celebrate({
     [Segments.BODY]: Joi.object().keys({
       identifier: Joi.string().required(),
+      expiration_time: Joi.string().required(),
       flow4Energy: Joi.boolean().optional(),
       flow4Detector: Joi.boolean().optional()
     })
@@ -35,6 +36,7 @@ export default function publicAccessRoutes(routes: Router) {
     }),
     [Segments.BODY]: Joi.object().keys({
       identifier: Joi.string().optional(),
+      expiration_time: Joi.string().optional(),
       able: Joi.number().optional(),
       flow4Energy: Joi.boolean().optional(),
       flow4Detector: Joi.boolean().optional(),

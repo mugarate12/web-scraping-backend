@@ -252,14 +252,33 @@ export default class ApiAccessController {
       })
   }
 
+  private formatExpirationTime = (expirationTime: string) => {
+    switch (expirationTime) {
+      case '1 month':
+        const nextMonthTime = moment().add(1, 'months').format('DD-MM-YYYY')
+        return nextMonthTime
+      case '6 months':
+        const nextSixMonthsTime = moment().add(6, 'months').format('DD-MM-YYYY')
+        return nextSixMonthsTime
+      case '1 year':
+        const nextOneYearTime = moment().add(1, 'years').format('DD-MM-YYYY')
+        return nextOneYearTime
+      default:
+        return expirationTime
+    }
+  }
+
   public create = async (req: Request, res: Response) => {
     const {
       identifier,
+      expiration_time,
       flow4Energy,
       flow4Detector
     } = req.body
 
-    const createClient = await apiAccessClientsRepository.create({ identifier: String(identifier) })
+    const expirationTime = this.formatExpirationTime(String(expiration_time))
+
+    const createClient = await apiAccessClientsRepository.create({ identifier: String(identifier), expiration_time: expirationTime })
       .then(() => {
         return true
       })
@@ -394,11 +413,14 @@ export default class ApiAccessController {
     const { clientID } = req.params
     const {
       identifier,
+      expiration_time,
       able,
       flow4Energy,
       flow4Detector,
       permissionsArray
     } = req.body
+
+    const expirationTime = this.formatExpirationTime(String(expiration_time))
 
     const permissionToFlow4Detector = await permissionsRepository.get({
       identifier: 'ACCESS_API_FLOW4DETECTOR_DATA'
@@ -450,28 +472,6 @@ export default class ApiAccessController {
       .catch(error => {
         console.log('erro ao criar permissão')
       })
-
-    
-    // const requests = permissionsArray.map(async (permission: {
-    //   dealership: string,
-    //   state: string,
-    //   city: string
-    // }) => {
-    //   const search = await cpflSearchRepository.get({
-    //     dealership: permission.dealership,
-    //     state: permission.state,
-    //     city: permission.city
-    //   })
-
-    //   if (!!search) {
-    //     await energyPermissionsRepository.create({
-    //       cpfl_search_FK: search.id,
-    //       client_FK: Number(clientID)
-    //     })
-    //   }
-    // })
-    // await Promise.all(requests)
-
     
     await apiAccessClientsRepository.update({
       identifiers: {
@@ -479,7 +479,8 @@ export default class ApiAccessController {
       },
       payload: {
         identifier: identifier !== undefined ? String(identifier) : '',
-        able: able !== undefined ? Number(able) : undefined
+        able: able !== undefined ? Number(able) : undefined,
+        expiration_time: expiration_time !== undefined ? expirationTime : undefined
       }
     })
       .catch(error => {

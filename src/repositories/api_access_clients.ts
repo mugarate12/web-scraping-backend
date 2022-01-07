@@ -7,11 +7,13 @@ const { API_ACCESS_CLIENTS_TABLE_NAME } = require('./../database/types')
 interface apiAccessClientsInterface {
   id: number,
   identifier: string,
-  able: number
+  able: number,
+  expiration_time: string
 }
 
 interface createApiAccessClientInterface {
-  identifier: string
+  identifier: string,
+  expiration_time?: string,
 }
 
 interface getApiAccessClientsInterface {
@@ -26,7 +28,8 @@ interface updateApiAccessClientsInterface {
   },
   payload: {
     identifier?: string,
-    able?: number
+    able?: number,
+    expiration_time?: string,
   }
 }
 
@@ -37,10 +40,15 @@ interface deleteApiAccessClient {
 export default class ApiAccessClientsRepository {
   private reference = () => connection<apiAccessClientsInterface>(API_ACCESS_CLIENTS_TABLE_NAME)
 
-  public create = async ({ identifier }: createApiAccessClientInterface) => {
+  public create = async ({ identifier, expiration_time }: createApiAccessClientInterface) => {
+    let payload = {}
+
+    payload['identifier'] = identifier
+    if (!!expiration_time) payload['expiration_time'] = expiration_time
+    
     return this.reference()
       .insert({
-        identifier
+        ...payload
       })
       .then(() => {
         return
@@ -111,6 +119,8 @@ export default class ApiAccessClientsRepository {
       if (!!payload.able) {
         updatePayload['able'] = payload.able
       }
+
+      if (!!payload.expiration_time) updatePayload['expiration_time'] = payload.expiration_time
 
       query = query.update(updatePayload)
     }
