@@ -7,7 +7,8 @@ import {
   cpflSearchNowRepository,
   cpflSearchUpdateTimeRepository,
   cpflDataRepository,
-  energyPermissionsRepository
+  energyPermissionsRepository,
+  apiAccessClientsRepository
 } from './../repositories'
 
 import { CPFFSearchInterface } from './../repositories/CPFLSearchRepository'
@@ -307,6 +308,15 @@ export default class CPFLSearchController {
 
     return res.status(200).json({
       data: searchsOfUserHavePermission
+    })
+  }
+
+  public getSearchsPerClients = async (req: Request, res: Response) => {
+    const data = await energyPermissionsRepository.indexPerClients()
+
+    return res.status(200).json({
+      message: 'ok',
+      data
     })
   }
 }

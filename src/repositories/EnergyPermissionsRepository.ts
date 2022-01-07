@@ -2,7 +2,11 @@ import { Knex } from 'knex'
 
 import { AppError } from './../utils/handleError'
 const connection: Knex<any, unknown[]> = require('./../database')
-const { ENERGY_PERMISSIONS_TABLE_NAME } = require('./../database/types')
+const { 
+	API_ACCESS_CLIENTS_TABLE_NAME,
+	CPFL_SEARCH,
+	ENERGY_PERMISSIONS_TABLE_NAME
+} = require('./../database/types')
 
 export interface EnergyPermissionsInterface {
 	id: number,
@@ -60,6 +64,55 @@ export default class EnergyPermissionsRepository {
 			.catch(error => {
 				throw new AppError('Database Error', 406, error.message, true)
 			})
+	}
+
+	public indexPerClients = async () => {
+		// let stringSQL = this.reference()
+		// 	.column({ 
+		// 		energy_id: 'id' 
+		// 	})
+		// 	.join(
+		// 		CPFL_SEARCH,
+		// 		`${CPFL_SEARCH}.id`, '=', `${ENERGY_PERMISSIONS_TABLE_NAME}.cpfl_search_FK`
+		// 	)
+		// 	.join(
+		// 		API_ACCESS_CLIENTS_TABLE_NAME,
+		// 		`${API_ACCESS_CLIENTS_TABLE_NAME}.id`, '=', `${ENERGY_PERMISSIONS_TABLE_NAME}.client_FK`
+		// 	)
+		// 	.select
+		// 	.toSQL().toNative()
+
+		// console.log(stringSQL)
+
+		return this.reference()
+			.join(
+				CPFL_SEARCH,
+				`${CPFL_SEARCH}.id`, '=', `${ENERGY_PERMISSIONS_TABLE_NAME}.cpfl_search_FK`
+			)
+			.join(
+				API_ACCESS_CLIENTS_TABLE_NAME,
+				`${API_ACCESS_CLIENTS_TABLE_NAME}.id`, '=', `${ENERGY_PERMISSIONS_TABLE_NAME}.client_FK`
+			)
+			.orderBy(`${ENERGY_PERMISSIONS_TABLE_NAME}.id`)
+			.select('*')
+			.then(async (result) => {
+				const energyPermissions = await this.reference().select('*').orderBy('id')
+
+				// console.log(ids)
+				return result.map((result, index) => {
+					return {
+						...result,
+						id: energyPermissions[index].id
+					}
+				})
+
+				return {
+					result,
+				}
+			})
+			.catch(error => {
+        throw new AppError('Database Error', 406, error.message, true)
+      })
 	}
 
 	public get = async ({ cpfl_search_FK, client_FK }: getEnergyPermissions) => {

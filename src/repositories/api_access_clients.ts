@@ -2,7 +2,11 @@ import { Knex } from 'knex'
 
 import { AppError } from './../utils/handleError'
 const connection: Knex<any, unknown[]> = require('./../database')
-const { API_ACCESS_CLIENTS_TABLE_NAME } = require('./../database/types')
+const { 
+  API_ACCESS_CLIENTS_TABLE_NAME,
+  ENERGY_PERMISSIONS_TABLE_NAME,
+  CPFL_SEARCH
+} = require('./../database/types')
 
 interface apiAccessClientsInterface {
   id: number,
