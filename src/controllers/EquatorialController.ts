@@ -7,7 +7,9 @@ import dotenv from 'dotenv'
 import { AppError, errorHandler } from './../utils/handleError'
 
 import {
-  equatorialDataRepository
+  cpflSearchRepository,
+  equatorialDataRepository,
+  energyPermissionsRepository
 } from './../repositories'
 
 dotenv.config()
@@ -73,6 +75,17 @@ type statusCountInterface = Array<{
   status_concluidas: number
 }>
 
+type reasonsCountInterface = Array<{
+  name: string,
+  state: string,
+  total_manutencao: number,
+  total_obra: number,
+  total_melhorias: number,
+  total_preventivas: number,
+  total_obraDeTerceiros: number,
+  total_documentoReserva: number,
+  total_outros: number
+}>
 
 export default class EquatorialController {
   public states = ['alagoas', 'maranhão', 'pará', 'piauí', 'rio grande do sul']
@@ -598,9 +611,6 @@ export default class EquatorialController {
   public get = async (browser: puppeteer.Browser, state: string, city: string) => {
     const url = this.makeURL(state)
 
-    const pages = await browser.pages()
-    pages[0].close()
-
     const page = await this.newPage(browser)
     await page.goto(url, { waitUntil: 'load' })
       .catch(error => {})
@@ -701,6 +711,361 @@ export default class EquatorialController {
 
     return res.status(200).json({
       message: 'ok'
+    })
+  }
+
+  private statesAndCitiesPermittedOfUser = async (userID: number, formattedState: string) => {
+    if (formattedState !== 'undefined' && formattedState !== 'all' && formattedState.length > 0) {
+      return {
+        states: [ formattedState ],
+        cities: []
+      }
+    } else {
+      let states: Array<string> = []
+      let cities: Array<string> = []
+
+      const searchs = await cpflSearchRepository.index({ dealership: 'equatorial' })
+      for (let index = 0; index < searchs.length; index++) {
+        const search = searchs[index]
+        
+        const energyPermission = await energyPermissionsRepository.get({
+          cpfl_search_FK: search.id,
+          client_FK: userID
+        })
+
+        if (!!energyPermission) {
+          if (!states.includes(search.state)) {
+            states.push(search.state)
+          }
+
+          if (!cities.includes(search.city)) {
+            cities.push(search.city)
+          }
+        }
+      }
+
+      return {
+        states,
+        cities
+      }
+    }
+  }
+
+  private convertState = (state: string) => {
+    if (state === 'alagoas') {
+      return 'Alagoas'
+    } else if (state === 'maranhão') {
+      return 'Maranhão'
+    } else if (state === 'pará') {
+      return 'Pará'
+    } else if (state === 'piauí') {
+      return 'Piauí'
+    } else {
+      return 'Rio Grande do Sul'
+    }
+  }
+
+  private haveCityInDataFormatted = (array: statusCountInterface, cityName: string) => {
+    let have = false
+
+    array.forEach((data => {
+      if (data.name === cityName) {
+        have = true
+      }
+    }))
+
+    return have
+  }
+
+  private haveCityInDataFormattedReasons = (array: reasonsCountInterface, cityName: string) => {
+    let have = false
+
+    array.forEach((data => {
+      if (data.name === cityName) {
+        have = true
+      }
+    }))
+
+    return have
+  }
+
+  public getCountStatus = async (req: Request, res: Response) => {
+    const userID = Number(res.getHeader('userID'))
+    const { state } = req.params
+    const { bairro, rua } = req.query
+
+    const formattedState = this.formatState(state)
+    const convertHour = Number(process.env.CONVERT_TO_TIMEZONE)
+    const actualDate = moment().subtract(convertHour, 'hours').format('DD/MM/YYYY')
+
+    const formattedArrayOfStates = await this.statesAndCitiesPermittedOfUser(userID, String(formattedState))
+    let states = formattedArrayOfStates.states
+    let cities = formattedArrayOfStates.cities
+
+    if (states.length === 0) states = [ 'all' ]
+    if (cities.length === 0) cities = [ 'all' ]
+    
+    let dataFormatted: statusCountInterface = []
+    const data = await equatorialDataRepository.indexPerDate({ 
+      date: actualDate, 
+      state: String(formattedState) !== 'undefined' && String(formattedState) !== 'all' && String(formattedState).length > 0 ? String(formattedState) : undefined,
+      district: String(bairro) !== 'undefined' ? String(bairro) : undefined,
+      states: states,
+      cities: cities,
+      street: String(rua) !== 'undefined' ? String(rua) : undefined,
+    })
+    
+    data.forEach((cpflData) => {
+      const haveCity = this.haveCityInDataFormatted(dataFormatted, cpflData.city)
+
+      if (haveCity) {
+        dataFormatted.forEach((formattedData) => {
+          if (formattedData.name === cpflData.city) {
+            if (cpflData.status === 2) {
+              formattedData.status_agendamento = formattedData.status_agendamento + 1
+            } else if (cpflData.status === 3) {
+              formattedData.status_emAndamento = formattedData.status_emAndamento + 1
+            } else  {
+              formattedData.status_concluidas = formattedData.status_concluidas+ 1
+            }
+          }
+        })
+      } else {
+        if (cpflData.status === 2) {
+          dataFormatted.push({
+            name: cpflData.city,
+            state: this.convertState(cpflData.state),
+            status_agendamento: 1,
+            status_emAndamento: 0,
+            status_concluidas: 0
+          })
+        } else if (cpflData.status === 3) {
+          dataFormatted.push({
+            name: cpflData.city,
+            state: this.convertState(cpflData.state),
+            status_agendamento: 0,
+            status_emAndamento: 1,
+            status_concluidas: 0
+          })
+        } else  {
+          dataFormatted.push({
+            name: cpflData.city,
+            state: this.convertState(cpflData.state),
+            status_agendamento: 0,
+            status_emAndamento: 0,
+            status_concluidas: 1
+          })
+        }
+      }
+    })
+
+    return res.status(200).json({
+      data: dataFormatted
+    })
+  }
+
+  public getCountReasons = async (req: Request, res: Response) => {
+    const userID = Number(res.getHeader('userID'))
+    const { state } = req.params
+    const { bairro, rua } = req.query
+
+    const formattedState = this.formatState(state)
+    const convertHour = Number(process.env.CONVERT_TO_TIMEZONE)
+    const actualDate = moment().subtract(convertHour, 'hours').format('DD/MM/YYYY')
+
+    const formattedArrayOfStates = await this.statesAndCitiesPermittedOfUser(userID, String(formattedState))
+    let states = formattedArrayOfStates.states
+    let cities = formattedArrayOfStates.cities
+
+    if (states.length === 0) states = [ 'all' ]
+    if (cities.length === 0) cities = [ 'all' ]
+
+    const data = await equatorialDataRepository.indexPerDate({ 
+      date: actualDate, 
+      state: String(formattedState) !== 'undefined' && String(formattedState) !== 'all' && String(formattedState).length > 0 ? String(formattedState) : undefined,
+      district: String(bairro) !== 'undefined' ? String(bairro) : undefined,
+      states: states,
+      cities: cities,
+      street: String(rua) !== 'undefined' ? String(rua) : undefined,
+    })
+    let dataFormatted: reasonsCountInterface = []
+
+    data.forEach((cpflData) => {
+      const haveCity = this.haveCityInDataFormattedReasons(dataFormatted, cpflData.city)
+
+      if (haveCity) {
+        dataFormatted.forEach((formattedData) => {
+          if (formattedData.name === cpflData.city) {
+            if (cpflData.reason === 'Manutencao') {
+              formattedData.total_manutencao += 1
+            } else if (cpflData.reason === 'Obra') {
+              formattedData.total_obra += 1
+            } else if (cpflData.reason === 'Preventivo') {
+              formattedData.total_preventivas += 1
+            } else if (cpflData.reason === 'Melhoria') {
+              formattedData.total_melhorias += 1
+            } else if (cpflData.reason === 'Documento Reserva') {
+              formattedData.total_documentoReserva += 1
+            } else if (cpflData.reason === 'Obra de Terceiros') {
+              formattedData.total_obraDeTerceiros += 1
+            } else {
+              formattedData.total_outros += 1
+            }
+          }
+        })
+      } else {
+        if (cpflData.reason === 'Manutencao') {
+          dataFormatted.push({
+            name: cpflData.city,
+            state: this.convertState(cpflData.state),
+            total_manutencao: 1,
+            total_obra: 0,
+            total_melhorias: 0,
+            total_preventivas: 0,
+            total_obraDeTerceiros: 0,
+            total_documentoReserva: 0,
+            total_outros: 0
+          })
+        } else if (cpflData.reason === 'Obra') {
+          dataFormatted.push({
+            name: cpflData.city,
+            state: this.convertState(cpflData.state),
+            total_manutencao: 0,
+            total_obra: 1,
+            total_melhorias: 0,
+            total_preventivas: 0,
+            total_obraDeTerceiros: 0,
+            total_documentoReserva: 0,
+            total_outros: 0
+          })
+        } else if (cpflData.reason === 'Preventivo') {
+          dataFormatted.push({
+            name: cpflData.city,
+            state: this.convertState(cpflData.state),
+            total_manutencao: 0,
+            total_obra: 0,
+            total_melhorias: 0,
+            total_preventivas: 1,
+            total_obraDeTerceiros: 0,
+            total_documentoReserva: 0,
+            total_outros: 0
+          })
+        } else if (cpflData.reason === 'Melhoria') {
+          dataFormatted.push({
+            name: cpflData.city,
+            state: this.convertState(cpflData.state),
+            total_manutencao: 0,
+            total_obra: 0,
+            total_melhorias: 1,
+            total_preventivas: 0,
+            total_obraDeTerceiros: 0,
+            total_documentoReserva: 0,
+            total_outros: 0
+          })
+        } else if (cpflData.reason === 'Obra de Terceiros') {
+          dataFormatted.push({
+            name: cpflData.city,
+            state: this.convertState(cpflData.state),
+            total_manutencao: 0,
+            total_obra: 0,
+            total_melhorias: 0,
+            total_preventivas: 0,
+            total_obraDeTerceiros: 1,
+            total_documentoReserva: 0,
+            total_outros: 0
+          })
+        } else if (cpflData.reason === 'Documento Reserva') {
+          dataFormatted.push({
+            name: cpflData.city,
+            state: this.convertState(cpflData.state),
+            total_manutencao: 0,
+            total_obra: 0,
+            total_melhorias: 0,
+            total_preventivas: 0,
+            total_obraDeTerceiros: 0,
+            total_documentoReserva: 1,
+            total_outros: 0
+          })
+        } else {
+          dataFormatted.push({
+            name: cpflData.city,
+            state: this.convertState(cpflData.state),
+            total_manutencao: 0,
+            total_obra: 0,
+            total_melhorias: 0,
+            total_preventivas: 0,
+            total_obraDeTerceiros: 0,
+            total_documentoReserva: 0,
+            total_outros: 1
+          })
+        }
+      }
+    })
+
+    return res.status(200).json({
+      data: dataFormatted
+    })
+  }
+
+  public getSummary = async (req: Request, res: Response) => {
+    const userID = Number(res.getHeader('userID'))
+
+    const tomorrowDayDate = moment().subtract(1, 'days').format('DD/MM/YYYY')
+    const actualDate = moment().format('DD/MM/YYYY')
+    const nextDayDate = moment().add(1, 'days').format('DD/MM/YYYY')
+
+    const formattedArrayOfStates = await this.statesAndCitiesPermittedOfUser(userID, 'all')
+    let states = formattedArrayOfStates.states
+    let cities = formattedArrayOfStates.cities
+ 
+    if (states.length === 0) states = [ 'all' ]
+    if (cities.length === 0) cities = [ 'all' ]
+
+    const onSchedule = await equatorialDataRepository.indexPerDate({
+      date: actualDate,
+      status: 2,
+      states,
+      cities
+    })
+
+    const executeIn20Minutes = await equatorialDataRepository.index({
+      date: actualDate,
+      status: 5,
+      states,
+      cities
+    })
+
+    const inMaintenance = await equatorialDataRepository.index({
+      status: 3,
+      date: actualDate,
+      states,
+      cities
+    })
+
+    const maintanceSchedulein24h = await equatorialDataRepository.indexPerDateWithLimit({
+      status: 2,
+      lowerLimit: actualDate,
+      higherLimit: nextDayDate,
+      states,
+      cities
+    })
+    
+    const finishedIn24h = await equatorialDataRepository.indexPerDateWithLimit({
+      status: 4,
+      lowerLimit: tomorrowDayDate,
+      higherLimit: actualDate,
+      states,
+      cities
+    })
+
+    return res.status(200).json({
+      data: {
+        totalDeAgendamentos: onSchedule.length,
+        manutencoesAgora: inMaintenance.length,
+        manutencoesEm24h: maintanceSchedulein24h.length,
+        concluidasEm24h: finishedIn24h.length,
+        paraIniciaremEm20min: executeIn20Minutes.length
+      }
     })
   }
 }

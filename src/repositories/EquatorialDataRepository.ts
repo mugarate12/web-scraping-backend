@@ -1,11 +1,14 @@
 import { Knex } from 'knex'
 import moment from 'moment'
+import dotenv from 'dotenv'
 
 import { AppError } from './../utils/handleError'
 const connection: Knex<any, unknown[]> = require('./../database')
 const { 
   EQUATORIAL_DATA
 } = require('./../database/types')
+
+dotenv.config()
 
 interface EquatorialDataInterface {
   id: number,
@@ -68,6 +71,33 @@ interface indexEquatorialDataInterface {
   district?: string,
   street?: string,
 
+  status?: number,
+
+  states?: Array<string>,
+  cities?: Array<string>,
+}
+
+interface indexPerDateEquatorialDataInterface {
+  date: string,
+
+  state?: string,
+  city?: string,
+  district?: string,
+  street?: string,
+
+  status?: number,
+
+  states: Array<string>,
+  cities: Array<string>
+}
+
+interface indexPerDateWithLimitInterface {
+  lowerLimit: string,
+  higherLimit: string,
+
+  states?: Array<string>,
+  cities?: Array<string>,
+
   status?: number
 }
 
@@ -129,12 +159,39 @@ export default class EquatorialDataRepository {
       })
   }
   
-  public index = async ({ date, state, city, district, street, status }: indexEquatorialDataInterface) => {
+  public index = async ({ date, state, city, district, street, status, states, cities }: indexEquatorialDataInterface) => {
     let query = this.reference()
 
     if (!!date) query = query.where('date', '=', date)
-    if (!!state) query = query.where('state', '=', state)
-    if (!!city) query = query.where('city', '=', city)
+
+    if (!!state && !states) {
+      query = query.where('state', '=', state)
+    }
+
+    if ((!state && !!states && states.length > 0) || (!!state && !!states && states.length > 0)) {
+      query = query.where(function() {
+        this.where('state', '=', states[0])
+
+        states.slice(1, states.length).forEach((stateValue) => {
+          this.orWhere('state', '=', stateValue)
+        })
+      })
+    }
+
+    if (!!city && !cities) {
+      if (!!city) query = query.where('city', '=', city)
+    }
+
+    if ((!city && !!cities && cities.length > 0) || (!!city && !!cities && cities.length > 0)) {
+      query = query.where(function() {
+        this.where('city', '=', cities[0])
+  
+        cities.slice(1, cities.length).forEach((cityValue) => {
+          this.orWhere('city', '=', cityValue)
+        })
+      })
+    }
+
     if (!!district) query = query.where('district', '=', district)
     if (!!street) query = query.where('street', '=', street)
     if (!!status) query = query.where('status', '=', status)
@@ -143,6 +200,111 @@ export default class EquatorialDataRepository {
     return query
       .select('*')
       .then(equatorialDataArray => equatorialDataArray)
+      .catch(error => {
+        throw new AppError('Database Error', 406, error.message, true)
+      })
+  }
+
+  public indexPerDate = async ({ status, state, district, street, date, states, cities }: indexPerDateEquatorialDataInterface) => {
+    let query = this.reference()
+    const convertHour = Number(process.env.CONVERT_TO_TIMEZONE)
+
+    const firstDayOfNextYear = moment()
+      .subtract(convertHour, 'hours')
+      .add(1, 'years')
+      .dayOfYear(1)
+      .format('DD/MM/YYYY')
+
+    if (Number(date.split('/')[2]) < Number(firstDayOfNextYear.split('/')[2])) {
+      query = query.where(function() {
+        this
+          .where('date', '>=', date)
+          .orWhere('date', '>=', firstDayOfNextYear)
+      })
+    } else {
+      query = query
+        .where('date', '>=', date)
+    }
+
+    if (!!state && !states) {
+      query = query.where('state', '=', state)
+    }
+
+    if ((!state && !!states && states.length > 0) || (!!state && !!states && states.length > 0)) {
+      query = query.where(function() {
+        this.where('state', '=', states[0])
+
+        states.slice(1, states.length).forEach((stateValue) => {
+          this.orWhere('state', '=', stateValue)
+        })
+      })
+    }
+
+    if (!!cities && cities.length > 0) {
+      query = query.where(function() {
+        this.where('city', '=', cities[0])
+
+        cities.slice(1, cities.length).forEach((cityValue) => {
+          this.orWhere('city', '=', cityValue)
+        })
+      })
+    }
+
+    if (!!district) {
+      query = query.where('district', '=', district)
+    }
+    
+    if (!!street) {
+      query = query.where('street', '=', street)
+    }
+
+    if (!!status) {
+      query = query.where('status', '=', status)
+    }
+
+    return query
+      .then(data => data)
+      .catch(error => {
+        throw new AppError('Database Error', 406, error.message, true)
+      })
+  }
+
+  public indexPerDateWithLimit = async ({ lowerLimit, higherLimit, status, states, cities }: indexPerDateWithLimitInterface) => {
+    let query = this.reference()
+
+    query = query.where(function() {
+      this
+        .where('date', '>=', lowerLimit)
+        .andWhere('date', '<=', higherLimit)
+    })
+
+    if (!!states && states.length > 0) {
+      query = query.where(function() {
+        this.where('state', '=', states[0])
+
+        states.slice(1, states.length).forEach((stateValue) => {
+          this.orWhere('state', '=', stateValue)
+        })
+      })
+    }
+
+    if (!!cities && cities.length > 0) {
+      query = query.where(function() {
+        this.where('city', '=', cities[0])
+
+        cities.slice(1, cities.length).forEach((cityValue) => {
+          this.orWhere('city', '=', cityValue)
+        })
+      })
+    }
+
+    if (!!status) {
+      query = query.where('status', '=', status)
+    }
+
+    return query
+      .select('*')
+      .then(cpflDatas => cpflDatas)
       .catch(error => {
         throw new AppError('Database Error', 406, error.message, true)
       })

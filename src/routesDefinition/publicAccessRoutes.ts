@@ -3,7 +3,8 @@ import { celebrate, Joi, Segments } from 'celebrate'
 
 import {
   apiAccessController,
-  cpflController
+  cpflController,
+  equatorialController
 } from './../controllers'
 
 import {
@@ -142,4 +143,27 @@ export default function publicAccessRoutes(routes: Router) {
       token: Joi.string().required()
     })
   }), publicAccessJWT, readApiInformations, readFlow4EnergyInformation, cpflController.getSummary)
+
+  // EQUATORIAL ROUTES
+  routes.get('/public/access/equatorial/count/status/:state', celebrate({
+    [Segments.QUERY]: Joi.object().keys({
+      token: Joi.string().required(),
+      bairro: Joi.string().optional(),
+      rua: Joi.string().optional()
+    })
+  }), publicAccessJWT, readApiInformations, readFlow4EnergyInformation, cpflEnergyPermissions, equatorialController.getCountStatus)
+
+  routes.get('/public/access/equatorial/count/causas/:state', celebrate({
+    [Segments.QUERY]: Joi.object().keys({
+      token: Joi.string().required(),
+      bairro: Joi.string().optional(),
+      rua: Joi.string().optional()
+    })
+  }), publicAccessJWT, equatorialController.getCountReasons)
+
+  routes.get('/public/access/equatorial/count/resumo/actualDate', celebrate({
+    [Segments.QUERY]: Joi.object().keys({
+      token: Joi.string().required()
+    })
+  }), publicAccessJWT, readApiInformations, readFlow4EnergyInformation, equatorialController.getSummary)
 } 
