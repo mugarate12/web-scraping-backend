@@ -196,8 +196,6 @@ export default class EquatorialDataRepository {
     if (!!street) query = query.where('street', '=', street)
     if (!!status) query = query.where('status', '=', status)
 
-    console.log(query.toSQL().toNative())
-
     return query
       .select('*')
       .then(equatorialDataArray => equatorialDataArray)
