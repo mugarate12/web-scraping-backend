@@ -11,6 +11,7 @@ import {
   equatorialDataRepository,
   energyPermissionsRepository
 } from './../repositories'
+import { EquatorialDataInterface as EquatorialDatabaseDataInterface } from './../repositories/EquatorialDataRepository'
 
 dotenv.config()
 
@@ -787,6 +788,60 @@ export default class EquatorialController {
     }))
 
     return have
+  }
+
+  private formatCPFLDataToPublicAccess = (CPFLDataArray: Array<EquatorialDatabaseDataInterface>) => {
+    return CPFLDataArray.map((registry) => {
+      const initalDate = registry.initial_hour.split(' - ')
+      const finalDate = registry.final_hour.split(' - ')
+
+      const duration = this.getDuration(
+        this.formatDateToGetDuration(initalDate[0], initalDate[1]),
+        this.formatDateToGetDuration(finalDate[0], finalDate[1])
+      )
+
+      // ['paulista', 'santa cruz', 'piratininga', 'rio grande do sul']
+
+      return {
+        ...registry,
+        duration: duration,
+        state: this.convertState(registry.state)
+      }
+    })
+  }
+
+  public getPerState = async (req: Request, res: Response) => {
+    const userID = Number(res.getHeader('userID'))
+    const { state } = req.params
+
+    console.log('fui chamado')
+
+    const formattedState = this.formatState(state)
+
+    let data = await equatorialDataRepository.index({ state: String(formattedState) })
+    let formattedData = this.formatCPFLDataToPublicAccess(data)
+
+    if (state === 'all') {
+      const formattedArrayOfStates = await this.statesAndCitiesPermittedOfUser(userID, 'all')
+      let states = formattedArrayOfStates.states
+      let cities = formattedArrayOfStates.cities
+  
+      if (states.length === 0) states = [ 'all' ]
+      if (cities.length === 0) cities = [ 'all' ]
+
+      data = await equatorialDataRepository.index({
+        states,
+        cities
+      })
+
+      console.log(data)
+
+      formattedData = this.formatCPFLDataToPublicAccess(data)
+    }
+
+    return res.status(200).json({
+      data: formattedData
+    })
   }
 
   public getCountStatus = async (req: Request, res: Response) => {

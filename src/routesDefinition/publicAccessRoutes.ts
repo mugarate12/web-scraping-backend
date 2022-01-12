@@ -145,6 +145,15 @@ export default function publicAccessRoutes(routes: Router) {
   }), publicAccessJWT, readApiInformations, readFlow4EnergyInformation, cpflController.getSummary)
 
   // EQUATORIAL ROUTES
+  routes.get('/public/access/equatorial/:state', celebrate({
+    [Segments.QUERY]: Joi.object().keys({
+      token: Joi.string().required()
+    }),
+    [Segments.PARAMS]: Joi.object().keys({
+      state: Joi.string().required()
+    })
+  }), publicAccessJWT, readApiInformations, readFlow4EnergyInformation, cpflEnergyPermissions, equatorialController.getPerState)
+
   routes.get('/public/access/equatorial/count/status/:state', celebrate({
     [Segments.QUERY]: Joi.object().keys({
       token: Joi.string().required(),

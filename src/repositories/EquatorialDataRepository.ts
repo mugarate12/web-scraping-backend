@@ -10,7 +10,7 @@ const {
 
 dotenv.config()
 
-interface EquatorialDataInterface {
+export interface EquatorialDataInterface {
   id: number,
 
   state: string,
@@ -196,6 +196,7 @@ export default class EquatorialDataRepository {
     if (!!street) query = query.where('street', '=', street)
     if (!!status) query = query.where('status', '=', status)
 
+    console.log(query.toSQL().toNative())
 
     return query
       .select('*')
