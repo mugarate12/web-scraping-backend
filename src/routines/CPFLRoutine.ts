@@ -4,7 +4,7 @@ import moment from 'moment'
 import puppeteer from 'puppeteer'
 
 import { cpflSearchRepository, cpflSearchNowRepository, cpflSearchUpdateTimeRepository } from './../repositories'
-import { cpflController } from './../controllers'
+import { cpflController, equatorialController } from './../controllers'
 import { FgCyan, FgBlue, Reset } from './../utils/colorsInTerminalReference'
 
 import { CPFFSearchInterface } from './../repositories/CPFLSearchRepository'
@@ -38,14 +38,14 @@ function stepLog(updateTime: number, step: number) {
   `)
 }
 
-async function routine(browser: puppeteer.Browser, updateTime: number) {
+async function cpflRoutine(browser: puppeteer.Browser, updateTime: number) {
   const requests = await cpflSearchRepository.index({ able: 1, dealership: 'cpfl', update_time: updateTime })
 
   if (requests.length > 0) {
     console.log(`${FgBlue}%s${Reset}`, `
-    ENERGY --> Requisitando serviços de update em ${updateTime} minuto(s)\n
-    ENERGY --> Requisitando ${requests.length} serviços\n
-    ENERGY --> começo da execução: ${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}
+    ENERGY CPFL --> Requisitando serviços de update em ${updateTime} minuto(s)\n
+    ENERGY CPFL --> Requisitando ${requests.length} serviços\n
+    ENERGY CPFL --> começo da execução: ${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}
     `)
 
     const lastExecution = moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')
@@ -70,8 +70,46 @@ async function routine(browser: puppeteer.Browser, updateTime: number) {
     // await cpflController.closeBrowser(browser)
   
     console.log(`${FgBlue}%s${Reset}`, `
-      ENERGY --> Final da execução: ${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}\n
-      ENERGY --> Requisições da rotina de ${updateTime} minuto(s) finalizadas\n
+      ENERGY CPFL --> Final da execução: ${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}\n
+      ENERGY CPFL --> Requisições da rotina de ${updateTime} minuto(s) finalizadas\n
+    `)
+  }
+}
+
+async function equatorialRoutine(browser: puppeteer.Browser, updateTime: number) {
+  const requests = await cpflSearchRepository.index({ able: 1, dealership: 'equatorial', update_time: updateTime })
+
+  if (requests.length > 0) {
+    console.log(`${FgBlue}%s${Reset}`, `
+    ENERGY EQUATORIAL --> Requisitando serviços de update em ${updateTime} minuto(s)\n
+    ENERGY EQUATORIAL --> Requisitando ${requests.length} serviços\n
+    ENERGY EQUATORIAL --> começo da execução: ${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}
+    `)
+
+    const lastExecution = moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')
+
+    const headquarter = createHeadquarterOfRequests(requests)
+
+    for (let index = 0; index < headquarter.length; index++) {
+      const arrayOfRequests = headquarter[index]
+      
+      const requestsPromises = arrayOfRequests.map(async (request) => {
+        // await cpflController.runCpflRoutine(browser, request.state, request.city)
+        //   .catch(error => {})
+        await equatorialController.runRoutine(browser, request.state, request.city)
+          .catch(error => {})
+
+        await cpflSearchUpdateTimeRepository.update({ cpfl_search_FK: request.id, last_execution: lastExecution })
+      })
+
+      await Promise.all([ ...requestsPromises ])
+      stepLog(updateTime, index + 1)
+    }
+
+  
+    console.log(`${FgBlue}%s${Reset}`, `
+      ENERGY EQUATORIAL --> Final da execução: ${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}\n
+      ENERGY EQUATORIAL --> Requisições da rotina de ${updateTime} minuto(s) finalizadas\n
     `)
   }
 }
@@ -83,7 +121,11 @@ async function updateRoutine() {
     for (let index = 0; index < requests.length; index++) {
       const search = requests[index]
       
-      await cpflController.runUpdateTimeRoutine(search.state, search.city)
+      if (search.dealership === 'cpfl') {
+        await cpflController.runUpdateTimeRoutine(search.state, search.city)
+      } else if (search.dealership === 'equatorial') {
+        await equatorialController.updateTime(search.state, search.city)
+      }
     }
   }
 }
@@ -104,6 +146,7 @@ async function updateServicesAdded(browser: puppeteer.Browser) {
       const search = requests[index]
       
       await cpflController.runCpflRoutine(browser, search.state, search.city)
+      await equatorialController.runRoutine(browser, search.state, search.city)
     }
 
     for (let index = 0; index < requests.length; index++) {
@@ -150,31 +193,38 @@ export default async () => {
   const serviceAddedBrowser = await cpflController.runBrowser()
 
   const fifteenRoutine = new CronJob.CronJob('*/15 * * * *', async () => {
-    await routine(fifteenMinutesBrowser, 15)
+    await cpflRoutine(fifteenMinutesBrowser, 15)
+    await equatorialRoutine(fifteenMinutesBrowser, 15)
   })
   
   const thirtyRoutine = new CronJob.CronJob('*/30 * * * *', async () => {
-    await routine(thirtyMinutesBrowser, 30)
+    await cpflRoutine(thirtyMinutesBrowser, 30)
+    await equatorialRoutine(thirtyMinutesBrowser, 30)
   })
   
   const fortyFiveRoutine = new CronJob.CronJob('*/45 * * * *', async () => {
-    await routine(fortyFiveMinutesBrowser, 45)
+    await cpflRoutine(fortyFiveMinutesBrowser, 45)
+    await equatorialRoutine(fortyFiveMinutesBrowser, 45)
   })
   
   const sixtyRoutine = new CronJob.CronJob('*/60 * * * *', async () => {
-    await routine(sixtyMinutesBrowser, 60)
+    await cpflRoutine(sixtyMinutesBrowser, 60)
+    await equatorialRoutine(sixtyMinutesBrowser, 60)
   })
   
   const twoHoursRoutine = new CronJob.CronJob('0 */2 * * *', async () => {
-    await routine(twoHoursBrowser, 120)
+    await cpflRoutine(twoHoursBrowser, 120)
+    await equatorialRoutine(twoHoursBrowser, 120)
   })
   
   const threeHoursRoutine = new CronJob.CronJob('0 */3 * * *', async () => {
-    await routine(threeHoursBrowser, 180)
+    await cpflRoutine(threeHoursBrowser, 180)
+    await equatorialRoutine(threeHoursBrowser, 180)
   })
   
   const fiveHoursRoutine = new CronJob.CronJob('0 */5 * * *', async () => {
-    await routine(fiveHoursBrowser, 300)
+    await cpflRoutine(fiveHoursBrowser, 300)
+    await equatorialRoutine(fiveHoursBrowser, 300)
   })
 
   // auxiliar routines

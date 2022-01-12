@@ -67,23 +67,6 @@ export default class EnergyPermissionsRepository {
 	}
 
 	public indexPerClients = async () => {
-		// let stringSQL = this.reference()
-		// 	.column({ 
-		// 		energy_id: 'id' 
-		// 	})
-		// 	.join(
-		// 		CPFL_SEARCH,
-		// 		`${CPFL_SEARCH}.id`, '=', `${ENERGY_PERMISSIONS_TABLE_NAME}.cpfl_search_FK`
-		// 	)
-		// 	.join(
-		// 		API_ACCESS_CLIENTS_TABLE_NAME,
-		// 		`${API_ACCESS_CLIENTS_TABLE_NAME}.id`, '=', `${ENERGY_PERMISSIONS_TABLE_NAME}.client_FK`
-		// 	)
-		// 	.select
-		// 	.toSQL().toNative()
-
-		// console.log(stringSQL)
-
 		return this.reference()
 			.join(
 				CPFL_SEARCH,

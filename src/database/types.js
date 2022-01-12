@@ -16,6 +16,8 @@ const CPFL_SEARCH = 'cpfl_search'
 const CPFL_SEARCH_UPDATE_TIME = 'cpfl_search_update_time'
 const CPFL_SEARCH_NOW = 'cpfl_search_now'
 
+const EQUATORIAL_DATA = 'equatorial_data'
+
 const ENERGY_PERMISSIONS_TABLE_NAME = 'energy_permissions'
 
 module.exports = {
@@ -36,6 +38,8 @@ module.exports = {
   CPFL_SEARCH,
   CPFL_SEARCH_UPDATE_TIME,
   CPFL_SEARCH_NOW,
+
+  EQUATORIAL_DATA,
 
   ENERGY_PERMISSIONS_TABLE_NAME
 }

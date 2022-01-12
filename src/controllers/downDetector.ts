@@ -500,8 +500,6 @@ export default class DownDetectorController {
 
     await this.closeBrowser(browser)
 
-    console.log('cheguei aqui')
-
     return res.status(200).json({
       message: 'serviço atualizado com sucesso!'
     })

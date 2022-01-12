@@ -15,7 +15,8 @@ import { CPFFSearchInterface } from './../repositories/CPFLSearchRepository'
 import { EnergyPermissionsInterface } from './../repositories/EnergyPermissionsRepository'
 
 import {
-  cpflController
+  cpflController,
+  equatorialController
 } from './'
 
 import { errorHandler, AppError } from './../utils/handleError'
@@ -35,7 +36,11 @@ export default class CPFLSearchController {
   private dealerships = [{
     label: 'CPFL',
     value: 'cpfl'
+  }, {
+    label: 'EQUATORIAL',
+    value: 'equatorial'
   }]
+
   private updates_times = [{
     label: '15 minutos',
     value: 15
@@ -71,8 +76,6 @@ export default class CPFLSearchController {
     let haveError = false
     let responseError: AppError | undefined
 
-    console.log(clientsKeys)
-
     await cpflSearchNowRepository.create({ city, state })
       .catch((error: AppError) => {
         haveError = true
@@ -85,8 +88,6 @@ export default class CPFLSearchController {
         res
       )
     }
-
-    // await cpflSearchRepository.create({ city, state, dealership, update_time: Number(update_time) })
 
     return await cpflSearchRepository.create({ city, state, dealership, update_time: Number(update_time) })
       .then(async () => {
@@ -217,14 +218,57 @@ export default class CPFLSearchController {
     const { dealership } = req.params
 
     let states: Array<string> = []
+    let formattedStates: Array<{
+      label: string,
+      value: string
+    }> = []
 
     if (dealership === 'cpfl') {
       states = cpflController.states
+      formattedStates = cpflController.formatStatesToFrontend(states)
+    } else if (dealership === 'equatorial') {
+      states = equatorialController.states
+      formattedStates = equatorialController.formatStatesToFrontend(states)
     }
+
     return res.status(200).json({
       message: 'estados recuperados com sucesso!',
-      data: cpflController.formatStatesToFrontend(states)
+      data: formattedStates
     })
+  }
+
+  private getCPFLCities = (state: string) => {
+    let cities: citiesInterface = []
+
+    if (state === 'paulista' || state === 'sp') {
+      cities = cpflController.SPcities
+    } else if (state === 'santa cruz' || state === 'sc') {
+      cities = cpflController.SantaCruzCities
+    } else if (state === 'piratininga' || state === 'pt') {
+      cities = cpflController.PiratiningaCities
+    } else if (state === 'rio grande do sul' || state === 'rs') {
+      cities = cpflController.RScities
+    }
+  
+    return cities
+  }
+
+  private getEquatorialCities = (state: string) => {
+    let cities: citiesInterface = []
+
+    if (state === 'alagoas' || state === 'al') {
+      cities = equatorialController.ALCities
+    } else if (state === 'maranhão' || state === 'ma') {
+      cities = equatorialController.MACities
+    } else if (state === 'pará' || state === 'pa') {
+      cities = equatorialController.PACities
+    } else if (state === 'piauí' || state === 'pi') {
+      cities = equatorialController.PICities
+    } else if (state === 'rio grande do sul' || state === 'rs') {
+      cities = equatorialController.RSCities
+    }
+
+    return cities
   }
 
   public getCities = async (req: Request, res: Response) => {
@@ -232,16 +276,12 @@ export default class CPFLSearchController {
 
     let cities: citiesInterface = []
 
-    if (dealership === 'cpfl' && (state === 'paulista' || state === 'sp')) {
-      cities = cpflController.SPcities
-    } else if (dealership === 'cpfl' && (state === 'santa cruz' || state === 'sc')) {
-      cities = cpflController.SantaCruzCities
-    } else if (dealership === 'cpfl' && (state === 'piratininga' || state === 'pt')) {
-      cities = cpflController.PiratiningaCities
-    } else if (dealership === 'cpfl' && (state === 'rio grande do sul' || state === 'rs')) {
-      cities = cpflController.RScities
+    if (dealership === 'cpfl') {
+      cities = this.getCPFLCities(state)
+    } else {
+      cities = this.getEquatorialCities(state)
     }
-
+ 
     return res.status(200).json({
       message: 'cidades recuperadas com sucesso!',
       data: cities

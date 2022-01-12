@@ -9,6 +9,7 @@ import DownDetectorChangeRepository from './downDetectorChangeRepository'
 import DownDetectorHistRepository from "./downDetectorHistRepository"
 import DownDetectorRoutineExecutionRepository from './downDetectorRoutineExecution'
 import EnergyPermissionsRepository from './EnergyPermissionsRepository'
+import EquatorialDataRepository from './EquatorialDataRepository'
 import MonitoringRepository from "./monitoringRepository"
 import PermissionsRepository from './permissionsRepository'
 import ServicesRepository from "./servicesRepository"
@@ -27,6 +28,7 @@ export const downDetectorChangeRepository = new DownDetectorChangeRepository()
 export const downDetectorHistRepository = new DownDetectorHistRepository()
 export const downDetectorRoutineExecutionRepository = new DownDetectorRoutineExecutionRepository()
 export const energyPermissionsRepository = new EnergyPermissionsRepository()
+export const equatorialDataRepository = new EquatorialDataRepository()
 export const monitoringRepository = new MonitoringRepository()
 export const permissionsRepository = new PermissionsRepository()
 export const servicesRepository = new ServicesRepository()
