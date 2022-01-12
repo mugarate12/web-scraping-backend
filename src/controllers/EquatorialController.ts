@@ -501,6 +501,14 @@ export default class EquatorialController {
       this.formatDateToGetDuration(data.finalDate, data.finalHour)
     )
 
+    if (finalSeconds < 0) {
+      finalSeconds = 0
+    }
+
+    if (finalMaintenance < 0) {
+      finalMaintenance = 0
+    }
+
     const status = this.getStatus(finalSeconds, finalMaintenance)
 
     const formattedData: EquatorialFormattedData = {
@@ -544,6 +552,14 @@ export default class EquatorialController {
       this.formatDateToGetDuration(actualDate.split(' ')[0], actualDate.split(' ')[1]),
       this.formatDateToGetDuration(data.date, data.finalHour)
     )
+
+    if (finalSeconds < 0) {
+      finalSeconds = 0
+    }
+
+    if (finalMaintenance < 0) {
+      finalMaintenance = 0
+    }
 
     const status = this.getStatus(finalSeconds, finalMaintenance)
 
@@ -795,16 +811,11 @@ export default class EquatorialController {
       const initalDate = registry.initial_hour.split(' - ')
       const finalDate = registry.final_hour.split(' - ')
 
-      const duration = this.getDuration(
-        this.formatDateToGetDuration(initalDate[0], initalDate[1]),
-        this.formatDateToGetDuration(finalDate[0], finalDate[1])
-      )
-
       // ['paulista', 'santa cruz', 'piratininga', 'rio grande do sul']
 
       return {
         ...registry,
-        duration: duration,
+        duration: registry.duration,
         state: this.convertState(registry.state)
       }
     })
@@ -834,10 +845,12 @@ export default class EquatorialController {
         cities
       })
 
-      console.log(data)
+      console.log(data[0].duration)
 
       formattedData = this.formatCPFLDataToPublicAccess(data)
     }
+
+    console.log(formattedData[0].duration)
 
     return res.status(200).json({
       data: formattedData
