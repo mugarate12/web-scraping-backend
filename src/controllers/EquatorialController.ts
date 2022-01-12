@@ -811,12 +811,25 @@ export default class EquatorialController {
       const initalDate = registry.initial_hour.split(' - ')
       const finalDate = registry.final_hour.split(' - ')
 
+      let finalSeconds = registry.final_seconds
+      let finalMaintenance = registry.final_maintenance
+
       // ['paulista', 'santa cruz', 'piratininga', 'rio grande do sul']
+
+      if (finalSeconds < 0) {
+        finalSeconds = 0
+      }
+      
+      if (finalMaintenance < 0) {
+        finalMaintenance = 0
+      }
 
       return {
         ...registry,
         duration: registry.duration,
-        state: this.convertState(registry.state)
+        state: this.convertState(registry.state),
+        final_seconds: finalSeconds,
+        final_maintenance: finalMaintenance
       }
     })
   }
