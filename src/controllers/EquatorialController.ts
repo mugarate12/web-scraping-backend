@@ -147,15 +147,15 @@ export default class EquatorialController {
   }
 
   public formatState = (state: string) => {
-    if (state === 'al' || state === 'alagoas') {
+    if (state === 'al' || state === 'alagoas' || state === 'Alagoas' || state === 'ALAGOAS') {
       return 'alagoas'
-    } else if (state === 'maranhão' || state === 'ma') {
+    } else if (state === 'maranhão' || state === 'ma' || state === 'Maranhão' || state === 'MARANHÃO') {
       return 'maranhão'
-    } else if (state === 'pará' || state === 'pa') {
+    } else if (state === 'pará' || state === 'pa' || state === 'Pará' || state === 'PARÁ') {
       return 'pará'
-    } else if (state === 'piauí' || state === 'pi') {
+    } else if (state === 'piauí' || state === 'pi' || state === 'Piauí' || state === 'PIAUÍ') {
       return 'piauí'
-    } else if (state === 'rio grande do sul' || state === 'rs') {
+    } else if (state === 'rio grande do sul' || state === 'rs' || state === 'Rio grande do sul' || state === 'RIO GRANDE DO SUL' || state === 'Rio Grande Do Sul' || state === 'Rio Grande do Sul') {
       return 'rio grande do sul'
     }
   }

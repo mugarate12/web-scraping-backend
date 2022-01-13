@@ -112,7 +112,7 @@ function initialRoutineLog(totalOfServices: number, updateTime: number) {
 
 function headquarterCompleteLog(updateTime: number, indicator: number) {
   console.log(colorToLog, `
-    Detector --> parte ${indicator} da rotina de ${updateTime} finalizada
+    Detector --> parte ${indicator} da rotina de ${updateTime} minuto(s) finalizada
   `)
 }
 
