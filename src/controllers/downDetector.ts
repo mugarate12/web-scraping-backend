@@ -197,58 +197,64 @@ export default class DownDetectorController {
       reports: []
     }
 
-    await page.goto(url2, { waitUntil:'load'})
+    await page.goto(url2, { waitUntil: 'domcontentloaded' })
       .then(response => {
         status = response.status()
+        console.log('first attemp: ', status)
       })
       .catch(error => {
         console.log(error)
       })
 
-      if (status !== 200) {
-        let currentStatus = status
-        
-        while (currentStatus !== 200) {
-          await this.sleep(5)
+    if (status !== 200) {
+      let currentStatus = status
+      let maxTry = 0
+      
+      while (currentStatus !== 200 && maxTry < 10) {
+        await this.sleep(5)
 
-          await page.reload()
-            .then(response => {
-              console.log(response?.status())
+        await page.reload()
+          .then(response => {
+            console.log(response?.status())
 
-              currentStatus = Number(response?.status())
-            })
-            .catch(error => {
-              console.log(error)
-            })
-        }
+            currentStatus = Number(response?.status())
+            maxTry += 1
+            console.log('attemp: ', maxTry, 'status: ', currentStatus)
+          })
+          .catch(error => {
+            maxTry += 1
 
-        const getDataResponse = await page.evaluate(() => {
-          const titleElement = document.getElementsByClassName('entry-title')[0]
-          const titleTextContent = String(titleElement.textContent)
-          
-          // get title
-          const removeBreakLines = titleTextContent.split('\n')[4]
-          const title = removeBreakLines.trim()
-          // const firstLetter = titleTextContent.indexOf('User')
-          // const textSlicedToFirstLetter = titleTextContent.slice(firstLetter, titleTextContent.length)
-          // const title = textSlicedToFirstLetter.slice(0, textSlicedToFirstLetter.indexOf('\n'))
-
-          const currentServiceProperties = window['DD']['currentServiceProperties']
-          const status: string = currentServiceProperties['status']
-          const series = currentServiceProperties['series']
-          const baseline: Array<downDetectorData> = series['baseline']['data']
-          const reports: Array<downDetectorData> = series['reports']['data']
-
-          return {
-            title,
-            status,
-            baseline,
-            reports
-          }
-        })
-
-        result = getDataResponse
+            console.log(error)
+          })
       }
+
+      const getDataResponse = await page.evaluate(() => {
+        const titleElement = document.getElementsByClassName('entry-title')[0]
+        const titleTextContent = String(titleElement.textContent)
+        
+        // get title
+        const removeBreakLines = titleTextContent.split('\n')[4]
+        const title = removeBreakLines.trim()
+        // const firstLetter = titleTextContent.indexOf('User')
+        // const textSlicedToFirstLetter = titleTextContent.slice(firstLetter, titleTextContent.length)
+        // const title = textSlicedToFirstLetter.slice(0, textSlicedToFirstLetter.indexOf('\n'))
+
+        const currentServiceProperties = window['DD']['currentServiceProperties']
+        const status: string = currentServiceProperties['status']
+        const series = currentServiceProperties['series']
+        const baseline: Array<downDetectorData> = series['baseline']['data']
+        const reports: Array<downDetectorData> = series['reports']['data']
+
+        return {
+          title,
+          status,
+          baseline,
+          reports
+        }
+      })
+
+      result = getDataResponse
+    }
 
     await browser.close()
 
