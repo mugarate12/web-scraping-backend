@@ -173,6 +173,7 @@ async function deleteDataWithStatusFinished() {
     `)
 
   await cpflController.deleteAllDataWithStatusFinished()
+  await equatorialController.deleteAllDataWithStatusFinished()
 
   console.log(`${FgBlue}%s${Reset}`, `
     ENERGY --> Rotina para deletar todos os serviços que foram finalizados (status 4)\n

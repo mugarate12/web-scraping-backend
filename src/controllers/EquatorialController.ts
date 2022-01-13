@@ -838,8 +838,6 @@ export default class EquatorialController {
     const userID = Number(res.getHeader('userID'))
     const { state } = req.params
 
-    console.log('fui chamado')
-
     const formattedState = this.formatState(state)
 
     let data = await equatorialDataRepository.index({ state: String(formattedState) })
@@ -858,12 +856,8 @@ export default class EquatorialController {
         cities
       })
 
-      console.log(data[0].duration)
-
       formattedData = this.formatCPFLDataToPublicAccess(data)
     }
-
-    console.log(formattedData[0].duration)
 
     return res.status(200).json({
       data: formattedData
@@ -1148,5 +1142,9 @@ export default class EquatorialController {
         paraIniciaremEm20min: executeIn20Minutes.length
       }
     })
+  }
+
+  public deleteAllDataWithStatusFinished = async () => {
+    await equatorialDataRepository.delete({ status: 4 })
   }
 }
