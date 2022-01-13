@@ -1182,7 +1182,7 @@ export default class CPFLController {
     const formattedArrayOfStates = await this.statesAndCitiesPermittedOfUser(userID, 'all')
     let states = formattedArrayOfStates.states
     let cities = formattedArrayOfStates.cities
-    let clientsAfetados = 0
+    let clientesAfetados = 0
 
     if (states.length === 0) states = [ 'all' ]
     if (cities.length === 0) cities = [ 'all' ]
@@ -1224,34 +1224,11 @@ export default class CPFLController {
       cities
     })
 
-    clientsAfetados = this.countAffectedClients(onSchedule, clientsAfetados)
-    clientsAfetados = this.countAffectedClients(executeIn20Minutes, clientsAfetados)
-    clientsAfetados = this.countAffectedClients(inMaintenance, clientsAfetados)
-
-    // if (onSchedule.length > 0) {
-    //   const street = onSchedule[0].street
-    //   console.log(street)
-    //   let firstNumberPosition = 0
-
-    //   for (let index = 0; index < street.length; index++) {
-    //     const letter = street[index]
-        
-    //     if (letter.search(/^[1-9][0-9]*$/) !== -1) {
-    //       firstNumberPosition = index
-    //       break
-    //     }
-    //   }
-
-    //   if (street.search('ao') !== -1) {
-    //     const clientsString = street.slice(firstNumberPosition, street.length)
-    //     const affectedClientsLimits = clientsString.split('ao')
-
-    //     const affectedClients = Number(affectedClientsLimits[1]) - Number(affectedClientsLimits[0])
-    //     clientsAfetados += affectedClients
-    //   } else {
-    //     clientsAfetados += 1
-    //   }
-    // }
+    clientesAfetados = this.countAffectedClients(onSchedule, clientesAfetados)
+    clientesAfetados = this.countAffectedClients(executeIn20Minutes, clientesAfetados)
+    clientesAfetados = this.countAffectedClients(inMaintenance, clientesAfetados)
+    clientesAfetados = this.countAffectedClients(maintanceSchedulein24h, clientesAfetados)
+    clientesAfetados = this.countAffectedClients(finishedIn24h, clientesAfetados)
 
     return res.status(200).json({
       data: {
@@ -1260,7 +1237,7 @@ export default class CPFLController {
         manutencoesEm24h: maintanceSchedulein24h.length,
         concluidasEm24h: finishedIn24h.length,
         paraIniciaremEm20min: executeIn20Minutes.length,
-        clientsAfetados
+        clientesAfetados
       }
     })
   }

@@ -73,7 +73,8 @@ type statusCountInterface = Array<{
   state: string,
   status_agendamento: number,
   status_emAndamento: number,
-  status_concluidas: number
+  status_concluidas: number,
+  clientes_afetados: number
 }>
 
 type reasonsCountInterface = Array<{
@@ -85,7 +86,8 @@ type reasonsCountInterface = Array<{
   total_preventivas: number,
   total_obraDeTerceiros: number,
   total_documentoReserva: number,
-  total_outros: number
+  total_outros: number,
+  clientes_afetados: number
 }>
 
 export default class EquatorialController {
@@ -834,6 +836,16 @@ export default class EquatorialController {
     })
   }
 
+  private countAffectedClients = (data: EquatorialDatabaseDataInterface[], initialOrActual: number) => {
+    let count = initialOrActual
+
+    data.forEach((item) => {
+      count += item.affected_clients
+    })
+
+    return count
+  }
+
   public getPerState = async (req: Request, res: Response) => {
     const userID = Number(res.getHeader('userID'))
     const { state } = req.params
@@ -897,11 +909,14 @@ export default class EquatorialController {
         dataFormatted.forEach((formattedData) => {
           if (formattedData.name === cpflData.city) {
             if (cpflData.status === 2) {
-              formattedData.status_agendamento = formattedData.status_agendamento + 1
+              formattedData.status_agendamento = formattedData.status_agendamento + 1,
+              formattedData.clientes_afetados = formattedData.clientes_afetados + cpflData.affected_clients
             } else if (cpflData.status === 3) {
               formattedData.status_emAndamento = formattedData.status_emAndamento + 1
+              formattedData.clientes_afetados = formattedData.clientes_afetados + cpflData.affected_clients
             } else  {
               formattedData.status_concluidas = formattedData.status_concluidas+ 1
+              formattedData.clientes_afetados = formattedData.clientes_afetados + cpflData.affected_clients
             }
           }
         })
@@ -912,7 +927,8 @@ export default class EquatorialController {
             state: this.convertState(cpflData.state),
             status_agendamento: 1,
             status_emAndamento: 0,
-            status_concluidas: 0
+            status_concluidas: 0,
+            clientes_afetados: cpflData.affected_clients
           })
         } else if (cpflData.status === 3) {
           dataFormatted.push({
@@ -920,7 +936,8 @@ export default class EquatorialController {
             state: this.convertState(cpflData.state),
             status_agendamento: 0,
             status_emAndamento: 1,
-            status_concluidas: 0
+            status_concluidas: 0,
+            clientes_afetados: cpflData.affected_clients
           })
         } else  {
           dataFormatted.push({
@@ -928,7 +945,8 @@ export default class EquatorialController {
             state: this.convertState(cpflData.state),
             status_agendamento: 0,
             status_emAndamento: 0,
-            status_concluidas: 1
+            status_concluidas: 1,
+            clientes_afetados: cpflData.affected_clients
           })
         }
       }
@@ -973,18 +991,25 @@ export default class EquatorialController {
           if (formattedData.name === cpflData.city) {
             if (cpflData.reason === 'Manutencao') {
               formattedData.total_manutencao += 1
+              formattedData.clientes_afetados = formattedData.clientes_afetados + cpflData.affected_clients
             } else if (cpflData.reason === 'Obra') {
               formattedData.total_obra += 1
+              formattedData.clientes_afetados = formattedData.clientes_afetados + cpflData.affected_clients
             } else if (cpflData.reason === 'Preventivo') {
               formattedData.total_preventivas += 1
+              formattedData.clientes_afetados = formattedData.clientes_afetados + cpflData.affected_clients
             } else if (cpflData.reason === 'Melhoria') {
               formattedData.total_melhorias += 1
+              formattedData.clientes_afetados = formattedData.clientes_afetados + cpflData.affected_clients
             } else if (cpflData.reason === 'Documento Reserva') {
               formattedData.total_documentoReserva += 1
+              formattedData.clientes_afetados = formattedData.clientes_afetados + cpflData.affected_clients
             } else if (cpflData.reason === 'Obra de Terceiros') {
               formattedData.total_obraDeTerceiros += 1
+              formattedData.clientes_afetados = formattedData.clientes_afetados + cpflData.affected_clients
             } else {
               formattedData.total_outros += 1
+              formattedData.clientes_afetados = formattedData.clientes_afetados + cpflData.affected_clients
             }
           }
         })
@@ -999,7 +1024,8 @@ export default class EquatorialController {
             total_preventivas: 0,
             total_obraDeTerceiros: 0,
             total_documentoReserva: 0,
-            total_outros: 0
+            total_outros: 0,
+            clientes_afetados: cpflData.affected_clients
           })
         } else if (cpflData.reason === 'Obra') {
           dataFormatted.push({
@@ -1011,7 +1037,8 @@ export default class EquatorialController {
             total_preventivas: 0,
             total_obraDeTerceiros: 0,
             total_documentoReserva: 0,
-            total_outros: 0
+            total_outros: 0,
+            clientes_afetados: cpflData.affected_clients
           })
         } else if (cpflData.reason === 'Preventivo') {
           dataFormatted.push({
@@ -1023,7 +1050,8 @@ export default class EquatorialController {
             total_preventivas: 1,
             total_obraDeTerceiros: 0,
             total_documentoReserva: 0,
-            total_outros: 0
+            total_outros: 0,
+            clientes_afetados: cpflData.affected_clients
           })
         } else if (cpflData.reason === 'Melhoria') {
           dataFormatted.push({
@@ -1035,7 +1063,8 @@ export default class EquatorialController {
             total_preventivas: 0,
             total_obraDeTerceiros: 0,
             total_documentoReserva: 0,
-            total_outros: 0
+            total_outros: 0,
+            clientes_afetados: cpflData.affected_clients
           })
         } else if (cpflData.reason === 'Obra de Terceiros') {
           dataFormatted.push({
@@ -1047,7 +1076,8 @@ export default class EquatorialController {
             total_preventivas: 0,
             total_obraDeTerceiros: 1,
             total_documentoReserva: 0,
-            total_outros: 0
+            total_outros: 0,
+            clientes_afetados: cpflData.affected_clients
           })
         } else if (cpflData.reason === 'Documento Reserva') {
           dataFormatted.push({
@@ -1059,7 +1089,8 @@ export default class EquatorialController {
             total_preventivas: 0,
             total_obraDeTerceiros: 0,
             total_documentoReserva: 1,
-            total_outros: 0
+            total_outros: 0,
+            clientes_afetados: cpflData.affected_clients
           })
         } else {
           dataFormatted.push({
@@ -1071,7 +1102,8 @@ export default class EquatorialController {
             total_preventivas: 0,
             total_obraDeTerceiros: 0,
             total_documentoReserva: 0,
-            total_outros: 1
+            total_outros: 1,
+            clientes_afetados: cpflData.affected_clients
           })
         }
       }
@@ -1133,13 +1165,21 @@ export default class EquatorialController {
       cities
     })
 
+    let clientes_afetados = 0
+    clientes_afetados = this.countAffectedClients(onSchedule, clientes_afetados)
+    clientes_afetados = this.countAffectedClients(executeIn20Minutes, clientes_afetados)
+    clientes_afetados = this.countAffectedClients(inMaintenance, clientes_afetados)
+    clientes_afetados = this.countAffectedClients(maintanceSchedulein24h, clientes_afetados)
+    clientes_afetados = this.countAffectedClients(finishedIn24h, clientes_afetados)
+
     return res.status(200).json({
       data: {
         totalDeAgendamentos: onSchedule.length,
         manutencoesAgora: inMaintenance.length,
         manutencoesEm24h: maintanceSchedulein24h.length,
         concluidasEm24h: finishedIn24h.length,
-        paraIniciaremEm20min: executeIn20Minutes.length
+        paraIniciaremEm20min: executeIn20Minutes.length,
+        clientes_afetados
       }
     })
   }
