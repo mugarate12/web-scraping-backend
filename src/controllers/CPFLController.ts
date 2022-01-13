@@ -63,7 +63,8 @@ type statusCountInterface = Array<{
   state: string,
   status_agendamento: number,
   status_emAndamento: number,
-  status_concluidas: number
+  status_concluidas: number,
+  clientes_afetados: number
 }>
 
 type reasonsCountInterface = Array<{
@@ -75,7 +76,8 @@ type reasonsCountInterface = Array<{
   total_preventivas: number,
   total_obraDeTerceiros: number,
   total_documentoReserva: number,
-  total_outros: number
+  total_outros: number,
+  clients_afetados: number
 }>
 
 export default class CPFLController {
@@ -569,13 +571,15 @@ export default class CPFLController {
         this.formatDateToGetDuration(initalDate[0], initalDate[1]),
         this.formatDateToGetDuration(finalDate[0], finalDate[1])
       )
+      const clientes_afetados = this.countAffectedClientsOfStreet(registry.street, 0)
 
       // ['paulista', 'santa cruz', 'piratininga', 'rio grande do sul']
 
       return {
         ...registry,
         duration: duration,
-        state: registry.state !== 'rio grande do sul' ? 'São Paulo' : 'Rio Grande do Sul'
+        state: registry.state !== 'rio grande do sul' ? 'São Paulo' : 'Rio Grande do Sul',
+        clientes_afetados
       }
     })
   }
@@ -725,7 +729,6 @@ export default class CPFLController {
       default:
         break;
     }
-
     
     let data = await cpflDataRepository.index({ state: stateFormatted })
     let formattedData = this.formatCPFLDataToPublicAccess(data)
@@ -870,8 +873,8 @@ export default class CPFLController {
     }
   }
 
-  private countAffectedClients = (data: CPFLDataDatabaseInterface[], affectedClientsVariable: number) => {
-    let count = affectedClientsVariable
+  private countAffectedClients = (data: CPFLDataDatabaseInterface[], initialOrActualValue: number) => {
+    let count = initialOrActualValue
 
     data.forEach((item) => {
       const street = item.street
@@ -898,6 +901,34 @@ export default class CPFLController {
         count += 1
       }
     })
+
+    return count
+  }
+
+  private countAffectedClientsOfStreet = (street: string, initialOrActualValue: number) => {
+    let count = initialOrActualValue
+    let firstNumberPosition = 0
+
+    for (let index = 0; index < street.length; index++) {
+      const letter = street[index]
+      
+      if (letter.search(/^[1-9][0-9]*$/) !== -1) {
+        firstNumberPosition = index
+        break
+      }
+    }
+
+    if (street.search('ao') !== -1) {
+      const clientsString = street.slice(firstNumberPosition, street.length)
+      const affectedClientsLimits = clientsString.split('ao')
+
+      const affectedClients = Number(affectedClientsLimits[1]) - Number(affectedClientsLimits[0])
+      if (!!affectedClients) {
+        count += affectedClients
+      }
+    } else {
+      count += 1
+    }
 
     return count
   }
@@ -936,10 +967,13 @@ export default class CPFLController {
           if (formattedData.name === cpflData.city) {
             if (cpflData.status === 2) {
               formattedData.status_agendamento = formattedData.status_agendamento + 1
+              formattedData.clientes_afetados = this.countAffectedClientsOfStreet(cpflData.street, formattedData.clientes_afetados)
             } else if (cpflData.status === 3) {
               formattedData.status_emAndamento = formattedData.status_emAndamento + 1
+              formattedData.clientes_afetados = this.countAffectedClientsOfStreet(cpflData.street, formattedData.clientes_afetados)
             } else  {
               formattedData.status_concluidas = formattedData.status_concluidas+ 1
+              formattedData.clientes_afetados = this.countAffectedClientsOfStreet(cpflData.street, formattedData.clientes_afetados)
             }
           }
         })
@@ -950,7 +984,8 @@ export default class CPFLController {
             state: this.convertState(cpflData.state),
             status_agendamento: 1,
             status_emAndamento: 0,
-            status_concluidas: 0
+            status_concluidas: 0,
+            clientes_afetados: this.countAffectedClientsOfStreet(cpflData.street, 0)
           })
         } else if (cpflData.status === 3) {
           dataFormatted.push({
@@ -958,7 +993,8 @@ export default class CPFLController {
             state: this.convertState(cpflData.state),
             status_agendamento: 0,
             status_emAndamento: 1,
-            status_concluidas: 0
+            status_concluidas: 0,
+            clientes_afetados: this.countAffectedClientsOfStreet(cpflData.street, 0)
           })
         } else  {
           dataFormatted.push({
@@ -966,7 +1002,8 @@ export default class CPFLController {
             state: this.convertState(cpflData.state),
             status_agendamento: 0,
             status_emAndamento: 0,
-            status_concluidas: 1
+            status_concluidas: 1,
+            clientes_afetados: this.countAffectedClientsOfStreet(cpflData.street, 0)
           })
         }
       }
@@ -1002,6 +1039,7 @@ export default class CPFLController {
       street: String(rua) !== 'undefined' ? String(rua) : undefined,
     })
     let dataFormatted: reasonsCountInterface = []
+    const clientesAfetados = this.countAffectedClients(data, 0)
 
     data.forEach((cpflData) => {
       const haveCity = this.haveCityInDataFormattedReasons(dataFormatted, cpflData.city)
@@ -1011,18 +1049,25 @@ export default class CPFLController {
           if (formattedData.name === cpflData.city) {
             if (cpflData.reason === 'Manutencao') {
               formattedData.total_manutencao += 1
+              formattedData.clients_afetados = this.countAffectedClientsOfStreet(cpflData.street, formattedData.clients_afetados)
             } else if (cpflData.reason === 'Obra') {
               formattedData.total_obra += 1
+              formattedData.clients_afetados = this.countAffectedClientsOfStreet(cpflData.street, formattedData.clients_afetados)
             } else if (cpflData.reason === 'Preventivo') {
               formattedData.total_preventivas += 1
+              formattedData.clients_afetados = this.countAffectedClientsOfStreet(cpflData.street, formattedData.clients_afetados)
             } else if (cpflData.reason === 'Melhoria') {
               formattedData.total_melhorias += 1
+              formattedData.clients_afetados = this.countAffectedClientsOfStreet(cpflData.street, formattedData.clients_afetados)
             } else if (cpflData.reason === 'Documento Reserva') {
               formattedData.total_documentoReserva += 1
+              formattedData.clients_afetados = this.countAffectedClientsOfStreet(cpflData.street, formattedData.clients_afetados)
             } else if (cpflData.reason === 'Obra de Terceiros') {
               formattedData.total_obraDeTerceiros += 1
+              formattedData.clients_afetados = this.countAffectedClientsOfStreet(cpflData.street, formattedData.clients_afetados)
             } else {
               formattedData.total_outros += 1
+              formattedData.clients_afetados = this.countAffectedClientsOfStreet(cpflData.street, formattedData.clients_afetados)
             }
           }
         })
@@ -1037,7 +1082,8 @@ export default class CPFLController {
             total_preventivas: 0,
             total_obraDeTerceiros: 0,
             total_documentoReserva: 0,
-            total_outros: 0
+            total_outros: 0,
+            clients_afetados: this.countAffectedClientsOfStreet(cpflData.street, 0)
           })
         } else if (cpflData.reason === 'Obra') {
           dataFormatted.push({
@@ -1049,7 +1095,8 @@ export default class CPFLController {
             total_preventivas: 0,
             total_obraDeTerceiros: 0,
             total_documentoReserva: 0,
-            total_outros: 0
+            total_outros: 0,
+            clients_afetados: this.countAffectedClientsOfStreet(cpflData.street, 0)
           })
         } else if (cpflData.reason === 'Preventivo') {
           dataFormatted.push({
@@ -1061,7 +1108,8 @@ export default class CPFLController {
             total_preventivas: 1,
             total_obraDeTerceiros: 0,
             total_documentoReserva: 0,
-            total_outros: 0
+            total_outros: 0,
+            clients_afetados: this.countAffectedClientsOfStreet(cpflData.street, 0)
           })
         } else if (cpflData.reason === 'Melhoria') {
           dataFormatted.push({
@@ -1073,7 +1121,8 @@ export default class CPFLController {
             total_preventivas: 0,
             total_obraDeTerceiros: 0,
             total_documentoReserva: 0,
-            total_outros: 0
+            total_outros: 0,
+            clients_afetados: this.countAffectedClientsOfStreet(cpflData.street, 0)
           })
         } else if (cpflData.reason === 'Obra de Terceiros') {
           dataFormatted.push({
@@ -1085,7 +1134,8 @@ export default class CPFLController {
             total_preventivas: 0,
             total_obraDeTerceiros: 1,
             total_documentoReserva: 0,
-            total_outros: 0
+            total_outros: 0,
+            clients_afetados: this.countAffectedClientsOfStreet(cpflData.street, 0)
           })
         } else if (cpflData.reason === 'Documento Reserva') {
           dataFormatted.push({
@@ -1097,7 +1147,8 @@ export default class CPFLController {
             total_preventivas: 0,
             total_obraDeTerceiros: 0,
             total_documentoReserva: 1,
-            total_outros: 0
+            total_outros: 0,
+            clients_afetados: this.countAffectedClientsOfStreet(cpflData.street, 0)
           })
         } else {
           dataFormatted.push({
@@ -1109,7 +1160,8 @@ export default class CPFLController {
             total_preventivas: 0,
             total_obraDeTerceiros: 0,
             total_documentoReserva: 0,
-            total_outros: 1
+            total_outros: 1,
+            clients_afetados: this.countAffectedClientsOfStreet(cpflData.street, 0)
           })
         }
       }
