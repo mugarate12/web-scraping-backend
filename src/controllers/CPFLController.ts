@@ -1249,6 +1249,7 @@ export default class CPFLController {
 
     const browser = await this.runBrowser()
 
+    console.log(state, city)
     await this.runCpflRoutine(browser, String(state), String(city))
       .catch(error => {})
 
