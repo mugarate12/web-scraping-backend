@@ -173,7 +173,8 @@ export default class DownDetectorController {
     const browser = await puppeteer.launch({ 
       headless: true,
       args: [
-        '--no-sandbox'
+        '--no-sandbox',
+        // '--proxy-server=http://201.91.82.155:3128'
       ]
     })
     const page = await browser.newPage()
@@ -183,6 +184,7 @@ export default class DownDetectorController {
     await page.setDefaultNavigationTimeout(0)
     
     const url2 = `https://downdetector.com.br/fora-do-ar/${serviceName}`
+    console.log(url2)
     let status: number = 200
     let data: any = {}
     let result: {
@@ -203,7 +205,7 @@ export default class DownDetectorController {
         console.log('first attemp: ', status)
       })
       .catch(error => {
-        console.log(error)
+        console.log('downdetectorerror', error)
       })
 
     if (status !== 200) {
@@ -252,8 +254,12 @@ export default class DownDetectorController {
           reports
         }
       })
+        .then(getDataResponse => {
+          result = getDataResponse
+        })
+        .catch(error => console.log(error))
 
-      result = getDataResponse
+      // result = getDataResponse
     }
 
     await browser.close()

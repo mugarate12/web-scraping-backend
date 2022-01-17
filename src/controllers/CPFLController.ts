@@ -949,6 +949,8 @@ export default class CPFLController {
     if (states.length === 0) states = [ 'all' ]
     if (cities.length === 0) cities = [ 'all' ]
 
+    console.log(states, cities)
+
     const data = await cpflDataRepository.indexPerDate({ 
       date: actualDate, 
       state: formattedState !== 'undefined' && formattedState !== 'all' && formattedState.length > 0 ? formattedState : undefined,
