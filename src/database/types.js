@@ -19,6 +19,8 @@ const CPFL_SEARCH_NOW = 'cpfl_search_now'
 
 const EQUATORIAL_DATA = 'equatorial_data'
 
+const OCR_DATA_TABLE_NAME = 'ocr_data'
+
 const ENERGY_PERMISSIONS_TABLE_NAME = 'energy_permissions'
 
 module.exports = {
@@ -41,6 +43,8 @@ module.exports = {
   CPFL_SEARCH_NOW,
 
   EQUATORIAL_DATA,
+
+  OCR_DATA_TABLE_NAME,
 
   ENERGY_PERMISSIONS_TABLE_NAME
 }

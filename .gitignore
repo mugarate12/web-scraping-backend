@@ -3,3 +3,6 @@ node_modules
 .env
 .png
 temp
+
+file.png
+file.jpg

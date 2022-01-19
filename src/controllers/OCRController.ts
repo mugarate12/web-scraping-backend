@@ -8,6 +8,8 @@ import moment from 'moment'
 
 // const gm = require('gm').subClass({imageMagick: true})
 
+import { ocrDataRepository } from './../repositories'
+
 const client = new vision.ImageAnnotatorClient({
   keyFilename: path.resolve(__dirname, '..', '..', 'googleJSONCredentials.json'),
   projectId: 'image-text-338511'
@@ -333,6 +335,45 @@ export default class OCRController {
     }
   }
 
+  private updateInDatabase = async (dataArray: {
+    serviceName: string;
+    up_value: string;
+    up_percent: string;
+    down_value: string;
+    down_percent: string;
+  }[], state: string, city: string) => {
+    for (let index = 0; index < dataArray.length; index++) {
+      const data = dataArray[index]
+
+      const ocrData = await ocrDataRepository.get({ state, city, service: data.serviceName })
+      if (!!ocrData) {
+        await ocrDataRepository.update({
+          identifiers: {
+            state,
+            city,
+            service: data.serviceName
+          },
+          payload: {
+            up_value: data.up_value,
+            up_percent: data.up_percent,
+            down_value: data.down_value,
+            down_percent: data.down_percent
+          }
+        })
+      } else {
+        await ocrDataRepository.create({
+          state,
+          city,
+          service: data.serviceName,
+          up_value: data.up_value,
+          up_percent: data.up_percent,
+          down_value: data.down_value,
+          down_percent: data.down_percent
+        })
+      }
+    }
+  }
+
   private getWithGoogleCloudVision = async () => {
     let example = 'https://old.ix.br/stats/3047274b0830e6f8371d5d14b0970580/rj/images/setas01.png'
 
@@ -481,6 +522,11 @@ export default class OCRController {
         // upsideFormattedValues
         // middleFormattedValues
         // downsideFormattedValues
+        // console.log(object)
+
+        this.updateInDatabase(upsideFormattedValues, 'RJ', 'Rio de Janeiro')
+        this.updateInDatabase(middleFormattedValues, 'RJ', 'Rio de Janeiro')
+        this.updateInDatabase(downsideFormattedValues, 'RJ', 'Rio de Janeiro')
       }
 
       return data
