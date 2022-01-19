@@ -5,13 +5,22 @@ import path from 'path'
 import https from 'https'
 import fs from 'fs'
 import moment from 'moment'
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 // const gm = require('gm').subClass({imageMagick: true})
 
 import { ocrDataRepository } from './../repositories'
 
+let clientKey = path.resolve(__dirname, '..', '..', 'googleJSONCredentials.json')
+
+if (process.env.NODE_ENV === 'production') {
+  clientKey = path.resolve(__dirname, '..', '..', '..', 'googleJSONCredentials.json')
+}
+
 const client = new vision.ImageAnnotatorClient({
-  keyFilename: path.resolve(__dirname, '..', '..', 'googleJSONCredentials.json'),
+  keyFilename: clientKey,
   projectId: 'image-text-338511'
 })
 
@@ -388,7 +397,10 @@ export default class OCRController {
 
     await this.sleep(5)
 
-   const filename = path.resolve(__dirname, '..', '..', 'file.png')
+   let filename = path.resolve(__dirname, '..', '..', 'file.png')
+   if (process.env.NODE_ENV === 'production') {
+      filename = path.resolve(__dirname, '..', '..', '..', 'file.png')
+   }
 
     try {
       const [ result ] = await client.textDetection(filename)
