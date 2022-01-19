@@ -9,6 +9,7 @@ import cleanTemporaryFilesRoutine from './cleanTemporaryFilesRoutine'
 import clientKeysExpirationRoutine from './clientKeysExpirationRoutine'
 import CPFLRoutine from './CPFLRoutine'
 import routinesRequests from './downDetectorRoutines'
+import ocrRoutine from './ocrRoutine'
 
 
 dotenv.config()
@@ -25,8 +26,9 @@ export default async (serverIo: Server) => {
   if(processName.search(/primary/) !== -1){
     cleanTemporaryFilesRoutine()
     clientKeysExpirationRoutine()
+    
     routinesRequests(serverIo)
-
     CPFLRoutine()
+    ocrRoutine()
   }
 }

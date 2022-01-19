@@ -4,7 +4,8 @@ import { celebrate, Joi, Segments } from 'celebrate'
 import {
   apiAccessController,
   cpflController,
-  equatorialController
+  equatorialController,
+  ocrController
 } from './../controllers'
 
 import {
@@ -175,4 +176,6 @@ export default function publicAccessRoutes(routes: Router) {
       token: Joi.string().required()
     })
   }), publicAccessJWT, readApiInformations, readFlow4EnergyInformation, equatorialController.getSummary)
+
+  routes.get('/public/access/ocr/all', ocrController.getAllData)
 } 

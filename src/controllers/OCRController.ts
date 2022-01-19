@@ -570,4 +570,16 @@ export default class OCRController {
       data: {}
     })
   }
+
+  public runRoutine = async () => {
+    await this.getWithGoogleCloudVision()
+  }
+
+  public getAllData = async (req: Request, res: Response) => {
+    const data = await ocrDataRepository.index()
+
+    return res.status(200).json({
+      data: data
+    })
+  }
 }
