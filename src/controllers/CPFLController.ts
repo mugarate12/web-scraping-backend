@@ -626,7 +626,7 @@ export default class CPFLController {
     ]
   
     const browser = await puppeteer.launch({ 
-      headless: true, 
+      headless: false, 
       args: minimal_args,
       slowMo: 200
       // userDataDir: false
@@ -949,8 +949,6 @@ export default class CPFLController {
     if (states.length === 0) states = [ 'all' ]
     if (cities.length === 0) cities = [ 'all' ]
 
-    console.log(states, cities)
-
     const data = await cpflDataRepository.indexPerDate({ 
       date: actualDate, 
       state: formattedState !== 'undefined' && formattedState !== 'all' && formattedState.length > 0 ? formattedState : undefined,
@@ -1249,7 +1247,6 @@ export default class CPFLController {
 
     const browser = await this.runBrowser()
 
-    console.log(state, city)
     await this.runCpflRoutine(browser, String(state), String(city))
       .catch(error => {})
 

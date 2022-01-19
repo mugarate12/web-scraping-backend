@@ -278,8 +278,6 @@ export default class CPFLDataRepository {
       query = query.where('status', '=', status)
     }
 
-    console.log(query.toSQL().toNative())
-
     return query
       .then(data => data)
       .catch(error => {

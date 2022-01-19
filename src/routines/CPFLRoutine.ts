@@ -146,7 +146,9 @@ async function updateServicesAdded(browser: puppeteer.Browser) {
       const search = requests[index]
       
       await cpflController.runCpflRoutine(browser, search.state, search.city)
+        .catch(error => console.log(error))
       await equatorialController.runRoutine(browser, search.state, search.city)
+        .catch(error => console.log(error))
     }
 
     for (let index = 0; index < requests.length; index++) {
