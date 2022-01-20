@@ -9,7 +9,7 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 
-// const gm = require('gm').subClass({imageMagick: true})
+const gm = require('gm').subClass({imageMagick: true})
 
 import { ocrDataRepository } from './../repositories'
 
@@ -183,6 +183,7 @@ export default class OCRController {
     })
   }
 
+  // decrepted
   private getServicesValues = (visionTexts: any, totalOfServices: number) => {
     let upsideValuesLimit: number | undefined = undefined
     let upsideValues: Array<{
@@ -547,36 +548,231 @@ export default class OCRController {
     }
   }
 
-  // private getRJ = async () => {
-  //   let example = 'https://old.ix.br/stats/3047274b0830e6f8371d5d14b0970580/rj/images/setas01.png'
+  private getRJCropedInformations = () => {
+    const services = {
+      CLARO: {
+        width: 105,
+        height: 167,
+        initialPointX: 145,
+        initialPointY: 0
+      },
+      LUMEN: {
+        width: 117,
+        height: 167,
+        initialPointX: 273,
+        initialPointY: 0
+      },
+      ELETRONET: {
+        width: 97,
+        height: 167,
+        initialPointX: 404,
+        initialPointY: 0
+      },
+      DURAND: {
+        width: 110,
+        height: 167,
+        initialPointX: 522,
+        initialPointY: 0
+      },
+      GLOBO: {
+        width: 104,
+        height: 167,
+        initialPointX: 652,
+        initialPointY: 0
+      },
+      'UFINET-SC': {
+        width: 116,
+        height: 167,
+        initialPointX: 774,
+        initialPointY: 0
+      },
+      CBPF: {
+        width: 650,
+        height: 90,
+        initialPointX: 190,
+        initialPointY: 170
+      },
+      'EQUINIX-RJ1': {
+        width: 650,
+        height: 90,
+        initialPointX: 190,
+        initialPointY: 170
+      },
+      'UFINET-JB': {
+        width: 119,
+        height: 169,
+        initialPointX: 146,
+        initialPointY: 271
+      },
+      MUNDIVOX: {
+        width: 98,
+        height: 169,
+        initialPointX: 280,
+        initialPointY: 271
+      },
+      COMMCORP: {
+        width: 104,
+        height: 169,
+        initialPointX: 402,
+        initialPointY: 271
+      },
+      INTERNEXA: {
+        width: 104,
+        height: 169,
+        initialPointX: 526,
+        initialPointY: 271
+      },
+      LINKFULL: {
+        width: 101,
+        height: 169,
+        initialPointX: 656,
+        initialPointY: 271
+      },
+      'EQUINIX-RJ2': {
+        width: 116,
+        height: 169,
+        initialPointX: 773,
+        initialPointY: 271
+      },
+
+    }
+
+    return services
+  }
+
+  private getInformationRJ = (informationsArray: Array<string>, key: string) => {
+    let serviceName = ''
+    let up_value = ''
+    let up_percent = ''
+    let down_value = ''
+    let down_percent = ''
+
+    if (key === 'CLARO' || key === 'LUMEN' || key === 'ELETRONET' || key === 'DURAND' || key === 'GLOBO' || key === 'UFINET-SC') {
+      serviceName = key
+      up_value = this.formatValue(informationsArray[2])
+
+      let lastLetter = informationsArray[3].length - 1
+      if (informationsArray[3][lastLetter] === '6' || informationsArray[3][lastLetter] === 'G' || informationsArray[3][lastLetter] === 'M') {
+        up_percent = '0%'
+        down_value = this.formatValue(informationsArray[3])
+
+        if (informationsArray.length === 5) {
+          down_percent = this.formatPercent( informationsArray[4])
+        } else {
+          down_percent = '0%'
+        }
+      } else {
+        up_percent = this.formatPercent(informationsArray[3])
+        down_value = this.formatValue(informationsArray[4])
+        
+        if (informationsArray.length === 6) {
+          down_percent = this.formatPercent(informationsArray[5])
+        } else {
+          down_percent = '0%'
+        }
+      }
+    } else if (key === 'CBPF') {
+      serviceName = key
+
+      up_value = this.formatValue(informationsArray[0])
+      up_percent = this.formatPercent(informationsArray[2])
+      down_value = this.formatValue(informationsArray[7])
+      down_percent = this.formatPercent(informationsArray[9])
+    } else if (key === 'EQUINIX-RJ1') {
+      serviceName = key
+
+      up_value = this.formatValue(informationsArray[7])
+      up_percent = this.formatPercent(informationsArray[9])
+      down_value = this.formatValue(informationsArray[0])
+      down_percent = this.formatPercent(informationsArray[2])
+    } else if (key === 'UFINET-JB' || key === 'MUNDIVOX' || key === 'COMMCORP' || key === 'INTERNEXA' || key === 'LINKFULL' || key === 'EQUINIX-RJ2' ) {
+      serviceName = key
+
+      up_value = this.formatValue(informationsArray[2])
+      up_percent = this.formatPercent(informationsArray[3])
+      down_value = this.formatValue(informationsArray[0])
+      down_percent = this.formatPercent(informationsArray[1])
+    }
+
+    return {
+      serviceName,
+      up_value,
+      up_percent,
+      down_value,
+      down_percent
+    }
+  }
+
+  private getRJ = async () => {
+    let example = 'https://old.ix.br/stats/3047274b0830e6f8371d5d14b0970580/rj/images/setas01.png'
   
-  //   const file = fs.createWriteStream('file.jpg', { encoding: 'base64' })
-  //   const request = https.get(example, function(response) {
-  //     response.pipe(file)
-  //   })
+    const file = fs.createWriteStream('file.png', { encoding: 'base64' })
+    const request = https.get(example, function(response) {
+      response.pipe(file)
+    })
 
-  //   await this.sleep(5)
+    await this.sleep(7)
 
-  //   const filename = path.resolve(__dirname, '..', '..', 'file.jpg')
-  //   const cropedFilename =  path.resolve(__dirname, '..', '..', 'croped.jpg')
+    let filename = path.resolve(__dirname, '..', '..', 'file.png')
+    let cropedFilename =  path.resolve(__dirname, '..', '..', 'croped.jpg')
+    if (process.env.NODE_ENV === 'production') {
+        filename = path.resolve(__dirname, '..', '..', '..', 'file.png')
+        cropedFilename =  path.resolve(__dirname, '..', '..', '..', 'croped.jpg')
+    }
+    
+    const cropedInformations = this.getRJCropedInformations()
+    const cropedKeys = Object.keys(cropedInformations)
+    let formattedInformations: {
+      serviceName: string;
+      up_value: string;
+      up_percent: string;
+      down_value: string;
+      down_percent: string;
+    }[] = []
 
-  //   gm(filename)
-  //     .crop(0, 140, 97, 166)
-  //     .white()
+    for (let index = 0; index < cropedKeys.length; index++) {
+      const key = cropedKeys[index]
 
+      await gm(filename)
+        .crop(
+          cropedInformations[key].width, 
+          cropedInformations[key].height, 
+          cropedInformations[key].initialPointX, 
+          cropedInformations[key].initialPointY
+          )
+        .write(cropedFilename, function(err) {
+          if (err) return console.dir(arguments)
+          console.log('created')
+        })
 
-  //   try {
-  //     const [ result ] = await client.textDetection(filename)
-     
-  //   } catch (error) {
-  //     console.log(error)
-  //   }
-  // }
+      await this.sleep(5)
+      console.log('timming ok')
+
+      try {
+        const [ result ] = await client.textDetection(cropedFilename)
+        const texts = result.textAnnotations
+        let arrayString: Array<string> = []
+  
+        if (!!texts) {
+          texts.forEach(text => {
+            // console.log(text.description)
+            arrayString.push(String(text.description))
+          })
+        }
+  
+        const information = this.getInformationRJ(arrayString.slice(1, arrayString.length), key)
+        formattedInformations.push(information)
+       
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    await this.updateInDatabase(formattedInformations, 'RJ', 'Rio de Janeiro')
+  }
 
   public updateManually = async (req: Request, res: Response) => {
-    // await this.get()
-    const data = await this.getWithGoogleCloudVision()
-    // await this.getRJ()
+    await this.getRJ()
 
     return res.status(200).json({
       data: {}
@@ -584,7 +780,7 @@ export default class OCRController {
   }
 
   public runRoutine = async () => {
-    await this.getWithGoogleCloudVision()
+    await this.getRJ()
   }
 
   public getAllData = async (req: Request, res: Response) => {
