@@ -355,32 +355,37 @@ export default class OCRController {
     for (let index = 0; index < dataArray.length; index++) {
       const data = dataArray[index]
 
-      const ocrData = await ocrDataRepository.get({ state, city, service: data.serviceName })
-      if (!!ocrData) {
-        await ocrDataRepository.update({
-          identifiers: {
+      if (!!data.serviceName && !!data.up_value && !!data.up_percent && !!data.down_value && !!data.down_percent) {
+        console.log(data)
+        
+        const ocrData = await ocrDataRepository.get({ state, city, service: data.serviceName })
+        if (!!ocrData) {
+          await ocrDataRepository.update({
+            identifiers: {
+              state,
+              city,
+              service: data.serviceName
+            },
+            payload: {
+              up_value: data.up_value,
+              up_percent: data.up_percent,
+              down_value: data.down_value,
+              down_percent: data.down_percent
+            }
+          })
+        } else {
+          await ocrDataRepository.create({
             state,
             city,
-            service: data.serviceName
-          },
-          payload: {
+            service: data.serviceName,
             up_value: data.up_value,
             up_percent: data.up_percent,
             down_value: data.down_value,
             down_percent: data.down_percent
-          }
-        })
-      } else {
-        await ocrDataRepository.create({
-          state,
-          city,
-          service: data.serviceName,
-          up_value: data.up_value,
-          up_percent: data.up_percent,
-          down_value: data.down_value,
-          down_percent: data.down_percent
-        })
+          })
+        }
       }
+
     }
   }
 
@@ -747,6 +752,7 @@ export default class OCRController {
 
       await this.sleep(5)
       console.log('timming ok')
+      console.log(key)
 
       try {
         const [ result ] = await client.textDetection(cropedFilename)
@@ -768,7 +774,9 @@ export default class OCRController {
       }
     }
 
+    console.log('atualizando no banco de dados')
     await this.updateInDatabase(formattedInformations, 'RJ', 'Rio de Janeiro')
+    console.log('atualizado!')
   }
 
   public updateManually = async (req: Request, res: Response) => {
