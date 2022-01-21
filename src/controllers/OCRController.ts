@@ -208,6 +208,73 @@ export default class OCRController {
     return services
   }
 
+  private getFortalezaCropedInformations = () => {
+    const services = {
+      RNP: {
+        width: 124,
+        height: 167,
+        initialPointX: 152,
+        initialPointY: 0
+      },
+      'MOB TELECOM': {
+        width: 105,
+        height: 167,
+        initialPointX: 354,
+        initialPointY: 0
+      },
+      'LUMEN': {
+        width: 124,
+        height: 167,
+        initialPointX: 570,
+        initialPointY: 0
+      },
+      'ELETRONET': {
+        width: 110,
+        height: 167,
+        initialPointX: 785,
+        initialPointY: 0
+      },
+      ETICE: {
+        width: 650,
+        height: 90,
+        initialPointX: 193,
+        initialPointY: 170
+      },
+      GLOBENET: {
+        width: 650,
+        height: 90,
+        initialPointX: 190,
+        initialPointY: 170
+      },
+      COMMCORP: {
+        width: 119,
+        height: 169,
+        initialPointX: 146,
+        initialPointY: 271
+      },
+      'ANGOLA CABLES': {
+        width: 138,
+        height: 169,
+        initialPointX: 345,
+        initialPointY: 271
+      },
+      HOSTWEB: {
+        width: 110,
+        height: 169,
+        initialPointX: 572,
+        initialPointY: 271
+      },
+      ASCENTY: {
+        width: 111,
+        height: 169,
+        initialPointX: 776,
+        initialPointY: 271
+      },
+    }
+
+    return services
+  }
+
   private getInformationRJ = (informationsArray: Array<string>, key: string) => {
     let serviceName = ''
     let up_value = ''
@@ -254,6 +321,97 @@ export default class OCRController {
       down_value = this.formatValue(informationsArray[0])
       down_percent = this.formatPercent(informationsArray[2])
     } else if (key === 'UFINET-JB' || key === 'MUNDIVOX' || key === 'COMMCORP' || key === 'INTERNEXA' || key === 'LINKFULL' || key === 'EQUINIX-RJ2' ) {
+      console.log(informationsArray)
+      serviceName = key
+
+      up_value = this.formatValue(informationsArray[2])
+      up_percent = this.formatPercent(informationsArray[3])
+
+      down_value = this.formatValue(informationsArray[0])
+      down_percent = this.formatPercent(informationsArray[1])
+    }
+
+    return {
+      serviceName,
+      up_value,
+      up_percent,
+      down_value,
+      down_percent
+    }
+  }
+
+  private getInformationFortaleza = (informationsArray: Array<string>, key: string) => {
+    let serviceName = ''
+    let up_value = ''
+    let up_percent = ''
+    let down_value = ''
+    let down_percent = ''
+
+    if (key === 'RNP' || key === 'LUMEN' || key === 'ELETRONET') {
+      serviceName = key
+      console.log(informationsArray)
+      up_value = this.formatValue(informationsArray[2])
+
+      let lastLetter = informationsArray[3].length - 1
+      if (informationsArray[3][lastLetter] === '6' || informationsArray[3][lastLetter] === 'G' || informationsArray[3][lastLetter] === 'M') {
+        up_percent = '0%'
+        down_value = this.formatValue(informationsArray[3])
+
+        if (informationsArray.length === 5) {
+          down_percent = this.formatPercent( informationsArray[4])
+        } else {
+          down_percent = '0%'
+        }
+      } else {
+        up_percent = this.formatPercent(informationsArray[3])
+        down_value = this.formatValue(informationsArray[4])
+        
+        if (informationsArray.length === 6) {
+          down_percent = this.formatPercent(informationsArray[5])
+        } else {
+          down_percent = '0%'
+        }
+      }
+    } else if (key === 'MOB TELECOM') {
+      serviceName = key
+      console.log(informationsArray)
+      up_value = this.formatValue(informationsArray[3])
+
+      let lastLetter = informationsArray[4].length - 1
+      if (informationsArray[4][lastLetter] === '6' || informationsArray[4][lastLetter] === 'G' || informationsArray[4][lastLetter] === 'M') {
+        up_percent = '0%'
+        down_value = this.formatValue(informationsArray[4])
+
+        if (informationsArray.length === 6) {
+          down_percent = this.formatPercent( informationsArray[5])
+        } else {
+          down_percent = '0%'
+        }
+      } else {
+        up_percent = this.formatPercent(informationsArray[4])
+        down_value = this.formatValue(informationsArray[5])
+        
+        if (informationsArray.length === 7) {
+          down_percent = this.formatPercent(informationsArray[6])
+        } else {
+          down_percent = '0%'
+        }
+      }
+    } else if (key === 'ETICE') {
+      serviceName = key
+
+      up_value = this.formatValue(informationsArray[0])
+      up_percent = this.formatPercent(informationsArray[2])
+      down_value = this.formatValue(informationsArray[7])
+      down_percent = this.formatPercent(informationsArray[9])
+    } else if (key === 'GLOBENET') {
+      serviceName = key
+
+      up_value = this.formatValue(informationsArray[7])
+      up_percent = this.formatPercent(informationsArray[9])
+      down_value = this.formatValue(informationsArray[0])
+      down_percent = this.formatPercent(informationsArray[2])
+    } else if (key === 'COMMCORP' || key === 'ANGOLA CABLES' || key === 'HOSTWEB' || key === 'ASCENTY') {
       console.log(informationsArray)
       serviceName = key
 
@@ -393,8 +551,130 @@ export default class OCRController {
     console.log('OCR --> atualizado!')
   }
 
+  private getFortaleza = async (isRoutine: boolean) => {
+    let fortalezaURL = 'https://old.ix.br/stats/cbff2f8aa74c6b3a283048e31b56576d/ce/images/setas01.png'
+
+    const file = fs.createWriteStream('file.png', { encoding: 'base64' })
+    const request = https.get(fortalezaURL, function(response) {
+      response.pipe(file)
+    })
+
+    await this.sleep(7)
+    
+    let filename = path.resolve(__dirname, '..', '..', 'file.png')
+    let cropedFilename =  path.resolve(__dirname, '..', '..', 'croped.jpg')
+    if (process.env.NODE_ENV === 'production') {
+        filename = path.resolve(__dirname, '..', '..', '..', 'file.png')
+        cropedFilename =  path.resolve(__dirname, '..', '..', '..', 'croped.jpg')
+    }
+
+    const cropedInformations = this.getFortalezaCropedInformations()
+    const cropedKeys = Object.keys(cropedInformations)
+    let formattedInformations: {
+      serviceName: string;
+      up_value: string;
+      up_percent: string;
+      down_value: string;
+      down_percent: string;
+    }[] = []
+
+    for (let index = 0; index < cropedKeys.length; index++) {
+      const key = cropedKeys[index]
+
+      await gm(filename)
+        .crop(
+          cropedInformations[key].width, 
+          cropedInformations[key].height, 
+          cropedInformations[key].initialPointX, 
+          cropedInformations[key].initialPointY
+          )
+        .write(cropedFilename, function(err) {
+          if (err) return console.dir(arguments)
+          console.log('OCR --> image croped')
+        })
+
+      await this.sleep(5)
+        console.log('OCR --> image croped timming ok')
+        console.log(key)
+
+      try {
+        const [ result ] = await client.textDetection(cropedFilename)
+        const texts = result.textAnnotations
+        let arrayString: Array<string> = []
+  
+        if (!!texts) {
+          texts.forEach(text => {
+            arrayString.push(String(text.description))
+          })
+        }
+  
+        const information = this.getInformationFortaleza(arrayString.slice(1, arrayString.length), key)
+        formattedInformations.push(information)
+        
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    
+    console.log(formattedInformations);
+    const dataCrop = {
+      width: 165,
+      height: 12,
+      initialPointX: 454,
+      initialPointY: 456
+    }
+
+    gm(filename)
+      .crop(
+        dataCrop.width, 
+        dataCrop.height, 
+        dataCrop.initialPointX, 
+        dataCrop.initialPointY
+        )
+      .write(cropedFilename, function(err) {
+        if (err) return console.dir(arguments)
+        console.log('OCR --> created')
+      })
+
+    await this.sleep(5)
+    console.log('OCR --> timming  date ok')
+    let imageDate = ''
+
+    try {
+      const [ result ] = await client.textDetection(cropedFilename)
+      const texts = result.textAnnotations
+      let arrayString: Array<string> = []
+
+      if (!!texts) {
+        texts.forEach(text => {
+          // console.log(text.description)
+          arrayString.push(String(text.description))
+        })
+      }
+
+      console.log(arrayString.slice(1, arrayString.length))
+      arrayString.slice(1, arrayString.length).forEach((content, index) => {
+        if (index === 0) {
+          imageDate += content
+        } 
+
+        if (index === 1) {
+          imageDate += ` ${content}`
+        }
+      })
+
+    } catch (error) {
+      console.log(error)
+    }
+
+    console.log('OCR --> atualizando no banco de dados')
+    await this.updateInDatabase(formattedInformations, 'CE', 'Fortaleza', imageDate, isRoutine)
+    console.log('OCR --> atualizado!')
+  }
+
   public updateManually = async (req: Request, res: Response) => {
     await this.getRJ(false)
+    await this.getFortaleza(false)
 
     return res.status(200).json({
       data: {}
@@ -403,6 +683,7 @@ export default class OCRController {
 
   public runRoutine = async () => {
     await this.getRJ(true)
+    await this.getFortaleza(true)
   }
 
   public getAllData = async (req: Request, res: Response) => {
