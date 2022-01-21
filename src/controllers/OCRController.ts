@@ -34,7 +34,7 @@ export default class OCRController {
     let formattedValue = value
     const lastLetterOfValue = formattedValue[formattedValue.length - 1]
 
-    if (lastLetterOfValue === ']' || lastLetterOfValue === '|') {
+    if (lastLetterOfValue === ']' || lastLetterOfValue === '|' || lastLetterOfValue === '/') {
       formattedValue = formattedValue.slice(0, formattedValue.length - 1)
     }
 
@@ -243,7 +243,7 @@ export default class OCRController {
       GLOBENET: {
         width: 650,
         height: 90,
-        initialPointX: 190,
+        initialPointX: 193,
         initialPointY: 170
       },
       COMMCORP: {
@@ -407,10 +407,18 @@ export default class OCRController {
     } else if (key === 'GLOBENET') {
       serviceName = key
 
-      up_value = this.formatValue(informationsArray[7])
-      up_percent = this.formatPercent(informationsArray[9])
-      down_value = this.formatValue(informationsArray[0])
-      down_percent = this.formatPercent(informationsArray[2])
+      if (informationsArray[2] === '/') {
+        up_value = this.formatValue(informationsArray[6])
+        up_percent = this.formatPercent(informationsArray[8])
+        down_value = this.formatValue(informationsArray[0])
+        down_percent = this.formatPercent(informationsArray[1])
+      } else {
+        up_value = this.formatValue(informationsArray[7])
+        up_percent = this.formatPercent(informationsArray[9])
+        down_value = this.formatValue(informationsArray[0])
+        down_percent = this.formatPercent(informationsArray[2])
+      }
+
     } else if (key === 'COMMCORP' || key === 'ANGOLA CABLES' || key === 'HOSTWEB' || key === 'ASCENTY') {
       // console.log(informationsArray)
       serviceName = key
