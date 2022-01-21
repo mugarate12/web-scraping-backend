@@ -321,7 +321,7 @@ export default class OCRController {
       down_value = this.formatValue(informationsArray[0])
       down_percent = this.formatPercent(informationsArray[2])
     } else if (key === 'UFINET-JB' || key === 'MUNDIVOX' || key === 'COMMCORP' || key === 'INTERNEXA' || key === 'LINKFULL' || key === 'EQUINIX-RJ2' ) {
-      console.log(informationsArray)
+      // console.log(informationsArray)
       serviceName = key
 
       up_value = this.formatValue(informationsArray[2])
@@ -349,7 +349,7 @@ export default class OCRController {
 
     if (key === 'RNP' || key === 'LUMEN' || key === 'ELETRONET') {
       serviceName = key
-      console.log(informationsArray)
+      // console.log(informationsArray)
       up_value = this.formatValue(informationsArray[2])
 
       let lastLetter = informationsArray[3].length - 1
@@ -374,7 +374,7 @@ export default class OCRController {
       }
     } else if (key === 'MOB TELECOM') {
       serviceName = key
-      console.log(informationsArray)
+      // console.log(informationsArray)
       up_value = this.formatValue(informationsArray[3])
 
       let lastLetter = informationsArray[4].length - 1
@@ -412,7 +412,7 @@ export default class OCRController {
       down_value = this.formatValue(informationsArray[0])
       down_percent = this.formatPercent(informationsArray[2])
     } else if (key === 'COMMCORP' || key === 'ANGOLA CABLES' || key === 'HOSTWEB' || key === 'ASCENTY') {
-      console.log(informationsArray)
+      // console.log(informationsArray)
       serviceName = key
 
       up_value = this.formatValue(informationsArray[2])
@@ -633,11 +633,11 @@ export default class OCRController {
         )
       .write(cropedFilename, function(err) {
         if (err) return console.dir(arguments)
-        console.log('OCR --> created')
+        // console.log('OCR --> created')
       })
 
     await this.sleep(5)
-    console.log('OCR --> timming  date ok')
+    // console.log('OCR --> timming  date ok')
     let imageDate = ''
 
     try {
@@ -652,7 +652,7 @@ export default class OCRController {
         })
       }
 
-      console.log(arrayString.slice(1, arrayString.length))
+      // console.log(arrayString.slice(1, arrayString.length))
       arrayString.slice(1, arrayString.length).forEach((content, index) => {
         if (index === 0) {
           imageDate += content
