@@ -30,30 +30,6 @@ export default class OCRController {
     return new Promise(resolve => setTimeout(resolve, 1000 * seconds))
   }
 
-  private getServicesTitles = (visionTexts: any) => {
-    let upsideServices: Array<string> = []
-    let upsideServicesLimit: number | undefined = undefined
-
-    if (!!visionTexts) {
-      visionTexts.forEach((text, index) => {        
-        if (upsideServicesLimit === undefined) {
-          if (text.description === 'PIX') {
-            upsideServices.push(String(visionTexts[index + 1].description))
-            
-            if (String(visionTexts[index + 2].description) !== 'PIX') {
-              upsideServicesLimit = index + 2
-            } 
-          }
-        }
-      })
-    }
-
-    return {
-      upsideServices,
-      upsideServicesLimit
-    }
-  }
-
   private formatValue = (value: string) => {
     let formattedValue = value
     const lastLetterOfValue = formattedValue[formattedValue.length - 1]
@@ -62,7 +38,10 @@ export default class OCRController {
       formattedValue = formattedValue.slice(0, formattedValue.length - 1)
     }
 
-    if (lastLetterOfValue === '6') {
+    const haveDotInValue = formattedValue.includes('.')
+    const lastLetterIsZero = lastLetterOfValue === '0'
+
+    if (lastLetterOfValue === '6' || (haveDotInValue && lastLetterIsZero)) {
       formattedValue = formattedValue.slice(0, formattedValue.length - 1) + 'G'
     }
 
@@ -78,24 +57,6 @@ export default class OCRController {
     }
 
     return formattedPercent
-  }
-
-  private formatValuesAndPercents = (values: Array<{
-    value: string,
-    percent: string
-  }>) => {
-    return values.map((value) => {
-      let formattedValue = value.value
-      let formattedPercent = value.percent
-            
-      formattedValue = this.formatValue(formattedValue)
-      formattedPercent = this.formatPercent(formattedPercent)
-
-      return {
-        value: formattedValue,
-        percent: formattedPercent
-      }
-    })
   }
 
   private updateInDatabase = async (dataArray: {
@@ -351,11 +312,11 @@ export default class OCRController {
           )
         .write(cropedFilename, function(err) {
           if (err) return console.dir(arguments)
-          console.log('created')
+          console.log('OCR --> image croped')
         })
 
       await this.sleep(5)
-      console.log('timming ok')
+      console.log('OCR --> image croped timming ok')
       console.log(key)
 
       try {
@@ -365,7 +326,6 @@ export default class OCRController {
   
         if (!!texts) {
           texts.forEach(text => {
-            // console.log(text.description)
             arrayString.push(String(text.description))
           })
         }
@@ -394,11 +354,11 @@ export default class OCRController {
         )
       .write(cropedFilename, function(err) {
         if (err) return console.dir(arguments)
-        console.log('created')
+        console.log('OCR --> created')
       })
 
     await this.sleep(5)
-    console.log('timming  date ok')
+    console.log('OCR --> timming  date ok')
     let imageDate = ''
 
     try {
@@ -427,12 +387,10 @@ export default class OCRController {
     } catch (error) {
       console.log(error)
     }
-    
-    console.log('imageDate: ', imageDate)
 
-    console.log('atualizando no banco de dados')
+    console.log('OCR --> atualizando no banco de dados')
     await this.updateInDatabase(formattedInformations, 'RJ', 'Rio de Janeiro', imageDate, isRoutine)
-    console.log('atualizado!')
+    console.log('OCR --> atualizado!')
   }
 
   public updateManually = async (req: Request, res: Response) => {
@@ -450,8 +408,16 @@ export default class OCRController {
   public getAllData = async (req: Request, res: Response) => {
     const data = await ocrDataRepository.index()
 
+    const formattedData = data.map((orcData) => {
+      return {
+        ...orcData,
+        up_percent: Number(orcData.up_percent.slice(0, orcData.up_percent.length - 1)),
+        down_percent: Number(orcData.down_percent.slice(0, orcData.down_percent.length - 1))
+      }
+    })
+
     return res.status(200).json({
-      data: data
+      data: formattedData
     })
   }
 }
