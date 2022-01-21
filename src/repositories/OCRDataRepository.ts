@@ -14,7 +14,10 @@ interface ocrDataInterface {
   up_value: string,
   up_percent: string,
   down_value: string,
-  down_percent: string
+  down_percent: string,
+
+  last_update_page: string,
+  last_update_routine: string
 }
 
 interface createOcrDataInterface {
@@ -25,7 +28,10 @@ interface createOcrDataInterface {
   up_value: string,
   up_percent: string,
   down_value: string,
-  down_percent: string
+  down_percent: string,
+
+  last_update_page: string,
+  last_update_routine?: string
 }
 
 interface getOcrDataInterface {
@@ -46,7 +52,10 @@ interface updateOcrDataInterface {
     up_value: string,
     up_percent: string,
     down_value: string,
-    down_percent: string
+    down_percent: string,
+
+    last_update_page: string,
+    last_update_routine?: string
   }
 }
 
@@ -55,9 +64,9 @@ interface updateOcrDataInterface {
 export default class OCRDataRepository {
   private reference = () => connection<ocrDataInterface>(OCR_DATA_TABLE_NAME)
 
-  public create = async ({ state, city, service, up_value, up_percent, down_value, down_percent }: createOcrDataInterface) => {
+  public create = async ({ state, city, service, up_value, up_percent, down_value, down_percent, last_update_page, last_update_routine }: createOcrDataInterface) => {
     return this.reference()
-      .insert({ state, city, service, up_value, up_percent, down_value, down_percent })
+      .insert({ state, city, service, up_value, up_percent, down_value, down_percent, last_update_page, last_update_routine })
       .then(() => {
         return
       })
@@ -92,13 +101,29 @@ export default class OCRDataRepository {
     if (!!identifiers.service) query.where('service', '=', identifiers.service)
     if (!!identifiers.state) query.where('state', '=', identifiers.state)
     if (!!identifiers.city) query.where('city', '=', identifiers.city)
+
+    let updatePayload: {
+      up_value: string;
+      up_percent: string;
+      down_value: string;
+      down_percent: string;
+      last_update_page: string;
+      last_update_routine?: string
+    } = {
+      up_value: payload.up_value,
+      up_percent: payload.up_percent,
+      down_value: payload.down_value,
+      down_percent: payload.down_percent,
+      last_update_page: payload.last_update_page
+    }
+
+    if (!!payload.last_update_routine) {
+      updatePayload.last_update_routine = payload.last_update_routine
+    }
     
     return query
       .update({
-        up_value: payload.up_value,
-        up_percent: payload.up_percent,
-        down_value: payload.down_value,
-        down_percent: payload.down_percent
+        ...updatePayload
       })
       .then(() => {
         return
