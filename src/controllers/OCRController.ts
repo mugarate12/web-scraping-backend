@@ -590,11 +590,11 @@ export default class OCRController {
           )
         .write(cropedFilename, function(err) {
           if (err) return console.dir(arguments)
-          // console.log('OCR --> image croped')
+          console.log('OCR --> image croped')
         })
 
       await this.sleep(5)
-        // console.log('OCR --> image croped timming ok')
+        console.log('OCR --> image croped timming ok')
         // console.log(key)
 
       try {
@@ -616,7 +616,7 @@ export default class OCRController {
       }
     }
     
-    // console.log(formattedInformations);
+    console.log(formattedInformations)
     const dataCrop = {
       width: 165,
       height: 12,
@@ -633,11 +633,11 @@ export default class OCRController {
         )
       .write(cropedFilename, function(err) {
         if (err) return console.dir(arguments)
-        // console.log('OCR --> created')
+        console.log('OCR --> created')
       })
 
     await this.sleep(5)
-    // console.log('OCR --> timming  date ok')
+    console.log('OCR --> timming  date ok')
     let imageDate = ''
 
     try {
