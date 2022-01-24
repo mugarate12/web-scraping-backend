@@ -355,6 +355,31 @@ export default class OCRController {
     return services
   }
 
+  private getLondrinaCropedInformations = () => {
+    const services = {
+      PERSIS: {
+        width: 75,
+        height: 103,
+        initialPointX: 83,
+        initialPointY: 86
+      },
+      SERCOMTEL: {
+        width: 65,
+        height: 103,
+        initialPointX: 231,
+        initialPointY: 86
+      },
+      UEL: {
+        width: 59,
+        height: 106,
+        initialPointX: 238,
+        initialPointY: 229
+      }
+    }
+
+    return services
+  }
+
   private getInformationRJ = (informationsArray: Array<string>, key: string) => {
     let serviceName = ''
     let up_value = ''
@@ -559,9 +584,41 @@ export default class OCRController {
       down_percent = '0%'
     } else {
       serviceName = key
-      
+
       down_value = this.formatValue(informationsArray[0])
       up_value = this.formatValue(informationsArray[1])
+
+      up_percent = '0%'
+      down_percent = '0%'
+    }
+
+    return {
+      serviceName,
+      up_value,
+      up_percent,
+      down_value,
+      down_percent
+    }
+  }
+
+  private getInformationLondrina = (informationsArray: Array<string>, key: string) => {
+    let serviceName = ''
+    let up_value = ''
+    let up_percent = ''
+    let down_value = ''
+    let down_percent = ''
+
+    serviceName = key
+
+    if (key === 'PERSIS' || key === 'SERCOMTEL') {
+      up_value = this.formatValue(informationsArray[0])
+      down_value = this.formatValue(informationsArray[1])
+
+      up_percent = '0%'
+      down_percent = '0%'
+    } else {
+      up_value = this.formatValue(informationsArray[1])
+      down_value = this.formatValue(informationsArray[0])
 
       up_percent = '0%'
       down_percent = '0%'
@@ -960,11 +1017,84 @@ export default class OCRController {
     console.log('OCR --> atualizado!')
   }
 
+  private getLondrina = async (isRoutine: boolean) => {
+    const url = 'https://old.ix.br/stats/9e20a5fe27367d4880f8c781e90c810e/lda/images/setas01.png'
+
+    const file = fs.createWriteStream('file.png', { encoding: 'base64' })
+    const request = https.get(url, function(response) {
+      response.pipe(file)
+    })
+
+    await this.sleep(7)
+
+    let filename = path.resolve(__dirname, '..', '..', 'file.png')
+    let cropedFilename =  path.resolve(__dirname, '..', '..', 'croped.jpg')
+    if (process.env.NODE_ENV === 'production') {
+        filename = path.resolve(__dirname, '..', '..', '..', 'file.png')
+        cropedFilename =  path.resolve(__dirname, '..', '..', '..', 'croped.jpg')
+    }
+
+    const cropedInformations = this.getLondrinaCropedInformations()
+    const cropedKeys = Object.keys(cropedInformations)
+    let formattedInformations: {
+      serviceName: string;
+      up_value: string;
+      up_percent: string;
+      down_value: string;
+      down_percent: string;
+    }[] = []
+
+    for (let index = 0; index < cropedKeys.length; index++) {
+      const key = cropedKeys[index]
+
+      await gm(filename)
+        .crop(
+          cropedInformations[key].width, 
+          cropedInformations[key].height, 
+          cropedInformations[key].initialPointX, 
+          cropedInformations[key].initialPointY
+          )
+        .write(cropedFilename, function(err) {
+          if (err) return console.dir(arguments)
+        })
+
+      await this.sleep(5)
+
+      try {
+        const [ result ] = await client.textDetection(cropedFilename)
+        const texts = result.textAnnotations
+        let arrayString: Array<string> = []
+  
+        if (!!texts) {
+          texts.forEach(text => {
+            arrayString.push(String(text.description))
+          })
+        }
+  
+        const information = this.getInformationLondrina(arrayString.slice(1, arrayString.length), key)
+        formattedInformations.push(information)
+        // console.log(information);
+        
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    let imageDate = await this.getDateInformation(filename, cropedFilename, 150, 14, 115, 4)
+    console.log(imageDate)
+    imageDate = `${imageDate.slice(0, 10)} ${imageDate.slice(10, imageDate.length)}`
+
+    console.log('OCR --> atualizando no banco de dados')
+    await this.updateInDatabase(formattedInformations, 'PR', 'Londrina', imageDate, isRoutine)
+    console.log('OCR --> atualizado!')
+  }
+
   public updateManually = async (req: Request, res: Response) => {
     // await this.getRJ(false)
     // await this.getFortaleza(false)
     // await this.getCascavel(false)
-    await this.getCuritiba(false)
+    // await this.getCuritiba(false)
+    await this.getLondrina(false)
 
     return res.status(200).json({
       data: {}
@@ -976,6 +1106,7 @@ export default class OCRController {
     await this.getFortaleza(true)
     await this.getCascavel(true)
     await this.getCuritiba(true)
+    await this.getLondrina(true)
   }
 
   public getAllData = async (req: Request, res: Response) => {
