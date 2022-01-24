@@ -554,6 +554,10 @@ export default class OCRController {
       console.log(error)
     }
 
+
+    if (imageDate.includes('(')) {
+      imageDate = imageDate.slice(0, imageDate.indexOf('('))
+    }
     console.log('OCR --> atualizando no banco de dados')
     await this.updateInDatabase(formattedInformations, 'RJ', 'Rio de Janeiro', imageDate, isRoutine)
     console.log('OCR --> atualizado!')
@@ -675,6 +679,9 @@ export default class OCRController {
       console.log(error)
     }
 
+    if (imageDate.includes('(')) {
+      imageDate = imageDate.slice(0, imageDate.indexOf('('))
+    }
     console.log('OCR --> atualizando no banco de dados')
     await this.updateInDatabase(formattedInformations, 'CE', 'Fortaleza', imageDate, isRoutine)
     console.log('OCR --> atualizado!')
