@@ -275,6 +275,86 @@ export default class OCRController {
     return services
   }
 
+  private getCascavelCropedInformations = () => {
+    const services = {
+      CERTTO: {
+        width: 106,
+        height: 100,
+        initialPointX: 43,
+        initialPointY: 86
+      },
+      DIPELNET: {
+        width: 117,
+        height: 100,
+        initialPointX: 199,
+        initialPointY: 86
+      },
+    }
+
+    return services
+  }
+
+  private getCuritibaCropedInformations = () => {
+    const services = {
+      OI: {
+        width: 100,
+        height: 85,
+        initialPointX: 36,
+        initialPointY: 93
+      },
+      NovaFibra: {
+        width: 96,
+        height: 85,
+        initialPointX: 267,
+        initialPointY: 93
+      },
+      CenturyLink: {
+        width: 105,
+        height: 85,
+        initialPointX: 392,
+        initialPointY: 93
+      },
+      CELEPAR: {
+        width: 105,
+        height: 85,
+        initialPointX: 637,
+        initialPointY: 93
+      },
+      UFPR: {
+        width: 115,
+        height: 87,
+        initialPointX: 37,
+        initialPointY: 283
+      },
+      GVT: {
+        width: 108,
+        height: 87,
+        initialPointX: 170,
+        initialPointY: 283
+      },
+      COPEL: {
+        width: 108,
+        height: 87,
+        initialPointX: 320,
+        initialPointY: 283
+      },
+      COMMCORP: {
+        width: 110,
+        height: 87,
+        initialPointX: 465,
+        initialPointY: 283
+      },
+      DBUG: {
+        width: 105,
+        height: 87,
+        initialPointX: 629,
+        initialPointY: 283
+      }
+    }
+
+    return services
+  }
+
   private getInformationRJ = (informationsArray: Array<string>, key: string) => {
     let serviceName = ''
     let up_value = ''
@@ -437,6 +517,111 @@ export default class OCRController {
       down_value,
       down_percent
     }
+  }
+
+  private getInformationCascavel = (informationsArray: Array<string>, key: string) => {
+    let serviceName = ''
+    let up_value = ''
+    let up_percent = ''
+    let down_value = ''
+    let down_percent = ''
+
+    up_value = this.formatValue(informationsArray[0])
+    down_value = this.formatValue(informationsArray[1])
+
+    up_percent = '0%'
+    down_percent = '0%'
+    serviceName = key
+
+    return {
+      serviceName,
+      up_value,
+      up_percent,
+      down_value,
+      down_percent
+    }
+  }
+
+  private getInformationCuritiba = (informationsArray: Array<string>, key: string) => {
+    let serviceName = ''
+    let up_value = ''
+    let up_percent = ''
+    let down_value = ''
+    let down_percent = ''
+
+    if (key === 'OI' || key === 'NovaFibra' || key === 'CenturyLink' || key === 'CELEPAR') {
+      serviceName = key
+      
+      up_value = this.formatPercent(informationsArray[0])
+      down_value = this.formatPercent(informationsArray[1])
+
+      up_percent = '0%'
+      down_percent = '0%'
+    } else {
+      serviceName = key
+      
+      down_value = this.formatValue(informationsArray[0])
+      up_value = this.formatValue(informationsArray[1])
+
+      up_percent = '0%'
+      down_percent = '0%'
+    }
+
+    return {
+      serviceName,
+      up_value,
+      up_percent,
+      down_value,
+      down_percent
+    }
+  }
+
+  private getDateInformation = async (filename: string, cropedFilename: string, width: number, height: number, initialPointX: number, initialPointY: number) => {
+    let imageDate = ''
+    
+    gm(filename)
+      .crop(
+        width, 
+        height, 
+        initialPointX, 
+        initialPointY
+        )
+      .write(cropedFilename, function(err) {
+        if (err) return console.dir(arguments)
+      })
+
+    await this.sleep(5)
+
+    try {
+      const [ result ] = await client.textDetection(cropedFilename)
+      const texts = result.textAnnotations
+      let arrayString: Array<string> = []
+
+      if (!!texts) {
+        texts.forEach(text => {
+          arrayString.push(String(text.description))
+        })
+      }
+
+      arrayString.slice(1, arrayString.length).forEach((content, index) => {
+        if (index === 0) {
+          imageDate += content
+        } 
+
+        if (index === 1) {
+          imageDate += ` ${content}`
+        }
+      })
+
+    } catch (error) {
+      console.log(error)
+    }
+
+    if (imageDate.includes('(')) {
+      imageDate = imageDate.slice(0, imageDate.indexOf('('))
+    }
+
+    return imageDate
   }
 
   private getRJ = async (isRoutine: boolean) => {
@@ -628,68 +813,158 @@ export default class OCRController {
       }
     }
     
-    console.log(formattedInformations)
-    const dataCrop = {
-      width: 165,
-      height: 12,
-      initialPointX: 454,
-      initialPointY: 456
-    }
+    let imageDate = await this.getDateInformation(filename, cropedFilename, 165, 12, 454, 456)
 
-    gm(filename)
-      .crop(
-        dataCrop.width, 
-        dataCrop.height, 
-        dataCrop.initialPointX, 
-        dataCrop.initialPointY
-        )
-      .write(cropedFilename, function(err) {
-        if (err) return console.dir(arguments)
-        console.log('OCR --> created')
-      })
-
-    await this.sleep(5)
-    console.log('OCR --> timming  date ok')
-    let imageDate = ''
-
-    try {
-      const [ result ] = await client.textDetection(cropedFilename)
-      const texts = result.textAnnotations
-      let arrayString: Array<string> = []
-
-      if (!!texts) {
-        texts.forEach(text => {
-          // console.log(text.description)
-          arrayString.push(String(text.description))
-        })
-      }
-
-      // console.log(arrayString.slice(1, arrayString.length))
-      arrayString.slice(1, arrayString.length).forEach((content, index) => {
-        if (index === 0) {
-          imageDate += content
-        } 
-
-        if (index === 1) {
-          imageDate += ` ${content}`
-        }
-      })
-
-    } catch (error) {
-      console.log(error)
-    }
-
-    if (imageDate.includes('(')) {
-      imageDate = imageDate.slice(0, imageDate.indexOf('('))
-    }
     console.log('OCR --> atualizando no banco de dados')
     await this.updateInDatabase(formattedInformations, 'CE', 'Fortaleza', imageDate, isRoutine)
     console.log('OCR --> atualizado!')
   }
 
+  private getCascavel = async (isRoutine: boolean) => {
+    const cascavelURL = 'https://old.ix.br/stats/56e371cdae2b4155300bf05876654a02/cac/images/setas01.png'
+
+    const file = fs.createWriteStream('file.png', { encoding: 'base64' })
+    const request = https.get(cascavelURL, function(response) {
+      response.pipe(file)
+    })
+
+    await this.sleep(7)
+
+    let filename = path.resolve(__dirname, '..', '..', 'file.png')
+    let cropedFilename =  path.resolve(__dirname, '..', '..', 'croped.jpg')
+    if (process.env.NODE_ENV === 'production') {
+        filename = path.resolve(__dirname, '..', '..', '..', 'file.png')
+        cropedFilename =  path.resolve(__dirname, '..', '..', '..', 'croped.jpg')
+    }
+
+    const cropedInformations = this.getCascavelCropedInformations()
+    const cropedKeys = Object.keys(cropedInformations)
+    let formattedInformations: {
+      serviceName: string;
+      up_value: string;
+      up_percent: string;
+      down_value: string;
+      down_percent: string;
+    }[] = []
+
+    for (let index = 0; index < cropedKeys.length; index++) {
+      const key = cropedKeys[index]
+
+      await gm(filename)
+        .crop(
+          cropedInformations[key].width, 
+          cropedInformations[key].height, 
+          cropedInformations[key].initialPointX, 
+          cropedInformations[key].initialPointY
+          )
+        .write(cropedFilename, function(err) {
+          if (err) return console.dir(arguments)
+        })
+
+      await this.sleep(5)
+
+      try {
+        const [ result ] = await client.textDetection(cropedFilename)
+        const texts = result.textAnnotations
+        let arrayString: Array<string> = []
+  
+        if (!!texts) {
+          texts.forEach(text => {
+            arrayString.push(String(text.description))
+          })
+        }
+  
+        const information = this.getInformationCascavel(arrayString.slice(1, arrayString.length), key)
+        formattedInformations.push(information)
+        
+      } catch (error) {
+        console.log(error)
+      }  
+    }
+
+    let imageDate = await this.getDateInformation(filename, cropedFilename, 149, 15, 114, 3)
+   
+    console.log('OCR --> atualizando no banco de dados')
+    await this.updateInDatabase(formattedInformations, 'PR', 'Cascavel', imageDate, isRoutine)
+    console.log('OCR --> atualizado!')
+  }
+
+  private getCuritiba = async (isRoutine: boolean) => {
+    const url = 'https://old.ix.br/stats/d1bc698ee8ecc275bdbc6f79047ed203/pr/images/setas01.png'
+
+    const file = fs.createWriteStream('file.png', { encoding: 'base64' })
+    const request = https.get(url, function(response) {
+      response.pipe(file)
+    })
+
+    await this.sleep(7)
+
+    let filename = path.resolve(__dirname, '..', '..', 'file.png')
+    let cropedFilename =  path.resolve(__dirname, '..', '..', 'croped.jpg')
+    if (process.env.NODE_ENV === 'production') {
+        filename = path.resolve(__dirname, '..', '..', '..', 'file.png')
+        cropedFilename =  path.resolve(__dirname, '..', '..', '..', 'croped.jpg')
+    }
+
+    const cropedInformations = this.getCuritibaCropedInformations()
+    const cropedKeys = Object.keys(cropedInformations)
+    let formattedInformations: {
+      serviceName: string;
+      up_value: string;
+      up_percent: string;
+      down_value: string;
+      down_percent: string;
+    }[] = []
+
+    for (let index = 0; index < cropedKeys.length; index++) {
+      const key = cropedKeys[index]
+
+      await gm(filename)
+        .crop(
+          cropedInformations[key].width, 
+          cropedInformations[key].height, 
+          cropedInformations[key].initialPointX, 
+          cropedInformations[key].initialPointY
+          )
+        .write(cropedFilename, function(err) {
+          if (err) return console.dir(arguments)
+        })
+
+      await this.sleep(5)
+
+      try {
+        const [ result ] = await client.textDetection(cropedFilename)
+        const texts = result.textAnnotations
+        let arrayString: Array<string> = []
+  
+        if (!!texts) {
+          texts.forEach(text => {
+            arrayString.push(String(text.description))
+          })
+        }
+  
+        const information = this.getInformationCuritiba(arrayString.slice(1, arrayString.length), key)
+        formattedInformations.push(information)
+        console.log(information);
+        
+      } catch (error) {
+        console.log(error)
+      }  
+    }
+
+    const imageDate = await this.getDateInformation(filename, cropedFilename, 161, 10, 236, 457)
+    console.log(imageDate)
+
+    console.log('OCR --> atualizando no banco de dados')
+    await this.updateInDatabase(formattedInformations, 'PR', 'Curitiba', imageDate, isRoutine)
+    console.log('OCR --> atualizado!')
+  }
+
   public updateManually = async (req: Request, res: Response) => {
-    await this.getRJ(false)
-    await this.getFortaleza(false)
+    // await this.getRJ(false)
+    // await this.getFortaleza(false)
+    // await this.getCascavel(false)
+    await this.getCuritiba(false)
 
     return res.status(200).json({
       data: {}
@@ -699,6 +974,8 @@ export default class OCRController {
   public runRoutine = async () => {
     await this.getRJ(true)
     await this.getFortaleza(true)
+    await this.getCascavel(true)
+    await this.getCuritiba(true)
   }
 
   public getAllData = async (req: Request, res: Response) => {
