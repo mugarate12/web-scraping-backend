@@ -380,6 +380,25 @@ export default class OCRController {
     return services
   }
 
+  private getMaringaCropedInformations = () => {
+    const services = {
+      UEM: {
+        width: 201,
+        height: 62,
+        initialPointX: 76,
+        initialPointY: 60
+      },
+      VSX: {
+        width: 201,
+        height: 62,
+        initialPointX: 76,
+        initialPointY: 60
+      },
+    }
+
+    return services
+  }
+
   private getInformationRJ = (informationsArray: Array<string>, key: string) => {
     let serviceName = ''
     let up_value = ''
@@ -633,6 +652,34 @@ export default class OCRController {
     }
   }
 
+  private getMaringaInformation = (informationsArray: Array<string>, key: string) => {
+    let serviceName = ''
+    let up_value = ''
+    let up_percent = ''
+    let down_value = ''
+    let down_percent = ''
+
+    serviceName = key
+    up_percent = '0%'
+    down_percent = '0%'
+
+    if (key === 'UEM') {
+      up_value = this.formatValue(informationsArray[0])
+      down_value = this.formatValue(informationsArray[1])
+    } else {
+      up_value = this.formatValue(informationsArray[1])
+      down_value = this.formatValue(informationsArray[0])
+    }
+
+    return {
+      serviceName,
+      up_value,
+      up_percent,
+      down_value,
+      down_percent
+    }
+  }
+
   private getDateInformation = async (filename: string, cropedFilename: string, width: number, height: number, initialPointX: number, initialPointY: number) => {
     let imageDate = ''
     
@@ -800,9 +847,9 @@ export default class OCRController {
     if (imageDate.includes('(')) {
       imageDate = imageDate.slice(0, imageDate.indexOf('('))
     }
-    console.log('OCR --> atualizando no banco de dados')
+    console.log('OCR --> atualizando no banco de dados - Rio de Janeiro')
     await this.updateInDatabase(formattedInformations, 'RJ', 'Rio de Janeiro', imageDate, isRoutine)
-    console.log('OCR --> atualizado!')
+    console.log('OCR --> atualizado! - Rio de Janeiro')
   }
 
   private getFortaleza = async (isRoutine: boolean) => {
@@ -844,11 +891,11 @@ export default class OCRController {
           )
         .write(cropedFilename, function(err) {
           if (err) return console.dir(arguments)
-          console.log('OCR --> image croped')
+          // console.log('OCR --> image croped')
         })
 
       await this.sleep(5)
-        console.log('OCR --> image croped timming ok')
+        // console.log('OCR --> image croped timming ok')
         // console.log(key)
 
       try {
@@ -872,9 +919,9 @@ export default class OCRController {
     
     let imageDate = await this.getDateInformation(filename, cropedFilename, 165, 12, 454, 456)
 
-    console.log('OCR --> atualizando no banco de dados')
+    console.log('OCR --> atualizando no banco de dados - Fortaleza')
     await this.updateInDatabase(formattedInformations, 'CE', 'Fortaleza', imageDate, isRoutine)
-    console.log('OCR --> atualizado!')
+    console.log('OCR --> atualizado! - Fortaleza')
   }
 
   private getCascavel = async (isRoutine: boolean) => {
@@ -941,9 +988,9 @@ export default class OCRController {
 
     let imageDate = await this.getDateInformation(filename, cropedFilename, 149, 15, 114, 3)
    
-    console.log('OCR --> atualizando no banco de dados')
+    console.log('OCR --> atualizando no banco de dados - Cascavel')
     await this.updateInDatabase(formattedInformations, 'PR', 'Cascavel', imageDate, isRoutine)
-    console.log('OCR --> atualizado!')
+    console.log('OCR --> atualizado! - Cascavel')
   }
 
   private getCuritiba = async (isRoutine: boolean) => {
@@ -1001,9 +1048,7 @@ export default class OCRController {
         }
   
         const information = this.getInformationCuritiba(arrayString.slice(1, arrayString.length), key)
-        formattedInformations.push(information)
-        console.log(information);
-        
+        formattedInformations.push(information)        
       } catch (error) {
         console.log(error)
       }  
@@ -1012,9 +1057,9 @@ export default class OCRController {
     const imageDate = await this.getDateInformation(filename, cropedFilename, 161, 10, 236, 457)
     console.log(imageDate)
 
-    console.log('OCR --> atualizando no banco de dados')
+    console.log('OCR --> atualizando no banco de dados - Curitiba')
     await this.updateInDatabase(formattedInformations, 'PR', 'Curitiba', imageDate, isRoutine)
-    console.log('OCR --> atualizado!')
+    console.log('OCR --> atualizado! - Curitiba')
   }
 
   private getLondrina = async (isRoutine: boolean) => {
@@ -1084,9 +1129,78 @@ export default class OCRController {
     console.log(imageDate)
     imageDate = `${imageDate.slice(0, 10)} ${imageDate.slice(10, imageDate.length)}`
 
-    console.log('OCR --> atualizando no banco de dados')
+    console.log('OCR --> atualizando no banco de dados - Londrina')
     await this.updateInDatabase(formattedInformations, 'PR', 'Londrina', imageDate, isRoutine)
-    console.log('OCR --> atualizado!')
+    console.log('OCR --> atualizado! - Londrina')
+  }
+
+  private getMaringa = async (isRoutine: boolean) => {
+    const url = 'https://old.ix.br/stats/9a0f375c9823a19fcf1f0fa0c6f744ca/mgf/images/setas01.png'
+
+    const file = fs.createWriteStream('file.png', { encoding: 'base64' })
+    const request = https.get(url, function(response) {
+      response.pipe(file)
+    })
+
+    await this.sleep(7)
+
+    let filename = path.resolve(__dirname, '..', '..', 'file.png')
+    let cropedFilename =  path.resolve(__dirname, '..', '..', 'croped.jpg')
+    if (process.env.NODE_ENV === 'production') {
+        filename = path.resolve(__dirname, '..', '..', '..', 'file.png')
+        cropedFilename =  path.resolve(__dirname, '..', '..', '..', 'croped.jpg')
+    }
+
+    const cropedInformations = this.getMaringaCropedInformations()
+    const cropedKeys = Object.keys(cropedInformations)
+    let formattedInformations: {
+      serviceName: string;
+      up_value: string;
+      up_percent: string;
+      down_value: string;
+      down_percent: string;
+    }[] = []
+
+    for (let index = 0; index < cropedKeys.length; index++) {
+      const key = cropedKeys[index]
+
+      await gm(filename)
+        .crop(
+          cropedInformations[key].width, 
+          cropedInformations[key].height, 
+          cropedInformations[key].initialPointX, 
+          cropedInformations[key].initialPointY
+          )
+        .write(cropedFilename, function(err) {
+          if (err) return console.dir(arguments)
+        })
+
+      await this.sleep(5)
+
+      try {
+        const [ result ] = await client.textDetection(cropedFilename)
+        const texts = result.textAnnotations
+        let arrayString: Array<string> = []
+  
+        if (!!texts) {
+          texts.forEach(text => {
+            arrayString.push(String(text.description))
+          })
+        }
+  
+        const information = this.getMaringaInformation(arrayString.slice(1, arrayString.length), key)
+        formattedInformations.push(information)
+      } catch (error) {
+        console.log(error)
+      }  
+    }
+
+    const imageDate = await this.getDateInformation(filename, cropedFilename, 147, 16, 112, 4)
+    console.log(imageDate)
+
+    console.log('OCR --> atualizando no banco de dados - Maringa')
+    await this.updateInDatabase(formattedInformations, 'PR', 'Maringa', imageDate, isRoutine)
+    console.log('OCR --> atualizado! - Maringa')
   }
 
   public updateManually = async (req: Request, res: Response) => {
@@ -1094,7 +1208,8 @@ export default class OCRController {
     // await this.getFortaleza(false)
     // await this.getCascavel(false)
     // await this.getCuritiba(false)
-    await this.getLondrina(false)
+    // await this.getLondrina(false)
+    await this.getMaringa(false)
 
     return res.status(200).json({
       data: {}
@@ -1107,6 +1222,7 @@ export default class OCRController {
     await this.getCascavel(true)
     await this.getCuritiba(true)
     await this.getLondrina(true)
+    await this.getMaringa(true)
   }
 
   public getAllData = async (req: Request, res: Response) => {
