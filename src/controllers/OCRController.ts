@@ -399,6 +399,97 @@ export default class OCRController {
     return services
   }
 
+  private getPortoAlegreCropedInformations = () => {
+    const services = {
+      SYGO: {
+        width: 86,
+        height: 92,
+        initialPointX: 43,
+        initialPointY: 93
+      },
+      COMMCORP: {
+        width: 94,
+        height: 92,
+        initialPointX: 141,
+        initialPointY: 93
+      },
+      OI: {
+        width: 102,
+        height: 92,
+        initialPointX: 236,
+        initialPointY: 93
+      },
+      'Nossa Telecom': {
+        width: 89,
+        height: 92,
+        initialPointX: 343,
+        initialPointY: 93
+      },
+      GVT: {
+        width: 91,
+        height: 92,
+        initialPointX: 439,
+        initialPointY: 93
+      },
+      Defferrari: {
+        width: 93,
+        height: 92,
+        initialPointX: 536,
+        initialPointY: 93
+      },
+      CenturyLink: {
+        width: 109,
+        height: 92,
+        initialPointX: 630,
+        initialPointY: 93
+      },
+      VOGEL: {
+        width: 93,
+        height: 88,
+        initialPointX: 42,
+        initialPointY: 286
+      },
+      'RNP UFRGS': {
+        width: 100,
+        height: 88,
+        initialPointX: 134,
+        initialPointY: 286
+      },
+      LVT: {
+        width: 92,
+        height: 88,
+        initialPointX: 241,
+        initialPointY: 286
+      },
+      ADYLNET: {
+        width: 101,
+        height: 88,
+        initialPointX: 336,
+        initialPointY: 286
+      },
+      RENOVARE: {
+        width: 92,
+        height: 88,
+        initialPointX: 440,
+        initialPointY: 286
+      },
+      RedeISP: {
+        width: 102,
+        height: 88,
+        initialPointX: 535,
+        initialPointY: 286
+      },
+      METROLAN: {
+        width: 101,
+        height: 88,
+        initialPointX: 637,
+        initialPointY: 286
+      },
+    }
+
+    return services
+  }
+
   private getInformationRJ = (informationsArray: Array<string>, key: string) => {
     let serviceName = ''
     let up_value = ''
@@ -524,10 +615,21 @@ export default class OCRController {
     } else if (key === 'ETICE') {
       serviceName = key
 
-      up_value = this.formatValue(informationsArray[0])
-      up_percent = this.formatPercent(informationsArray[2])
-      down_value = this.formatValue(informationsArray[7])
-      down_percent = this.formatPercent(informationsArray[9])
+      if (informationsArray[0].includes('/') && informationsArray[0][informationsArray[0].length - 1] !== '/') {
+        const value = informationsArray[0].split('/')
+
+        up_value = this.formatValue(value[0])
+        up_percent = this.formatPercent(value[1])
+
+        down_value = this.formatValue(informationsArray[7])
+        down_percent = this.formatPercent(informationsArray[9])
+      } else {
+        up_value = this.formatValue(informationsArray[0])
+        up_percent = this.formatPercent(informationsArray[2])
+        down_value = this.formatValue(informationsArray[7])
+        down_percent = this.formatPercent(informationsArray[9])
+      }
+
     } else if (key === 'GLOBENET') {
       serviceName = key
 
@@ -680,6 +782,38 @@ export default class OCRController {
     }
   }
 
+  private getPortoAlegreInformation = (informationsArray: Array<string>, key: string) => {
+    let serviceName = ''
+    let up_value = ''
+    let up_percent = ''
+    let down_value = ''
+    let down_percent = ''
+
+    serviceName = key
+
+    if (key === 'SYGO' || key === 'COMMCORP' || key === 'OI' || key === 'NossaTelecom' || key === 'GVT' || key === 'Defferrari' || key === 'CenturyLink') {
+      up_value = this.formatValue(informationsArray[0])
+      up_percent = this.formatPercent(informationsArray[1])
+
+      down_value = this.formatValue(informationsArray[2])
+      down_percent = this.formatValue(informationsArray[3])
+    } else {
+      down_value = this.formatValue(informationsArray[0])
+      down_percent = this.formatPercent(informationsArray[1])
+
+      up_value = this.formatValue(informationsArray[2])
+      up_percent = this.formatPercent(informationsArray[3])
+    }
+
+    return {
+      serviceName,
+      up_value,
+      up_percent,
+      down_value,
+      down_percent
+    }
+  }
+
   private getDateInformation = async (filename: string, cropedFilename: string, width: number, height: number, initialPointX: number, initialPointY: number) => {
     let imageDate = ''
     
@@ -724,6 +858,8 @@ export default class OCRController {
     if (imageDate.includes('(')) {
       imageDate = imageDate.slice(0, imageDate.indexOf('('))
     }
+
+    imageDate = `${imageDate.slice(0, 10)} ${imageDate.slice(10, imageDate.length)}`
 
     return imageDate
   }
@@ -1125,9 +1261,7 @@ export default class OCRController {
       }
     }
 
-    let imageDate = await this.getDateInformation(filename, cropedFilename, 150, 14, 115, 4)
-    console.log(imageDate)
-    imageDate = `${imageDate.slice(0, 10)} ${imageDate.slice(10, imageDate.length)}`
+    let imageDate = await this.getDateInformation(filename, cropedFilename, 150, 14, 115, 4)    
 
     console.log('OCR --> atualizando no banco de dados - Londrina')
     await this.updateInDatabase(formattedInformations, 'PR', 'Londrina', imageDate, isRoutine)
@@ -1196,20 +1330,89 @@ export default class OCRController {
     }
 
     const imageDate = await this.getDateInformation(filename, cropedFilename, 147, 16, 112, 4)
-    console.log(imageDate)
 
     console.log('OCR --> atualizando no banco de dados - Maringa')
     await this.updateInDatabase(formattedInformations, 'PR', 'Maringa', imageDate, isRoutine)
     console.log('OCR --> atualizado! - Maringa')
   }
 
+  private getPortoAlegre = async (isRoutine: boolean) => {
+    const url = 'https://old.ix.br/stats/2c04290547384e55840a47bef077c673/rs/images/setas01.png'
+
+    const file = fs.createWriteStream('file.png', { encoding: 'base64' })
+    const request = https.get(url, function(response) {
+      response.pipe(file)
+    })
+
+    await this.sleep(7)
+
+    let filename = path.resolve(__dirname, '..', '..', 'file.png')
+    let cropedFilename =  path.resolve(__dirname, '..', '..', 'croped.jpg')
+    if (process.env.NODE_ENV === 'production') {
+        filename = path.resolve(__dirname, '..', '..', '..', 'file.png')
+        cropedFilename =  path.resolve(__dirname, '..', '..', '..', 'croped.jpg')
+    }
+
+    const cropedInformations = this.getPortoAlegreCropedInformations()
+    const cropedKeys = Object.keys(cropedInformations)
+    let formattedInformations: {
+      serviceName: string;
+      up_value: string;
+      up_percent: string;
+      down_value: string;
+      down_percent: string;
+    }[] = []
+
+    for (let index = 0; index < cropedKeys.length; index++) {
+      const key = cropedKeys[index]
+
+      await gm(filename)
+        .crop(
+          cropedInformations[key].width, 
+          cropedInformations[key].height, 
+          cropedInformations[key].initialPointX, 
+          cropedInformations[key].initialPointY
+          )
+        .write(cropedFilename, function(err) {
+          if (err) return console.dir(arguments)
+        })
+
+      await this.sleep(5)
+
+      try {
+        const [ result ] = await client.textDetection(cropedFilename)
+        const texts = result.textAnnotations
+        let arrayString: Array<string> = []
+  
+        if (!!texts) {
+          texts.forEach(text => {
+            arrayString.push(String(text.description))
+          })
+        }
+  
+        // console.log(key, arrayString)
+        const information = this.getPortoAlegreInformation(arrayString.slice(1, arrayString.length), key)
+        formattedInformations.push(information)        
+      } catch (error) {
+        console.log(error)
+      }  
+    }
+
+    const imageDate = await this.getDateInformation(filename, cropedFilename, 156, 10, 238, 457)
+
+    console.log('OCR --> atualizando no banco de dados - Porto Alegre')
+    await this.updateInDatabase(formattedInformations, 'RS', 'Porto Alegre', imageDate, isRoutine)
+    console.log('OCR --> atualizado! - Porto Alegre')
+  }
+
   public updateManually = async (req: Request, res: Response) => {
     // await this.getRJ(false)
-    // await this.getFortaleza(false)
+    await this.getFortaleza(false)
     // await this.getCascavel(false)
     // await this.getCuritiba(false)
     // await this.getLondrina(false)
-    await this.getMaringa(false)
+    // await this.getMaringa(false)
+    await this.getPortoAlegre(false)
 
     return res.status(200).json({
       data: {}
@@ -1223,6 +1426,7 @@ export default class OCRController {
     await this.getCuritiba(true)
     await this.getLondrina(true)
     await this.getMaringa(true)
+    await this.getPortoAlegre(true)
   }
 
   public getAllData = async (req: Request, res: Response) => {
