@@ -235,7 +235,7 @@ export default async () => {
     await updateRoutine()
   })
 
-  const updateServicesAddedRoutine = new CronJob.CronJob('* * * * *', async () => {
+  const updateServicesAddedRoutine = new CronJob.CronJob('*/10 * * * *', async () => {
     await updateServicesAdded(serviceAddedBrowser)
   })
 
