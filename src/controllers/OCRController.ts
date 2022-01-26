@@ -1282,7 +1282,7 @@ export default class OCRController {
     down_value: string;
     down_percent: string;
   }, type: 'up' | 'down', informationsArray: Array<string>, key: string) => {
-    console.log(key, informationsArray)
+    // console.log(key, informationsArray)
     
     if (key === 'NIC-NU' || key === 'Telium' || key === 'SAMMCCR' || key === 'USP' || key === 'Embratel' || key === 'Telefônica' || key === 'Algar-PIAF' || key === 'Commcorp' || key === 'Americanet' || key === 'G8' || key === 'Matrix' || key === 'CENESP' || key === 'Equinox-SP4' || key === 'NIC-JD' || key === 'Odata') {
       if (type === 'up') {
