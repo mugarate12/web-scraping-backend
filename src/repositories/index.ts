@@ -12,6 +12,7 @@ import EnergyPermissionsRepository from './EnergyPermissionsRepository'
 import EquatorialDataRepository from './EquatorialDataRepository'
 import MonitoringRepository from "./monitoringRepository"
 import OCRDataRepository from './OCRDataRepository'
+import OCRPermissionsRepository from './OCRPermissionsRepository'
 import PermissionsRepository from './permissionsRepository'
 import ServicesRepository from "./servicesRepository"
 import ServicesUpdateTimeRepository from './servicesUpdateTimeRepository'
@@ -32,6 +33,7 @@ export const energyPermissionsRepository = new EnergyPermissionsRepository()
 export const equatorialDataRepository = new EquatorialDataRepository()
 export const monitoringRepository = new MonitoringRepository()
 export const ocrDataRepository = new OCRDataRepository()
+export const ocrPermissionsRepository = new OCRPermissionsRepository()
 export const permissionsRepository = new PermissionsRepository()
 export const servicesRepository = new ServicesRepository()
 export const servicesUpdateTimeRepository = new ServicesUpdateTimeRepository()

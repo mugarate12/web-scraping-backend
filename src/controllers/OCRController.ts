@@ -11,7 +11,13 @@ dotenv.config()
 
 const gm = require('gm').subClass({imageMagick: true})
 
-import { ocrDataRepository } from './../repositories'
+import { 
+  ocrDataRepository,
+  ocrPermissionsRepository
+} from './../repositories'
+import { AppError, errorHandler } from '../utils/handleError'
+
+import { ocrDataInterface } from './../repositories/OCRDataRepository'
 
 let clientKey = path.resolve(__dirname, '..', '..', 'googleJSONCredentials.json')
 
@@ -2042,8 +2048,93 @@ export default class OCRController {
     await this.getSaoPaulo(true)
   }
 
-  public getAllData = async (req: Request, res: Response) => {
-    const data = await ocrDataRepository.index()
+  public addPermission = async (req: Request, res: Response) => {
+    const { client_FK, state, city, pix_name } = req.body
+
+    console.log(pix_name);
+
+    return await ocrPermissionsRepository.create({
+      client_FK: Number(client_FK),
+      state: String(state),
+      city: String(city),
+      pix_name: String(pix_name)
+    })
+      .then(() => {
+        return res.status(201).json({
+          message: 'permissão criada com sucesso!'
+        })
+      })
+      .catch(error => {
+        return errorHandler(
+          new AppError('database', 403, 'erro ao criar permissão', true),
+          res
+        )
+      })
+  }
+
+  public removePermission = async  (req: Request, res: Response) => {
+    const { client_FK, state, city, pix_name } = req.body
+
+    return await ocrPermissionsRepository.delete({
+      client_FK: Number(client_FK),
+      state: String(state),
+      city: String(city),
+      pix_name: String(pix_name)
+    })
+      .then(() => {
+        return res.status(201).json({
+          message: 'permissão removida com sucesso!'
+        })
+      })
+      .catch(error => {
+        return errorHandler(
+          new AppError('database', 403, 'erro ao remover permissão', true),
+          res
+        )
+      })
+  }
+
+  public getPermissions = async (clientID: number) => {
+    let services: Array<string> = []
+    let states: Array<string> = []
+    let cities: Array<string> = []
+
+    const permissions = await ocrPermissionsRepository.index({ client_FK: clientID })
+
+    permissions.forEach((permission) => {
+      if (!services.includes(permission.pix_name)) {
+        services.push(permission.pix_name)
+      }
+
+      if (!states.includes(permission.state)) {
+        states.push(permission.state)
+      }
+
+      if (!cities.includes(permission.city)) {
+        cities.push(permission.city)
+      }
+    })
+
+    return {
+      services,
+      states,
+      cities
+    }
+  }
+
+  public getAllData = async (req: Request, res: Response) => { 
+    const userID = Number(res.getHeader('userID'))
+    
+    const { services, states, cities } = await this.getPermissions(userID)
+    
+    let data: Array<ocrDataInterface> = []
+    if (services.length > 0 && states.length > 0 && cities.length > 0) {
+      data = await ocrDataRepository.index({
+        services,
+        states,
+        cities
+      })
+    }
 
     const formattedData = data.map((orcData) => {
       return {

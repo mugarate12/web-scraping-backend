@@ -177,5 +177,10 @@ export default function publicAccessRoutes(routes: Router) {
     })
   }), publicAccessJWT, readApiInformations, readFlow4EnergyInformation, equatorialController.getSummary)
 
-  routes.get('/public/access/ocr/all', ocrController.getAllData)
+  // OCR ROUTES
+  routes.get('/public/access/ocr/all', celebrate({
+    [Segments.QUERY]: Joi.object().keys({
+      token: Joi.string().required()
+    })
+  }), publicAccessJWT, ocrController.getAllData)
 } 
