@@ -1,7 +1,7 @@
 import CronJob from 'cron'
 import fs from 'fs'
 
-function cleanTemporaryFiles() {
+export function cleanTemporaryFiles() {
   const isLinux = process.platform === 'darwin' || process.platform === 'linux'
 
   if (isLinux) {

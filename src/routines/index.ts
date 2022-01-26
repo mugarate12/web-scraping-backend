@@ -5,12 +5,11 @@ import dotenv from 'dotenv'
 import path from 'path'
 import fs from 'fs'
 
-import cleanTemporaryFilesRoutine from './cleanTemporaryFilesRoutine'
+import cleanTemporaryFilesRoutine, { cleanTemporaryFiles } from './cleanTemporaryFilesRoutine'
 import clientKeysExpirationRoutine from './clientKeysExpirationRoutine'
 import CPFLRoutine from './CPFLRoutine'
 import routinesRequests from './downDetectorRoutines'
 import ocrRoutine from './ocrRoutine'
-
 
 dotenv.config()
 
@@ -24,7 +23,8 @@ export function convertMinutesToMilliseconds(minutes: number) {
 
 export default async (serverIo: Server) => {
   if(processName.search(/primary/) !== -1){
-    cleanTemporaryFilesRoutine()
+    // cleanTemporaryFilesRoutine()
+    cleanTemporaryFiles()
     clientKeysExpirationRoutine()
     
     routinesRequests(serverIo)
