@@ -26,7 +26,7 @@ async function update() {
 }
 
 export default async () => {
-  const ocrRoutine = new CronJob.CronJob('*/11 * * * *', async () => {
+  const ocrRoutine = new CronJob.CronJob('*/15 * * * *', async () => {
     initialLog()
 
     await update()
