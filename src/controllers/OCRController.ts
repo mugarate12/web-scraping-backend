@@ -71,6 +71,26 @@ export default class OCRController {
     return formattedPercent
   }
 
+  private validatePercent = (percent: string) => {
+    const percentWithoutIndicator = percent.slice(0, percent.length - 1)
+
+    if (Number(percentWithoutIndicator) === 0 || !!Number(percentWithoutIndicator)) {
+      return true
+    } else {
+      return false
+    }
+  }
+
+  private validateValue = (value: string) => {
+    const valueWithoutDescriptionIndicator = value.slice(0, value.length - 1)
+
+    if (Number(valueWithoutDescriptionIndicator) === 0 || !!Number(valueWithoutDescriptionIndicator)) {
+      return true
+    } else {
+      return false
+    }
+  }
+
   private updateInDatabase = async (dataArray: {
     serviceName: string;
     up_value: string;
@@ -102,7 +122,7 @@ export default class OCRController {
         ocrDataPayload.last_update_routine = actualDate
       }
 
-      if (!!data.serviceName && !!data.up_value && !!data.up_percent && !!data.down_value && !!data.down_percent) {        
+      if (!!data.serviceName && this.validateValue(data.up_value) && this.validatePercent(data.up_percent) && this.validateValue(data.down_value) && this.validatePercent(data.down_percent)) {        
         const ocrData = await ocrDataRepository.get({ state, city, service: data.serviceName })
         if (!!ocrData) {
           await ocrDataRepository.update({
