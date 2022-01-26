@@ -138,7 +138,7 @@ async function viewAndSetRedisKey(updateTime: number) {
     return true
   } else {
     await client.set(completeRedisKey, 2)
-    await client.expire(completeRedisKey, 120)
+    await client.expire(completeRedisKey, 240)
 
     return false
   }
