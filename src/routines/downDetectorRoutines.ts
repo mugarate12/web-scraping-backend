@@ -110,6 +110,12 @@ function initialRoutineLog(totalOfServices: number, updateTime: number) {
   `)
 }
 
+function headquarterInitialLog(updateTime: number, indicator: number) {
+  console.log(colorToLog, `
+    Detector --> parte ${indicator} da rotina de ${updateTime} minuto(s) iniciada
+  `)
+}
+
 function headquarterCompleteLog(updateTime: number, indicator: number) {
   console.log(colorToLog, `
     Detector --> parte ${indicator} da rotina de ${updateTime} minuto(s) finalizada
@@ -195,6 +201,8 @@ async function routinesRequests(serverIo: Server, browser: puppeteer.Browser, up
 
     for (let index = 0; index < headquartersOFRequests.length; index++) {
       const requestsOfHeadquarter = headquartersOFRequests[index]
+      
+      headquarterInitialLog(updateTime, index + 1)
       
       const requestsResultsPromises = requestsOfHeadquarter.map(async (request, index) => {
         await downDetectorController.accessDownDetectorRoutine(request.service_name, browser)

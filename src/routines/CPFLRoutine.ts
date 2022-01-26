@@ -32,6 +32,12 @@ function createHeadquarterOfRequests(requests: CPFFSearchInterface[]) {
   return result
 }
 
+function stepInitialLog(updateTime: number, step: number) {
+  console.log(`${FgBlue}%s${Reset}`, `
+      ENERGY --> parte ${step} da rotina de ${updateTime} minuto(s) iniciada
+  `)
+}
+
 function stepLog(updateTime: number, step: number) {
   console.log(`${FgBlue}%s${Reset}`, `
       ENERGY --> parte ${step} da rotina de ${updateTime} minuto(s) finalizada
@@ -56,6 +62,8 @@ async function cpflRoutine(browser: puppeteer.Browser, updateTime: number) {
     for (let index = 0; index < headquarter.length; index++) {
       const arrayOfRequests = headquarter[index]
       
+      stepInitialLog(updateTime, index + 1)
+
       const requestsPromises = arrayOfRequests.map(async (request) => {
         await cpflController.runCpflRoutine(browser, request.state, request.city)
           .catch(error => {})
@@ -140,8 +148,6 @@ async function updateServicesAdded(browser: puppeteer.Browser) {
     ENERGY --> começo da execução: ${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}
     `)
 
-    // const browser = await cpflController.runBrowser()
-
     for (let index = 0; index < requests.length; index++) {
       const search = requests[index]
       
@@ -159,8 +165,6 @@ async function updateServicesAdded(browser: puppeteer.Browser) {
         city: search.city
       })
     }
-
-    await cpflController.closeBrowser(browser)
 
     console.log(`${FgCyan}%s${Reset}`, `
       ENERGY --> Final da execução: ${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}\n
