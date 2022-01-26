@@ -32,8 +32,12 @@ export default class OCRController {
 
   private formatValue = (value: string) => {
     let formattedValue = value
+    
+    if (formattedValue[0] === '-') {
+      formattedValue = formattedValue.slice(1, formattedValue.length)
+    }
+    
     const lastLetterOfValue = formattedValue[formattedValue.length - 1]
-
     if (lastLetterOfValue === ']' || lastLetterOfValue === '|' || lastLetterOfValue === '/') {
       formattedValue = formattedValue.slice(0, formattedValue.length - 1)
     }
@@ -49,7 +53,15 @@ export default class OCRController {
   }
 
   private formatPercent = (percent: string) => {
+    if (percent === undefined) {
+      return '0%'
+    }
+
     let formattedPercent = percent
+
+    if (formattedPercent[0] === '-') {
+      formattedPercent = formattedPercent.slice(1, formattedPercent.length)
+    }
 
     const lastLetterOfPercent = formattedPercent[formattedPercent.length - 1]
     if (lastLetterOfPercent !== '%') {
@@ -490,6 +502,435 @@ export default class OCRController {
     return services
   }
 
+  private getSaoPauloCropedInformations = () => {
+    const services = {
+      // UP VALUES
+      'NIC-NU': {
+        UP: {
+          width: 40,
+          height: 27,
+          initialPointX: 64,
+          initialPointY: 93
+        },
+        DOWN: {
+          width: 41,
+          height: 28,
+          initialPointX: 1,
+          initialPointY: 144
+        }
+      },
+      'Telium': {
+        UP: {
+          width: 42,
+          height: 27,
+          initialPointX: 130,
+          initialPointY: 93
+        },
+        DOWN: {
+          width: 39,
+          height: 28,
+          initialPointX: 70,
+          initialPointY: 144
+        }
+      },
+      'SAMMCCR': {
+        UP: {
+          width: 43,
+          height: 27,
+          initialPointX: 199,
+          initialPointY: 93
+        },
+        DOWN: {
+          width: 39,
+          height: 28,
+          initialPointX: 140,
+          initialPointY: 144
+        }
+      },
+      'USP': {
+        UP: {
+          width: 41,
+          height: 27,
+          initialPointX: 268,
+          initialPointY: 93
+        },
+        DOWN: {
+          width: 39,
+          height: 28,
+          initialPointX: 203,
+          initialPointY: 144
+        }
+      },
+      'Embratel': {
+        UP: {
+          width: 43,
+          height: 27,
+          initialPointX: 328,
+          initialPointY: 93
+        },
+        DOWN: {
+          width: 41,
+          height: 28,
+          initialPointX: 265,
+          initialPointY: 144
+        }
+      },
+      'Telefônica': {
+        UP: {
+          width: 43,
+          height: 27,
+          initialPointX: 395,
+          initialPointY: 93
+        },
+        DOWN: {
+          width: 44,
+          height: 28,
+          initialPointX: 330,
+          initialPointY: 144
+        }
+      },
+      'Algar-PIAF': {
+        UP: {
+          width: 42,
+          height: 27,
+          initialPointX: 461,
+          initialPointY: 93
+        },
+        DOWN: {
+          width: 43,
+          height: 28,
+          initialPointX: 397,
+          initialPointY: 144
+        }
+      },
+      'Commcorp': {
+        UP: {
+          width: 50,
+          height: 27,
+          initialPointX: 524,
+          initialPointY: 93
+        },
+        DOWN: {
+          width: 43,
+          height: 28,
+          initialPointX: 462,
+          initialPointY: 144
+        }
+      },
+      'Americanet': {
+        UP: {
+          width: 50,
+          height: 27,
+          initialPointX: 600,
+          initialPointY: 93
+        },
+        DOWN: {
+          width: 44,
+          height: 28,
+          initialPointX: 534,
+          initialPointY: 144
+        }
+      },
+      'G8': {
+        UP: {
+          width: 48,
+          height: 27,
+          initialPointX: 672,
+          initialPointY: 93
+        },
+        DOWN: {
+          width: 47,
+          height: 28,
+          initialPointX: 604,
+          initialPointY: 144
+        }
+      },
+      'Matrix': {
+        UP: {
+          width: 48,
+          height: 27,
+          initialPointX: 741,
+          initialPointY: 93
+        },
+        DOWN: {
+          width: 45,
+          height: 28,
+          initialPointX: 676,
+          initialPointY: 144
+        }
+      },
+      'Algar CENESP': {
+        UP: {
+          width: 45,
+          height: 27,
+          initialPointX: 816,
+          initialPointY: 93
+        },
+        DOWN: {
+          width: 45,
+          height: 28,
+          initialPointX: 745,
+          initialPointY: 144
+        }
+      },
+      'Equinox-SP4': {
+        UP: {
+          width: 45,
+          height: 27,
+          initialPointX: 885,
+          initialPointY: 93
+        },
+        DOWN: {
+          width: 43,
+          height: 28,
+          initialPointX: 820,
+          initialPointY: 144
+        }
+      },
+      'NIC-JD': {
+        UP: {
+          width: 44,
+          height: 27,
+          initialPointX: 955,
+          initialPointY: 93
+        },
+        DOWN: {
+          width: 42,
+          height: 28,
+          initialPointX: 891,
+          initialPointY: 144
+        }
+      },
+      'Odata': {
+        UP: {
+          width: 52,
+          height: 27,
+          initialPointX: 1024,
+          initialPointY: 93
+        },
+        DOWN: {
+          width: 46,
+          height: 28,
+          initialPointX: 958,
+          initialPointY: 144
+        }
+      },
+      // DOWN VALUES
+      'Level 3 CenturyLink': {
+        UP: {
+          width: 36,
+          height: 26,
+          initialPointX: 66,
+          initialPointY: 314
+        },
+        DOWN: {
+          width: 42,
+          height: 27,
+          initialPointX: 1,
+          initialPointY: 280
+        }
+      },
+      'OI': {
+        UP: {
+          width: 44,
+          height: 26,
+          initialPointX: 130,
+          initialPointY: 314
+        },
+        DOWN: {
+          width: 39,
+          height: 27,
+          initialPointX: 71,
+          initialPointY: 280
+        }
+      },
+      'Equinix-SP1': {
+        UP: {
+          width: 44,
+          height: 26,
+          initialPointX: 199,
+          initialPointY: 314
+        },
+        DOWN: {
+          width: 46,
+          height: 27,
+          initialPointX: 130,
+          initialPointY: 280
+        }
+      },
+      'GVT-JD': {
+        UP: {
+          width: 44,
+          height: 26,
+          initialPointX: 268,
+          initialPointY: 314
+        },
+        DOWN: {
+          width: 41,
+          height: 27,
+          initialPointX: 204,
+          initialPointY: 280
+        }
+      },
+      'TIVIT': {
+        UP: {
+          width: 44,
+          height: 26,
+          initialPointX: 327,
+          initialPointY: 314
+        },
+        DOWN: {
+          width: 42,
+          height: 27,
+          initialPointX: 264,
+          initialPointY: 280
+        }
+      },
+      'Scala': {
+        UP: {
+          width: 41,
+          height: 26,
+          initialPointX: 396,
+          initialPointY: 314
+        },
+        DOWN: {
+          width: 44,
+          height: 29,
+          initialPointX: 330,
+          initialPointY: 280
+        }
+      },
+      'GVT-CENU': {
+        UP: {
+          width: 46,
+          height: 26,
+          initialPointX: 459,
+          initialPointY: 314
+        },
+        DOWN: {
+          width: 41,
+          height: 27,
+          initialPointX: 397,
+          initialPointY: 280
+        }
+      },
+      'Vogel': {
+        UP: {
+          width: 49,
+          height: 26,
+          initialPointX: 527,
+          initialPointY: 314
+        },
+        DOWN: {
+          width: 43,
+          height: 27,
+          initialPointX: 461,
+          initialPointY: 280
+        }
+      },
+      'Eletronet': {
+        UP: {
+          width: 47,
+          height: 26,
+          initialPointX: 600,
+          initialPointY: 314
+        },
+        DOWN: {
+          width: 48,
+          height: 27,
+          initialPointX: 530,
+          initialPointY: 280
+        }
+      },
+      'Equinix-SP3': {
+        UP: {
+          width: 47,
+          height: 26,
+          initialPointX: 671,
+          initialPointY: 314
+        },
+        DOWN: {
+          width: 49,
+          height: 27,
+          initialPointX: 601,
+          initialPointY: 280
+        }
+      },
+      'Locaweb': {
+        UP: {
+          width: 47,
+          height: 26,
+          initialPointX: 741,
+          initialPointY: 314
+        },
+        DOWN: {
+          width: 46,
+          height: 27,
+          initialPointX: 674,
+          initialPointY: 280
+        }
+      },
+      'Equinix-SP2': {
+        UP: {
+          width: 48,
+          height: 26,
+          initialPointX: 814,
+          initialPointY: 314
+        },
+        DOWN: {
+          width: 47,
+          height: 27,
+          initialPointX: 747,
+          initialPointY: 280
+        }
+      },
+      'Ufinet': {
+        UP: {
+          width: 47,
+          height: 26,
+          initialPointX: 885,
+          initialPointY: 314
+        },
+        DOWN: {
+          width: 46,
+          height: 27,
+          initialPointX: 817,
+          initialPointY: 280
+        }
+      },
+      'TIM': {
+        UP: {
+          width: 41,
+          height: 26,
+          initialPointX: 955,
+          initialPointY: 314
+        },
+        DOWN: {
+          width: 47,
+          height: 27,
+          initialPointX: 886,
+          initialPointY: 280
+        }
+      },
+      'Ascenty-SP2': {
+        UP: {
+          width: 46,
+          height: 26,
+          initialPointX: 1020,
+          initialPointY: 314
+        },
+        DOWN: {
+          width: 42,
+          height: 27,
+          initialPointX: 955,
+          initialPointY: 280
+        }
+      },
+    }
+
+    return services
+  }
+
   private getInformationRJ = (informationsArray: Array<string>, key: string) => {
     let serviceName = ''
     let up_value = ''
@@ -698,8 +1139,8 @@ export default class OCRController {
     if (key === 'OI' || key === 'NovaFibra' || key === 'CenturyLink' || key === 'CELEPAR') {
       serviceName = key
       
-      up_value = this.formatPercent(informationsArray[0])
-      down_value = this.formatPercent(informationsArray[1])
+      up_value = this.formatValue(informationsArray[0])
+      down_value = this.formatValue(informationsArray[1])
 
       up_percent = '0%'
       down_percent = '0%'
@@ -811,6 +1252,34 @@ export default class OCRController {
       up_percent,
       down_value,
       down_percent
+    }
+  }
+
+  private getSaoPauloInformation = (informations: {
+    serviceName: string;
+    up_value: string;
+    up_percent: string;
+    down_value: string;
+    down_percent: string;
+  }, type: 'up' | 'down', informationsArray: Array<string>, key: string) => {
+    console.log(key, informationsArray)
+    
+    if (key === 'NIC-NU' || key === 'Telium' || key === 'SAMMCCR' || key === 'USP' || key === 'Embratel' || key === 'Telefônica' || key === 'Algar-PIAF' || key === 'Commcorp' || key === 'Americanet' || key === 'G8' || key === 'Matrix' || key === 'CENESP' || key === 'Equinox-SP4' || key === 'NIC-JD' || key === 'Odata') {
+      if (type === 'up') {
+        informations.up_value = this.formatValue(informationsArray[1])
+        informations.up_percent = this.formatPercent(informationsArray[2])
+      } else {
+        informations.down_value = this.formatValue(informationsArray[1])
+        informations.down_percent = this.formatPercent(informationsArray[2])
+      }
+    } else {
+      if (type === 'up') {
+        informations.up_value = this.formatValue(informationsArray[1])
+        informations.up_percent = this.formatPercent(informationsArray[2])
+      } else {
+        informations.down_value = this.formatValue(informationsArray[1])
+        informations.down_percent = this.formatPercent(informationsArray[2])
+      }
     }
   }
 
@@ -1390,7 +1859,7 @@ export default class OCRController {
           })
         }
   
-        // console.log(key, arrayString)
+        console.log(key, arrayString)
         const information = this.getPortoAlegreInformation(arrayString.slice(1, arrayString.length), key)
         formattedInformations.push(information)        
       } catch (error) {
@@ -1405,14 +1874,157 @@ export default class OCRController {
     console.log('OCR --> atualizado! - Porto Alegre')
   }
 
+  private getSaoPaulo = async (isRoutine: boolean) => {
+    const url = 'https://old.ix.br/stats/93a90de78413c1557bf553404bea9c14/sp/images/setas01.png'
+
+    const file = fs.createWriteStream('file.png', { encoding: 'base64' })
+    const request = https.get(url, function(response) {
+      response.pipe(file)
+    })
+
+    await this.sleep(7)
+
+    let filename = path.resolve(__dirname, '..', '..', 'file.png')
+    let cropedFilename =  path.resolve(__dirname, '..', '..', 'croped.jpg')
+    if (process.env.NODE_ENV === 'production') {
+        filename = path.resolve(__dirname, '..', '..', '..', 'file.png')
+        cropedFilename =  path.resolve(__dirname, '..', '..', '..', 'croped.jpg')
+    }
+
+    const cropedInformations = this.getSaoPauloCropedInformations()
+    const cropedKeys = Object.keys(cropedInformations)
+    let formattedInformations: {
+      serviceName: string;
+      up_value: string;
+      up_percent: string;
+      down_value: string;
+      down_percent: string;
+    }[] = []
+
+    for (let index = 0; index < cropedKeys.length; index++) {
+      const key = cropedKeys[index]
+      let informations: {
+        serviceName: string;
+        up_value: string;
+        up_percent: string;
+        down_value: string;
+        down_percent: string;
+      } = {
+        serviceName: '',
+        up_value: '',
+        up_percent: '',
+        down_value: '',
+        down_percent: ''
+      }
+
+      informations['serviceName'] = key
+
+      gm(filename)
+        .crop(
+          cropedInformations[key]['UP'].width, 
+          cropedInformations[key]['UP'].height, 
+          cropedInformations[key]['UP'].initialPointX, 
+          cropedInformations[key]['UP'].initialPointY
+          )
+        .write(cropedFilename, function(err) {
+          if (err) return console.dir(arguments)
+        })
+        
+      await this.sleep(5)
+      try {
+        const [ result ] = await client.textDetection(cropedFilename)
+        const texts = result.textAnnotations
+        let arrayString: Array<string> = []
+  
+        if (!!texts) {
+          texts.forEach(text => {
+            arrayString.push(String(text.description))
+          })
+        }
+  
+        this.getSaoPauloInformation(
+          informations,
+          'up',
+          arrayString,
+          key
+        )
+        // console.log(arrayString)
+        // informations.up_value = this.formatValue(arrayString[1])
+        // informations.up_percent = this.formatPercent(arrayString[2])
+      } catch (error) {
+        console.log(error)
+      }
+      
+      gm(filename)
+        .crop(
+          cropedInformations[key]['DOWN'].width, 
+          cropedInformations[key]['DOWN'].height, 
+          cropedInformations[key]['DOWN'].initialPointX, 
+          cropedInformations[key]['DOWN'].initialPointY
+          )
+        .write(cropedFilename, function(err) {
+          if (err) return console.dir(arguments)
+        })
+      
+      await this.sleep(5)
+
+      try {
+        const [ result ] = await client.textDetection(cropedFilename)
+        const texts = result.textAnnotations
+        let arrayString: Array<string> = []
+  
+        if (!!texts) {
+          texts.forEach(text => {
+            arrayString.push(String(text.description))
+          })
+        }
+  
+        this.getSaoPauloInformation(
+          informations,
+          'down',
+          arrayString,
+          key
+        )
+        // console.log(arrayString)
+        // informations.down_value = this.formatValue(arrayString[1])
+        // informations.down_percent = this.formatPercent(arrayString[2])
+      } catch (error) {
+        console.log(error)
+      }  
+
+      formattedInformations.push(informations)
+    }
+
+    console.log(formattedInformations);
+
+    // try {
+    //   const [ result ] = await client.textDetection(cropedFilename)
+    //   const texts = result.textAnnotations
+    //   let arrayString: Array<string> = []
+
+    //   if (!!texts) {
+    //     texts.forEach(text => {
+    //       arrayString.push(String(text.description))
+    //     })
+    //   }
+
+    //   console.log(arrayString)
+    //   // const information = this.getInformationCuritiba(arrayString.slice(1, arrayString.length), key)
+    //   // formattedInformations.push(information)        
+    // } catch (error) {
+    //   console.log(error)
+    // }  
+  }
+
   public updateManually = async (req: Request, res: Response) => {
     // await this.getRJ(false)
-    await this.getFortaleza(false)
+    // await this.getFortaleza(false)
     // await this.getCascavel(false)
     // await this.getCuritiba(false)
     // await this.getLondrina(false)
     // await this.getMaringa(false)
-    await this.getPortoAlegre(false)
+    // await this.getPortoAlegre(false)
+    await this.getSaoPaulo(false)
 
     return res.status(200).json({
       data: {}
