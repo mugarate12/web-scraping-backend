@@ -557,7 +557,7 @@ export default class OCRController {
         DOWN: {
           width: 39,
           height: 28,
-          initialPointX: 203,
+          initialPointX: 201,
           initialPointY: 144
         }
       },
@@ -710,9 +710,9 @@ export default class OCRController {
         },
         DOWN: {
           width: 46,
-          height: 28,
+          height: 30,
           initialPointX: 958,
-          initialPointY: 144
+          initialPointY: 143
         }
       },
       // DOWN VALUES
@@ -1948,9 +1948,6 @@ export default class OCRController {
           arrayString,
           key
         )
-        // console.log(arrayString)
-        // informations.up_value = this.formatValue(arrayString[1])
-        // informations.up_percent = this.formatPercent(arrayString[2])
       } catch (error) {
         console.log(error)
       }
@@ -1985,9 +1982,6 @@ export default class OCRController {
           arrayString,
           key
         )
-        // console.log(arrayString)
-        // informations.down_value = this.formatValue(arrayString[1])
-        // informations.down_percent = this.formatPercent(arrayString[2])
       } catch (error) {
         console.log(error)
       }  
@@ -1995,25 +1989,11 @@ export default class OCRController {
       formattedInformations.push(informations)
     }
 
-    console.log(formattedInformations);
-
-    // try {
-    //   const [ result ] = await client.textDetection(cropedFilename)
-    //   const texts = result.textAnnotations
-    //   let arrayString: Array<string> = []
-
-    //   if (!!texts) {
-    //     texts.forEach(text => {
-    //       arrayString.push(String(text.description))
-    //     })
-    //   }
-
-    //   console.log(arrayString)
-    //   // const information = this.getInformationCuritiba(arrayString.slice(1, arrayString.length), key)
-    //   // formattedInformations.push(information)        
-    // } catch (error) {
-    //   console.log(error)
-    // }  
+    let imageDate = await this.getDateInformation(filename, cropedFilename, 158, 11, 469, 458)
+    
+    console.log('OCR --> atualizando no banco de dados - São Paulo (SP)')
+    await this.updateInDatabase(formattedInformations, 'SP', 'São Paulo', imageDate, isRoutine)
+    console.log('OCR --> atualizado! - São Paulo (SP)')
   }
 
   public updateManually = async (req: Request, res: Response) => {
@@ -2039,6 +2019,7 @@ export default class OCRController {
     await this.getLondrina(true)
     await this.getMaringa(true)
     await this.getPortoAlegre(true)
+    await this.getSaoPaulo(true)
   }
 
   public getAllData = async (req: Request, res: Response) => {
