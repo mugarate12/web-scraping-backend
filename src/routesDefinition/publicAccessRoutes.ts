@@ -183,4 +183,6 @@ export default function publicAccessRoutes(routes: Router) {
       token: Joi.string().required()
     })
   }), publicAccessJWT, ocrController.getAllData)
+  
+  routes.get('/public/access/ocr/all/withoutKey', ocrController.getAllDataWithoutKey)
 } 

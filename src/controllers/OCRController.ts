@@ -1727,11 +1727,11 @@ export default class OCRController {
       }  
     }
 
-    const imageDate = await this.getDateInformation(filename, cropedFilename, 161, 10, 236, 457)
-    console.log(imageDate)
+    // const imageDate = await this.getDateInformation(filename, cropedFilename, 161, 10, 236, 457)
+    // console.log(imageDate)
 
     console.log('OCR --> atualizando no banco de dados - Curitiba')
-    await this.updateInDatabase(formattedInformations, 'PR', 'Curitiba', imageDate, isRoutine)
+    await this.updateInDatabase(formattedInformations, 'PR', 'Curitiba', '', isRoutine)
     console.log('OCR --> atualizado! - Curitiba')
   }
 
@@ -2013,10 +2013,10 @@ export default class OCRController {
       }  
     }
 
-    const imageDate = await this.getDateInformation(filename, cropedFilename, 156, 10, 238, 457)
+    // const imageDate = await this.getDateInformation(filename, cropedFilename, 156, 10, 238, 457)
 
     console.log('OCR --> atualizando no banco de dados - Porto Alegre')
-    await this.updateInDatabase(formattedInformations, 'RS', 'Porto Alegre', imageDate, isRoutine)
+    await this.updateInDatabase(formattedInformations, 'RS', 'Porto Alegre', '', isRoutine)
     console.log('OCR --> atualizado! - Porto Alegre')
   }
 
@@ -2183,7 +2183,7 @@ export default class OCRController {
   }
 
   public runRoutineTeenMinutes = async () => {
-    await this.sleep(40)
+    await this.sleep(70)
 
     await Promise.all([
       this.getPortoAlegre(true),
@@ -2366,6 +2366,22 @@ export default class OCRController {
         cities
       })
     }
+
+    const formattedData = data.map((orcData) => {
+      return {
+        ...orcData,
+        up_percent: Number(orcData.up_percent.slice(0, orcData.up_percent.length - 1)),
+        down_percent: Number(orcData.down_percent.slice(0, orcData.down_percent.length - 1))
+      }
+    })
+
+    return res.status(200).json({
+      data: formattedData
+    })
+  }
+
+  public getAllDataWithoutKey = async (req: Request, res: Response) => {
+    const data = await ocrDataRepository.index({})
 
     const formattedData = data.map((orcData) => {
       return {
