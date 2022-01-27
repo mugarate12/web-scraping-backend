@@ -25,22 +25,22 @@ async function update() {
 }
 
 export default async () => {
-  const ocrRoutine = new CronJob.CronJob('*/5 * * * *', async () => {
-    initialLog('de todas com exceção SP')
+  // const ocrRoutine = new CronJob.CronJob('*/5 * * * *', async () => {
+  //   initialLog('de todas com exceção SP')
 
-    await update()
+  //   await update()
 
-    finalLog()
-  })
+  //   finalLog()
+  // })
 
   const ocrRoutineTeenMinutes = new CronJob.CronJob('*/10 * * * *', async () => {
-    initialLog('de SP')
+    initialLog('de todos')
 
     await ocrController.runRoutineTeenMinutes()
 
     finalLog()
   }) 
 
-  ocrRoutine.start()
+  // ocrRoutine.start()
   ocrRoutineTeenMinutes.start()
 }
