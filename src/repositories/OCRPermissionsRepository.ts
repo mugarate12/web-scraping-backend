@@ -23,6 +23,13 @@ interface createOCRPermissionsInterface {
   pix_name: string
 }
 
+interface getOCRPermissionInterface {
+  client_FK: number,
+  state: string,
+  city: string,
+  pix_name: string
+}
+
 interface indexOCRPermissionsInterface {
   client_FK?: number
 }
@@ -43,6 +50,17 @@ export default class OCRPermissionsRepository {
       .then(() => {
         return
       })
+      .catch(error => {
+        throw new AppError('Database Error', 406, error.message, true)
+      })
+  }
+
+  public get = async ({ client_FK, state, city, pix_name }: getOCRPermissionInterface) => {
+    return this.reference()
+      .where({ client_FK, state, city, pix_name })
+      .select('*')
+      .first()
+      .then(ocrData => ocrData)
       .catch(error => {
         throw new AppError('Database Error', 406, error.message, true)
       })

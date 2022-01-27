@@ -2050,48 +2050,67 @@ export default class OCRController {
 
   public addPermission = async (req: Request, res: Response) => {
     const { client_FK, state, city, pix_name } = req.body
+    const {
+      permissions
+    } = req.body
 
-    console.log(pix_name);
+    const requests = permissions.map(async (permission: {
+      client_FK: number, 
+      state: string, 
+      city: string,
+      service: string
+    }) => {
+      const search = await ocrPermissionsRepository.get({
+        client_FK: Number(permission.client_FK),
+        state: String(permission.state),
+        city: String(permission.city),
+        pix_name: String(permission.service)
+      })
 
-    return await ocrPermissionsRepository.create({
-      client_FK: Number(client_FK),
-      state: String(state),
-      city: String(city),
-      pix_name: String(pix_name)
-    })
-      .then(() => {
-        return res.status(201).json({
-          message: 'permissão criada com sucesso!'
+      if (!search) {
+        await ocrPermissionsRepository.create({
+          client_FK: Number(permission.client_FK),
+          state: String(permission.state),
+          city: String(permission.city),
+          pix_name: String(permission.service)
         })
-      })
-      .catch(error => {
-        return errorHandler(
-          new AppError('database', 403, 'erro ao criar permissão', true),
-          res
-        )
-      })
+          .catch(error => {})
+      }
+    })
+
+    await Promise.all(requests)
+
+    return res.status(201).json({
+      message: 'permissão criada com sucesso!'
+    })
   }
 
   public removePermission = async  (req: Request, res: Response) => {
     const { client_FK, state, city, pix_name } = req.body
+    const {
+      permissions
+    } = req.body
 
-    return await ocrPermissionsRepository.delete({
-      client_FK: Number(client_FK),
-      state: String(state),
-      city: String(city),
-      pix_name: String(pix_name)
+    const requests = permissions.map(async (permission: {
+      client_FK: number, 
+      state: string, 
+      city: string,
+      service: string
+    }) => {
+      await ocrPermissionsRepository.delete({
+        client_FK: Number(permission.client_FK),
+        state: String(permission.state),
+        city: String(permission.city),
+        pix_name: String(permission.service)
+      })
+        .catch(error => {})
     })
-      .then(() => {
-        return res.status(201).json({
-          message: 'permissão removida com sucesso!'
-        })
-      })
-      .catch(error => {
-        return errorHandler(
-          new AppError('database', 403, 'erro ao remover permissão', true),
-          res
-        )
-      })
+
+    await Promise.all(requests)
+
+    return res.status(200).json({
+      message: 'permissão removida com sucesso!'
+    })
   }
 
   public getPermissions = async (clientID: number) => {
@@ -2120,6 +2139,73 @@ export default class OCRController {
       states,
       cities
     }
+  }
+
+  public getRegistredStates = async (req: Request, res: Response) => {
+    let states: Array<string> = []
+
+    const ocrData = await ocrDataRepository.index({})
+    ocrData.forEach((data) => {
+      if (!states.includes(data.state)) {
+        states.push(data.state)
+      }
+    })
+
+    return res.status(200).json({
+      states: states.map((state) => {
+        return {
+          label: state,
+          value: state
+        }
+      })
+    })
+  }
+
+  public getRegistredCities = async (req: Request, res: Response) => {
+    const { state } = req.params
+
+    let cities: Array<string> = []
+    const ocrData = await ocrDataRepository.index({
+      states: [ state ]
+    })
+    ocrData.forEach((data) => {
+      if (!cities.includes(data.city)) {
+        cities.push(data.city)
+      }
+    })
+
+    return res.status(200).json({
+      cities: cities.map((city) => {
+        return {
+          label: city,
+          value: city
+        }
+      })
+    })
+  }
+
+  public getRegistredServices = async (req: Request, res: Response) => {
+    const { state, city } = req.params
+
+    let services: Array<string> = []
+    const ocrData = await ocrDataRepository.index({
+      states: [ state ],
+      cities: [ city ]
+    })
+    ocrData.forEach(data => {
+      if (!services.includes(data.service)) {
+        services.push(data.service)
+      }
+    })
+
+    return res.status(200).json({
+      services: services.map(service => {
+        return {
+          label: service,
+          value: service
+        }
+      })
+    })
   }
 
   public getAllData = async (req: Request, res: Response) => { 
