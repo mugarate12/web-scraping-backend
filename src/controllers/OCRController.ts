@@ -27,7 +27,7 @@ if (process.env.NODE_ENV === 'production') {
 
 const client = new vision.ImageAnnotatorClient({
   keyFilename: clientKey,
-  projectId: 'image-text-338511'
+  projectId: "fifth-repeater-335914"
 })
 
 
@@ -102,6 +102,20 @@ export default class OCRController {
     } else {
       return false
     }
+  }
+
+  private formatColorToPercent = (
+    red: number | undefined | null,
+    green: number | undefined | null,
+    blue: number | undefined | null
+  ) => {
+    let value = '0%'
+    
+    if (red === 0 && green === 0 && blue === 254) {
+      value = '25%'
+    }
+
+    return value
   }
 
   private updateInDatabase = async (dataArray: {
@@ -406,20 +420,34 @@ export default class OCRController {
         width: 75,
         height: 103,
         initialPointX: 83,
-        initialPointY: 86
+        initialPointY: 86,
+        colors: {
+          UP: {
+            width: 4,
+            height: 4,
+            initialPointX: 75,
+            initialPointY: 86,
+          },
+          DOWN: {
+            width: 4,
+            height: 4,
+            initialPointX: 147,
+            initialPointY: 177,
+          }
+        }
       },
-      SERCOMTEL: {
-        width: 65,
-        height: 103,
-        initialPointX: 231,
-        initialPointY: 86
-      },
-      UEL: {
-        width: 59,
-        height: 106,
-        initialPointX: 238,
-        initialPointY: 229
-      }
+      // SERCOMTEL: {
+      //   width: 65,
+      //   height: 103,
+      //   initialPointX: 231,
+      //   initialPointY: 86
+      // },
+      // UEL: {
+      //   width: 59,
+      //   height: 106,
+      //   initialPointX: 238,
+      //   initialPointY: 229
+      // }
     }
 
     return services
@@ -1768,7 +1796,82 @@ export default class OCRController {
       } catch (error) {
         console.log(error)
       }
+
+      // processamento das cores
+    //   await gm(filename)
+    //     .crop(
+    //       cropedInformations[key].colors.UP.width, 
+    //       cropedInformations[key].colors.UP.height, 
+    //       cropedInformations[key].colors.UP.initialPointX, 
+    //       cropedInformations[key].colors.UP.initialPointY
+    //       )
+    //     .write(cropedFilename, function(err) {
+    //       if (err) return console.dir(arguments)
+    //     })
+
+    //   await this.sleep(5)
+
+    //   try {
+    //     const [ result ] = await client.imageProperties(cropedFilename)
+    //     const colors = result.imagePropertiesAnnotation?.dominantColors?.colors
+
+    //     if (!!colors) {
+    //       const colorDetected = colors[0].color
+
+    //       if (!!colorDetected) {
+    //         formattedInformations.forEach((information, index) => {
+    //           if (information.serviceName === key) {
+    //             formattedInformations[index].up_percent = this.formatColorToPercent(
+    //               colorDetected.red,
+    //               colorDetected.green,
+    //               colorDetected.blue
+    //             )
+    //           }
+    //         })
+    //       }
+    //     }
+    //   } catch (error) {
+    //     console.log(error)
+    //   }
+
+    //   await gm(filename)
+    //     .crop(
+    //       cropedInformations[key].colors.DOWN.width, 
+    //       cropedInformations[key].colors.DOWN.height, 
+    //       cropedInformations[key].colors.DOWN.initialPointX, 
+    //       cropedInformations[key].colors.DOWN.initialPointY
+    //       )
+    //     .write(cropedFilename, function(err) {
+    //       if (err) return console.dir(arguments)
+    //     })
+
+    //   await this.sleep(5)
+
+    //   try {
+    //     const [ result ] = await client.imageProperties(cropedFilename)
+    //     const colors = result.imagePropertiesAnnotation?.dominantColors?.colors
+
+    //     if (!!colors) {
+    //       const colorDetected = colors[0].color
+
+    //       if (!!colorDetected) {
+    //         formattedInformations.forEach((information, index) => {
+    //           if (information.serviceName === key) {
+    //             formattedInformations[index].down_percent = this.formatColorToPercent(
+    //               colorDetected.red,
+    //               colorDetected.green,
+    //               colorDetected.blue
+    //             )
+    //           }
+    //         })
+    //       }
+    //     }
+    //   } catch (error) {
+    //     console.log(error)
+    //   }
     }
+
+    // console.log(formattedInformations)
 
     let imageDate = await this.getDateInformation(filename, cropedFilename, 150, 14, 115, 4)    
 
@@ -2052,14 +2155,14 @@ export default class OCRController {
     // await this.getSaoPaulo(false)
 
     await Promise.all([
-      this.getRJ(false),
-      this.getFortaleza(false),
-      this.getCascavel(false),
-      this.getCuritiba(false),
+      // this.getRJ(false),
+      // this.getFortaleza(false),
+      // this.getCascavel(false),
+      // this.getCuritiba(false),
       this.getLondrina(false),
-      this.getMaringa(false),
-      this.getPortoAlegre(false),
-      this.getSaoPaulo(false)
+      // this.getMaringa(false),
+      // this.getPortoAlegre(false),
+      // this.getSaoPaulo(false)
     ])
 
     return res.status(200).json({
