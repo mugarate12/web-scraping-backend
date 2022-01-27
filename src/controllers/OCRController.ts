@@ -201,12 +201,12 @@ export default class OCRController {
 
   private getRJCropedInformations = () => {
     const services = {
-      CLARO: {
-        width: 105,
-        height: 167,
-        initialPointX: 145,
-        initialPointY: 0
-      },
+      // CLARO: {
+      //   width: 105,
+      //   height: 167,
+      //   initialPointX: 145,
+      //   initialPointY: 0
+      // },
       // LUMEN: {
       //   width: 117,
       //   height: 167,
@@ -225,12 +225,12 @@ export default class OCRController {
       //   initialPointX: 522,
       //   initialPointY: 0
       // },
-      GLOBO: {
-        width: 104,
-        height: 167,
-        initialPointX: 652,
-        initialPointY: 0
-      },
+      // GLOBO: {
+      //   width: 104,
+      //   height: 167,
+      //   initialPointX: 652,
+      //   initialPointY: 0
+      // },
       // 'UFINET-SC': {
       //   width: 116,
       //   height: 167,
@@ -279,12 +279,12 @@ export default class OCRController {
       //   initialPointX: 656,
       //   initialPointY: 271
       // },
-      'EQUINIX-RJ2': {
-        width: 116,
-        height: 169,
-        initialPointX: 773,
-        initialPointY: 271
-      },
+      // 'EQUINIX-RJ2': {
+      //   width: 116,
+      //   height: 169,
+      //   initialPointX: 773,
+      //   initialPointY: 271
+      // },
 
     }
 
@@ -2314,7 +2314,7 @@ export default class OCRController {
     await Promise.all([
       this.getPortoAlegre(true),
       this.getCuritiba(true),
-      this.getRJ(true),
+      // this.getRJ(true),
       this.getSaoPaulo(true)
     ])
   }
