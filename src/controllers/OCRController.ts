@@ -355,54 +355,54 @@ export default class OCRController {
 
   private getCuritibaCropedInformations = () => {
     const services = {
-      OI: {
-        width: 100,
-        height: 85,
-        initialPointX: 36,
-        initialPointY: 93
-      },
-      NovaFibra: {
-        width: 96,
-        height: 85,
-        initialPointX: 267,
-        initialPointY: 93
-      },
-      CenturyLink: {
-        width: 105,
-        height: 85,
-        initialPointX: 392,
-        initialPointY: 93
-      },
-      CELEPAR: {
-        width: 105,
-        height: 85,
-        initialPointX: 637,
-        initialPointY: 93
-      },
-      UFPR: {
-        width: 115,
-        height: 87,
-        initialPointX: 37,
-        initialPointY: 283
-      },
-      GVT: {
-        width: 108,
-        height: 87,
-        initialPointX: 170,
-        initialPointY: 283
-      },
-      COPEL: {
-        width: 108,
-        height: 87,
-        initialPointX: 320,
-        initialPointY: 283
-      },
-      COMMCORP: {
-        width: 110,
-        height: 87,
-        initialPointX: 465,
-        initialPointY: 283
-      },
+      // OI: {
+      //   width: 100,
+      //   height: 85,
+      //   initialPointX: 36,
+      //   initialPointY: 93
+      // },
+      // NovaFibra: {
+      //   width: 96,
+      //   height: 85,
+      //   initialPointX: 267,
+      //   initialPointY: 93
+      // },
+      // CenturyLink: {
+      //   width: 105,
+      //   height: 85,
+      //   initialPointX: 392,
+      //   initialPointY: 93
+      // },
+      // CELEPAR: {
+      //   width: 105,
+      //   height: 85,
+      //   initialPointX: 637,
+      //   initialPointY: 93
+      // },
+      // UFPR: {
+      //   width: 115,
+      //   height: 87,
+      //   initialPointX: 37,
+      //   initialPointY: 283
+      // },
+      // GVT: {
+      //   width: 108,
+      //   height: 87,
+      //   initialPointX: 170,
+      //   initialPointY: 283
+      // },
+      // COPEL: {
+      //   width: 108,
+      //   height: 87,
+      //   initialPointX: 320,
+      //   initialPointY: 283
+      // },
+      // COMMCORP: {
+      //   width: 110,
+      //   height: 87,
+      //   initialPointX: 465,
+      //   initialPointY: 283
+      // },
       DBUG: {
         width: 105,
         height: 87,
@@ -474,90 +474,90 @@ export default class OCRController {
 
   private getPortoAlegreCropedInformations = () => {
     const services = {
-      SYGO: {
-        width: 86,
-        height: 92,
-        initialPointX: 43,
-        initialPointY: 93
-      },
-      COMMCORP: {
-        width: 94,
-        height: 92,
-        initialPointX: 141,
-        initialPointY: 93
-      },
-      OI: {
-        width: 102,
-        height: 92,
-        initialPointX: 236,
-        initialPointY: 93
-      },
+      // SYGO: {
+      //   width: 86,
+      //   height: 92,
+      //   initialPointX: 43,
+      //   initialPointY: 93
+      // },
+      // COMMCORP: {
+      //   width: 94,
+      //   height: 92,
+      //   initialPointX: 141,
+      //   initialPointY: 93
+      // },
+      // OI: {
+      //   width: 102,
+      //   height: 92,
+      //   initialPointX: 236,
+      //   initialPointY: 93
+      // },
       'Nossa Telecom': {
         width: 89,
         height: 92,
         initialPointX: 343,
         initialPointY: 93
       },
-      GVT: {
-        width: 91,
-        height: 92,
-        initialPointX: 439,
-        initialPointY: 93
-      },
-      Defferrari: {
-        width: 93,
-        height: 92,
-        initialPointX: 536,
-        initialPointY: 93
-      },
-      CenturyLink: {
-        width: 109,
-        height: 92,
-        initialPointX: 630,
-        initialPointY: 93
-      },
-      VOGEL: {
-        width: 93,
-        height: 88,
-        initialPointX: 42,
-        initialPointY: 286
-      },
-      'RNP UFRGS': {
-        width: 100,
-        height: 88,
-        initialPointX: 134,
-        initialPointY: 286
-      },
-      LVT: {
-        width: 92,
-        height: 88,
-        initialPointX: 241,
-        initialPointY: 286
-      },
-      ADYLNET: {
-        width: 101,
-        height: 88,
-        initialPointX: 336,
-        initialPointY: 286
-      },
-      RENOVARE: {
-        width: 92,
-        height: 88,
-        initialPointX: 440,
-        initialPointY: 286
-      },
-      RedeISP: {
-        width: 102,
-        height: 88,
-        initialPointX: 535,
-        initialPointY: 286
-      },
-      METROLAN: {
-        width: 101,
-        height: 88,
-        initialPointX: 637,
-        initialPointY: 286
-      },
+      // GVT: {
+      //   width: 91,
+      //   height: 92,
+      //   initialPointX: 439,
+      //   initialPointY: 93
+      // },
+      // Defferrari: {
+      //   width: 93,
+      //   height: 92,
+      //   initialPointX: 536,
+      //   initialPointY: 93
+      // },
+      // CenturyLink: {
+      //   width: 109,
+      //   height: 92,
+      //   initialPointX: 630,
+      //   initialPointY: 93
+      // },
+      // VOGEL: {
+      //   width: 93,
+      //   height: 88,
+      //   initialPointX: 42,
+      //   initialPointY: 286
+      // },
+      // 'RNP UFRGS': {
+      //   width: 100,
+      //   height: 88,
+      //   initialPointX: 134,
+      //   initialPointY: 286
+      // },
+      // LVT: {
+      //   width: 92,
+      //   height: 88,
+      //   initialPointX: 241,
+      //   initialPointY: 286
+      // },
+      // ADYLNET: {
+      //   width: 101,
+      //   height: 88,
+      //   initialPointX: 336,
+      //   initialPointY: 286
+      // },
+      // RENOVARE: {
+      //   width: 92,
+      //   height: 88,
+      //   initialPointX: 440,
+      //   initialPointY: 286
+      // },
+      // RedeISP: {
+      //   width: 102,
+      //   height: 88,
+      //   initialPointX: 535,
+      //   initialPointY: 286
+      // },
+      // METROLAN: {
+      //   width: 101,
+      //   height: 88,
+      //   initialPointX: 637,
+      //   initialPointY: 286
+      // },
     }
 
     return services
@@ -622,20 +622,20 @@ export default class OCRController {
       //     initialPointY: 144
       //   }
       // },
-      'Embratel': {
-        UP: {
-          width: 43,
-          height: 27,
-          initialPointX: 328,
-          initialPointY: 93
-        },
-        DOWN: {
-          width: 41,
-          height: 28,
-          initialPointX: 265,
-          initialPointY: 144
-        }
-      },
+      // 'Embratel': {
+      //   UP: {
+      //     width: 43,
+      //     height: 27,
+      //     initialPointX: 328,
+      //     initialPointY: 93
+      //   },
+      //   DOWN: {
+      //     width: 41,
+      //     height: 28,
+      //     initialPointX: 265,
+      //     initialPointY: 144
+      //   }
+      // },
       // 'Telefônica': {
       //   UP: {
       //     width: 43,
@@ -720,34 +720,34 @@ export default class OCRController {
       //     initialPointY: 144
       //   }
       // },
-      // 'Algar CENESP': {
-      //   UP: {
-      //     width: 45,
-      //     height: 27,
-      //     initialPointX: 816,
-      //     initialPointY: 93
-      //   },
-      //   DOWN: {
-      //     width: 45,
-      //     height: 28,
-      //     initialPointX: 745,
-      //     initialPointY: 144
-      //   }
-      // },
-      // 'Equinox-SP4': {
-      //   UP: {
-      //     width: 45,
-      //     height: 27,
-      //     initialPointX: 885,
-      //     initialPointY: 93
-      //   },
-      //   DOWN: {
-      //     width: 43,
-      //     height: 28,
-      //     initialPointX: 820,
-      //     initialPointY: 144
-      //   }
-      // },
+      'Algar CENESP': {
+        UP: {
+          width: 45,
+          height: 27,
+          initialPointX: 816,
+          initialPointY: 93
+        },
+        DOWN: {
+          width: 45,
+          height: 28,
+          initialPointX: 745,
+          initialPointY: 144
+        }
+      },
+      'Equinox-SP4': {
+        UP: {
+          width: 45,
+          height: 27,
+          initialPointX: 885,
+          initialPointY: 93
+        },
+        DOWN: {
+          width: 43,
+          height: 28,
+          initialPointX: 820,
+          initialPointY: 144
+        }
+      },
       // 'NIC-JD': {
       //   UP: {
       //     width: 44,
@@ -777,20 +777,20 @@ export default class OCRController {
       //   }
       // },
       // DOWN VALUES
-      'Level 3 CenturyLink': {
-        UP: {
-          width: 36,
-          height: 26,
-          initialPointX: 66,
-          initialPointY: 314
-        },
-        DOWN: {
-          width: 42,
-          height: 27,
-          initialPointX: 1,
-          initialPointY: 280
-        }
-      },
+      // 'Level 3 CenturyLink': {
+      //   UP: {
+      //     width: 36,
+      //     height: 26,
+      //     initialPointX: 66,
+      //     initialPointY: 314
+      //   },
+      //   DOWN: {
+      //     width: 42,
+      //     height: 27,
+      //     initialPointX: 1,
+      //     initialPointY: 280
+      //   }
+      // },
       // 'OI': {
       //   UP: {
       //     width: 44,
@@ -2186,6 +2186,8 @@ export default class OCRController {
     await this.sleep(40)
 
     await Promise.all([
+      this.getPortoAlegre(true),
+      this.getCuritiba(true),
       this.getRJ(true),
       this.getSaoPaulo(true)
     ])
