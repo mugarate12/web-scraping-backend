@@ -111,8 +111,32 @@ export default class OCRController {
   ) => {
     let value = '0%'
     
+    if (red === 116 && green === 87 && blue === 203) {
+      value = '10%'
+    }
+   
     if (red === 0 && green === 0 && blue === 254) {
       value = '25%'
+    }
+    
+    if (red === 0 && green === 236 && blue === 236) {
+      value = '40%'
+    }
+
+    if (red === 0 && green === 255 && blue === 6) {
+      value = '55%'
+    }
+    
+    if (red === 255 && green === 255 && blue === 0) {
+      value = '70%'
+    }
+    
+    if (red === 255 && green === 142 && blue === 1) {
+      value = '85%'
+    }
+    
+    if (red === 254 && green === 0 && blue === 0) {
+      value = '100%'
     }
 
     return value
@@ -367,12 +391,26 @@ export default class OCRController {
       //   initialPointX: 267,
       //   initialPointY: 93
       // },
-      // CenturyLink: {
-      //   width: 105,
-      //   height: 85,
-      //   initialPointX: 392,
-      //   initialPointY: 93
-      // },
+      CenturyLink: {
+        width: 105,
+        height: 85,
+        initialPointX: 392,
+        initialPointY: 93,
+        colors: {
+          UP: {
+            width: 4,
+            height: 4,
+            initialPointX: 446,
+            initialPointY: 109,
+          },
+          DOWN: {
+            width: 4,
+            height: 4,
+            initialPointX: 437,
+            initialPointY: 163,
+          }
+        }
+      },
       // CELEPAR: {
       //   width: 105,
       //   height: 85,
@@ -407,7 +445,21 @@ export default class OCRController {
         width: 105,
         height: 87,
         initialPointX: 629,
-        initialPointY: 283
+        initialPointY: 283,
+        colors: {
+          UP: {
+            width: 4,
+            height: 4,
+            initialPointX: 674,
+            initialPointY: 296,
+          },
+          DOWN: {
+            width: 4,
+            height: 4,
+            initialPointX: 683,
+            initialPointY: 360,
+          }
+        }
       }
     }
 
@@ -777,20 +829,20 @@ export default class OCRController {
       //   }
       // },
       // DOWN VALUES
-      // 'Level 3 CenturyLink': {
-      //   UP: {
-      //     width: 36,
-      //     height: 26,
-      //     initialPointX: 66,
-      //     initialPointY: 314
-      //   },
-      //   DOWN: {
-      //     width: 42,
-      //     height: 27,
-      //     initialPointX: 1,
-      //     initialPointY: 280
-      //   }
-      // },
+      'Level 3 CenturyLink': {
+        UP: {
+          width: 36,
+          height: 26,
+          initialPointX: 66,
+          initialPointY: 314
+        },
+        DOWN: {
+          width: 42,
+          height: 27,
+          initialPointX: 1,
+          initialPointY: 280
+        }
+      },
       // 'OI': {
       //   UP: {
       //     width: 44,
@@ -1724,7 +1776,81 @@ export default class OCRController {
         formattedInformations.push(information)        
       } catch (error) {
         console.log(error)
-      }  
+      }
+
+      // up percent
+      await gm(filename)
+        .crop(
+          cropedInformations[key].colors.UP.width, 
+          cropedInformations[key].colors.UP.height, 
+          cropedInformations[key].colors.UP.initialPointX, 
+          cropedInformations[key].colors.UP.initialPointY
+          )
+        .write(cropedFilename, function(err) {
+          if (err) return console.dir(arguments)
+        })
+
+      await this.sleep(5)
+
+      try {
+        const [ result ] = await client.imageProperties(cropedFilename)
+        const colors = result.imagePropertiesAnnotation?.dominantColors?.colors
+
+        if (!!colors) {
+          const colorDetected = colors[0].color
+
+          if (!!colorDetected) {
+            formattedInformations.forEach((information, index) => {
+              if (information.serviceName === key) {
+                formattedInformations[index].up_percent = this.formatColorToPercent(
+                  colorDetected.red,
+                  colorDetected.green,
+                  colorDetected.blue
+                )
+              }
+            })
+          }
+        }
+      } catch (error) {
+        console.log(error)
+      }
+
+      // down percent
+      await gm(filename)
+        .crop(
+          cropedInformations[key].colors.DOWN.width, 
+          cropedInformations[key].colors.DOWN.height, 
+          cropedInformations[key].colors.DOWN.initialPointX, 
+          cropedInformations[key].colors.DOWN.initialPointY
+          )
+        .write(cropedFilename, function(err) {
+          if (err) return console.dir(arguments)
+        })
+
+      await this.sleep(5)
+
+      try {
+        const [ result ] = await client.imageProperties(cropedFilename)
+        const colors = result.imagePropertiesAnnotation?.dominantColors?.colors
+
+        if (!!colors) {
+          const colorDetected = colors[0].color
+
+          if (!!colorDetected) {
+            formattedInformations.forEach((information, index) => {
+              if (information.serviceName === key) {
+                formattedInformations[index].down_percent = this.formatColorToPercent(
+                  colorDetected.red,
+                  colorDetected.green,
+                  colorDetected.blue
+                )
+              }
+            })
+          }
+        }
+      } catch (error) {
+        console.log(error)
+      }
     }
 
     // const imageDate = await this.getDateInformation(filename, cropedFilename, 161, 10, 236, 457)
@@ -2158,8 +2284,8 @@ export default class OCRController {
       // this.getRJ(false),
       // this.getFortaleza(false),
       // this.getCascavel(false),
-      // this.getCuritiba(false),
-      this.getLondrina(false),
+      this.getCuritiba(false),
+      // this.getLondrina(false),
       // this.getMaringa(false),
       // this.getPortoAlegre(false),
       // this.getSaoPaulo(false)
