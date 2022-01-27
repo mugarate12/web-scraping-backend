@@ -1368,19 +1368,21 @@ export default class OCRController {
 
   private getRJ = async (isRoutine: boolean) => {
     let example = 'https://old.ix.br/stats/3047274b0830e6f8371d5d14b0970580/rj/images/setas01.png'
-  
-    const file = fs.createWriteStream('file.png', { encoding: 'base64' })
+    const nameOfFile = 'file_rioDeJaneiro.png'
+    const nameOfCropedFile = 'croped_rioDeJaneiro.jpg'
+
+    const file = fs.createWriteStream(nameOfFile, { encoding: 'base64' })
     const request = https.get(example, function(response) {
       response.pipe(file)
     })
 
     await this.sleep(7)
 
-    let filename = path.resolve(__dirname, '..', '..', 'file.png')
-    let cropedFilename =  path.resolve(__dirname, '..', '..', 'croped.jpg')
+    let filename = path.resolve(__dirname, '..', '..', nameOfFile)
+    let cropedFilename =  path.resolve(__dirname, '..', '..', nameOfCropedFile)
     if (process.env.NODE_ENV === 'production') {
-        filename = path.resolve(__dirname, '..', '..', '..', 'file.png')
-        cropedFilename =  path.resolve(__dirname, '..', '..', '..', 'croped.jpg')
+        filename = path.resolve(__dirname, '..', '..', '..', nameOfFile)
+        cropedFilename =  path.resolve(__dirname, '..', '..', '..', nameOfCropedFile)
     }
     
     const cropedInformations = this.getRJCropedInformations()
@@ -1492,19 +1494,21 @@ export default class OCRController {
 
   private getFortaleza = async (isRoutine: boolean) => {
     let fortalezaURL = 'https://old.ix.br/stats/cbff2f8aa74c6b3a283048e31b56576d/ce/images/setas01.png'
+    const nameOfFile = 'file_fortaleza.png'
+    const nameOfCropedFile = 'croped_fortaleza.jpg'
 
-    const file = fs.createWriteStream('file.png', { encoding: 'base64' })
+    const file = fs.createWriteStream(nameOfFile, { encoding: 'base64' })
     const request = https.get(fortalezaURL, function(response) {
       response.pipe(file)
     })
 
     await this.sleep(7)
     
-    let filename = path.resolve(__dirname, '..', '..', 'file.png')
-    let cropedFilename =  path.resolve(__dirname, '..', '..', 'croped.jpg')
+    let filename = path.resolve(__dirname, '..', '..', nameOfFile)
+    let cropedFilename =  path.resolve(__dirname, '..', '..', nameOfCropedFile)
     if (process.env.NODE_ENV === 'production') {
-        filename = path.resolve(__dirname, '..', '..', '..', 'file.png')
-        cropedFilename =  path.resolve(__dirname, '..', '..', '..', 'croped.jpg')
+        filename = path.resolve(__dirname, '..', '..', '..', nameOfFile)
+        cropedFilename =  path.resolve(__dirname, '..', '..', '..', nameOfCropedFile)
     }
 
     const cropedInformations = this.getFortalezaCropedInformations()
@@ -1564,19 +1568,21 @@ export default class OCRController {
 
   private getCascavel = async (isRoutine: boolean) => {
     const cascavelURL = 'https://old.ix.br/stats/56e371cdae2b4155300bf05876654a02/cac/images/setas01.png'
+    const nameOfFile = 'file_cascavel.png'
+    const nameOfCropedFile = 'croped_cascavel.jpg'
 
-    const file = fs.createWriteStream('file.png', { encoding: 'base64' })
+    const file = fs.createWriteStream(nameOfFile, { encoding: 'base64' })
     const request = https.get(cascavelURL, function(response) {
       response.pipe(file)
     })
 
     await this.sleep(7)
 
-    let filename = path.resolve(__dirname, '..', '..', 'file.png')
-    let cropedFilename =  path.resolve(__dirname, '..', '..', 'croped.jpg')
+    let filename = path.resolve(__dirname, '..', '..', nameOfFile)
+    let cropedFilename =  path.resolve(__dirname, '..', '..', nameOfCropedFile)
     if (process.env.NODE_ENV === 'production') {
-        filename = path.resolve(__dirname, '..', '..', '..', 'file.png')
-        cropedFilename =  path.resolve(__dirname, '..', '..', '..', 'croped.jpg')
+        filename = path.resolve(__dirname, '..', '..', '..', nameOfFile)
+        cropedFilename =  path.resolve(__dirname, '..', '..', '..', nameOfCropedFile)
     }
 
     const cropedInformations = this.getCascavelCropedInformations()
@@ -1618,7 +1624,6 @@ export default class OCRController {
   
         const information = this.getInformationCascavel(arrayString.slice(1, arrayString.length), key)
         formattedInformations.push(information)
-        
       } catch (error) {
         console.log(error)
       }  
@@ -1633,19 +1638,21 @@ export default class OCRController {
 
   private getCuritiba = async (isRoutine: boolean) => {
     const url = 'https://old.ix.br/stats/d1bc698ee8ecc275bdbc6f79047ed203/pr/images/setas01.png'
+    const nameOfFile = 'file_curitiba.png'
+    const nameOfCropedFile = 'croped_curitiba.jpg'
 
-    const file = fs.createWriteStream('file.png', { encoding: 'base64' })
+    const file = fs.createWriteStream(nameOfFile, { encoding: 'base64' })
     const request = https.get(url, function(response) {
       response.pipe(file)
     })
 
     await this.sleep(7)
 
-    let filename = path.resolve(__dirname, '..', '..', 'file.png')
-    let cropedFilename =  path.resolve(__dirname, '..', '..', 'croped.jpg')
+    let filename = path.resolve(__dirname, '..', '..', nameOfFile)
+    let cropedFilename =  path.resolve(__dirname, '..', '..', nameOfCropedFile)
     if (process.env.NODE_ENV === 'production') {
-        filename = path.resolve(__dirname, '..', '..', '..', 'file.png')
-        cropedFilename =  path.resolve(__dirname, '..', '..', '..', 'croped.jpg')
+        filename = path.resolve(__dirname, '..', '..', '..', nameOfFile)
+        cropedFilename =  path.resolve(__dirname, '..', '..', '..', nameOfCropedFile)
     }
 
     const cropedInformations = this.getCuritibaCropedInformations()
@@ -1702,19 +1709,21 @@ export default class OCRController {
 
   private getLondrina = async (isRoutine: boolean) => {
     const url = 'https://old.ix.br/stats/9e20a5fe27367d4880f8c781e90c810e/lda/images/setas01.png'
+    const nameOfFile = 'file_londrina.png'
+    const nameOfCropedFile = 'croped_londrina.jpg'
 
-    const file = fs.createWriteStream('file.png', { encoding: 'base64' })
+    const file = fs.createWriteStream(nameOfFile, { encoding: 'base64' })
     const request = https.get(url, function(response) {
       response.pipe(file)
     })
 
     await this.sleep(7)
 
-    let filename = path.resolve(__dirname, '..', '..', 'file.png')
-    let cropedFilename =  path.resolve(__dirname, '..', '..', 'croped.jpg')
+    let filename = path.resolve(__dirname, '..', '..', nameOfFile)
+    let cropedFilename =  path.resolve(__dirname, '..', '..', nameOfCropedFile)
     if (process.env.NODE_ENV === 'production') {
-        filename = path.resolve(__dirname, '..', '..', '..', 'file.png')
-        cropedFilename =  path.resolve(__dirname, '..', '..', '..', 'croped.jpg')
+        filename = path.resolve(__dirname, '..', '..', '..', nameOfFile)
+        cropedFilename =  path.resolve(__dirname, '..', '..', '..', nameOfCropedFile)
     }
 
     const cropedInformations = this.getLondrinaCropedInformations()
@@ -1756,8 +1765,6 @@ export default class OCRController {
   
         const information = this.getInformationLondrina(arrayString.slice(1, arrayString.length), key)
         formattedInformations.push(information)
-        // console.log(information);
-        
       } catch (error) {
         console.log(error)
       }
@@ -1772,19 +1779,21 @@ export default class OCRController {
 
   private getMaringa = async (isRoutine: boolean) => {
     const url = 'https://old.ix.br/stats/9a0f375c9823a19fcf1f0fa0c6f744ca/mgf/images/setas01.png'
+    const nameOfFile = 'file_maringa.png'
+    const nameOfCropedFile = 'croped_maringa.jpg'
 
-    const file = fs.createWriteStream('file.png', { encoding: 'base64' })
+    const file = fs.createWriteStream(nameOfFile, { encoding: 'base64' })
     const request = https.get(url, function(response) {
       response.pipe(file)
     })
 
     await this.sleep(7)
 
-    let filename = path.resolve(__dirname, '..', '..', 'file.png')
-    let cropedFilename =  path.resolve(__dirname, '..', '..', 'croped.jpg')
+    let filename = path.resolve(__dirname, '..', '..', nameOfFile)
+    let cropedFilename =  path.resolve(__dirname, '..', '..', nameOfCropedFile)
     if (process.env.NODE_ENV === 'production') {
-        filename = path.resolve(__dirname, '..', '..', '..', 'file.png')
-        cropedFilename =  path.resolve(__dirname, '..', '..', '..', 'croped.jpg')
+        filename = path.resolve(__dirname, '..', '..', '..', nameOfFile)
+        cropedFilename =  path.resolve(__dirname, '..', '..', '..', nameOfCropedFile)
     }
 
     const cropedInformations = this.getMaringaCropedInformations()
@@ -1840,19 +1849,21 @@ export default class OCRController {
 
   private getPortoAlegre = async (isRoutine: boolean) => {
     const url = 'https://old.ix.br/stats/2c04290547384e55840a47bef077c673/rs/images/setas01.png'
+    const nameOfFile = 'file_portoalegre.png'
+    const nameOfCropedFile = 'croped_portoalegre.jpg'
 
-    const file = fs.createWriteStream('file.png', { encoding: 'base64' })
+    const file = fs.createWriteStream(nameOfFile, { encoding: 'base64' })
     const request = https.get(url, function(response) {
       response.pipe(file)
     })
 
     await this.sleep(7)
 
-    let filename = path.resolve(__dirname, '..', '..', 'file.png')
-    let cropedFilename =  path.resolve(__dirname, '..', '..', 'croped.jpg')
+    let filename = path.resolve(__dirname, '..', '..', nameOfFile)
+    let cropedFilename =  path.resolve(__dirname, '..', '..', nameOfCropedFile)
     if (process.env.NODE_ENV === 'production') {
-        filename = path.resolve(__dirname, '..', '..', '..', 'file.png')
-        cropedFilename =  path.resolve(__dirname, '..', '..', '..', 'croped.jpg')
+        filename = path.resolve(__dirname, '..', '..', '..', nameOfFile)
+        cropedFilename =  path.resolve(__dirname, '..', '..', '..', nameOfCropedFile)
     }
 
     const cropedInformations = this.getPortoAlegreCropedInformations()
@@ -1892,7 +1903,6 @@ export default class OCRController {
           })
         }
   
-        console.log(key, arrayString)
         const information = this.getPortoAlegreInformation(arrayString.slice(1, arrayString.length), key)
         formattedInformations.push(information)        
       } catch (error) {
@@ -2039,7 +2049,18 @@ export default class OCRController {
     // await this.getLondrina(false)
     // await this.getMaringa(false)
     // await this.getPortoAlegre(false)
-    await this.getSaoPaulo(false)
+    // await this.getSaoPaulo(false)
+
+    await Promise.all([
+      this.getRJ(false),
+      this.getFortaleza(false),
+      this.getCascavel(false),
+      this.getCuritiba(false),
+      this.getLondrina(false),
+      this.getMaringa(false),
+      this.getPortoAlegre(false),
+      this.getSaoPaulo(false)
+    ])
 
     return res.status(200).json({
       data: {}
@@ -2047,14 +2068,21 @@ export default class OCRController {
   }
 
   public runRoutine = async () => {
-    await this.getRJ(true)
-    await this.getFortaleza(true)
-    await this.getCascavel(true)
-    await this.getCuritiba(true)
-    await this.getLondrina(true)
-    await this.getMaringa(true)
-    await this.getPortoAlegre(true)
-    await this.getSaoPaulo(true)
+    await Promise.all([
+      this.getRJ(true),
+      this.getFortaleza(true),
+      this.getCascavel(true),
+      this.getCuritiba(true),
+      this.getLondrina(true),
+      this.getMaringa(true),
+      this.getPortoAlegre(true)
+    ])
+  }
+
+  public runRoutineTeenMinutes = async () => {
+    await Promise.all([
+      this.getSaoPaulo(true)
+    ])
   }
 
   public addPermission = async (req: Request, res: Response) => {

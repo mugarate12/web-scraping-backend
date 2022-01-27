@@ -7,10 +7,9 @@ import { FgCyan, FgBlue, Reset } from './../utils/colorsInTerminalReference'
 
 dotenv.config()
 
-function initialLog() {
+function initialLog(description: string) {
   console.log(`${FgBlue}%s${Reset}`, `
-    OCR --> Executando verificação de chaves expiradas\n
-    OCR --> Quantidade de chaves: somente RJ\n
+    OCR --> Executando coletas ${description}\n
     OCR --> começo da execução: ${moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss')}
     `)
 }
@@ -26,13 +25,22 @@ async function update() {
 }
 
 export default async () => {
-  const ocrRoutine = new CronJob.CronJob('*/15 * * * *', async () => {
-    initialLog()
+  const ocrRoutine = new CronJob.CronJob('*/5 * * * *', async () => {
+    initialLog('de todas com exceção SP')
 
     await update()
 
     finalLog()
   })
 
+  const ocrRoutineTeenMinutes = new CronJob.CronJob('*/10 * * * *', async () => {
+    initialLog('de SP')
+
+    await ocrController.runRoutineTeenMinutes()
+
+    finalLog()
+  }) 
+
   ocrRoutine.start()
+  ocrRoutineTeenMinutes.start()
 }
