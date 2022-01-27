@@ -80,7 +80,10 @@ export default class OCRController {
   private validatePercent = (percent: string) => {
     const percentWithoutIndicator = percent.slice(0, percent.length - 1)
 
-    if (Number(percentWithoutIndicator) === 0 || !!Number(percentWithoutIndicator)) {
+    if (
+      (Number(percentWithoutIndicator) === 0 || !!Number(percentWithoutIndicator))
+      && (Number(percentWithoutIndicator) > -1 && Number(percentWithoutIndicator) < 100)
+    ) {
       return true
     } else {
       return false
@@ -88,9 +91,13 @@ export default class OCRController {
   }
 
   private validateValue = (value: string) => {
+    const lastLetterOfValue = value[value.length - 1]
     const valueWithoutDescriptionIndicator = value.slice(0, value.length - 1)
 
-    if (Number(valueWithoutDescriptionIndicator) === 0 || !!Number(valueWithoutDescriptionIndicator)) {
+    if (
+      (Number(valueWithoutDescriptionIndicator) === 0 || !!Number(valueWithoutDescriptionIndicator))
+      && (lastLetterOfValue === 'G' || lastLetterOfValue === 'M' || lastLetterOfValue === 'T' || lastLetterOfValue === 'B')
+      ) {
       return true
     } else {
       return false
@@ -1902,19 +1909,21 @@ export default class OCRController {
 
   private getSaoPaulo = async (isRoutine: boolean) => {
     const url = 'https://old.ix.br/stats/93a90de78413c1557bf553404bea9c14/sp/images/setas01.png'
+    const nameOfFile = 'file_sp.png'
+    const nameOfCropedFile = 'croped_sp.jpg'
 
-    const file = fs.createWriteStream('file.png', { encoding: 'base64' })
+    const file = fs.createWriteStream(nameOfFile, { encoding: 'base64' })
     const request = https.get(url, function(response) {
       response.pipe(file)
     })
 
     await this.sleep(7)
 
-    let filename = path.resolve(__dirname, '..', '..', 'file.png')
-    let cropedFilename =  path.resolve(__dirname, '..', '..', 'croped.jpg')
+    let filename = path.resolve(__dirname, '..', '..', nameOfFile)
+    let cropedFilename =  path.resolve(__dirname, '..', '..', nameOfCropedFile)
     if (process.env.NODE_ENV === 'production') {
-        filename = path.resolve(__dirname, '..', '..', '..', 'file.png')
-        cropedFilename =  path.resolve(__dirname, '..', '..', '..', 'croped.jpg')
+        filename = path.resolve(__dirname, '..', '..', '..', nameOfFile)
+        cropedFilename =  path.resolve(__dirname, '..', '..', '..', nameOfCropedFile)
     }
 
     const cropedInformations = this.getSaoPauloCropedInformations()

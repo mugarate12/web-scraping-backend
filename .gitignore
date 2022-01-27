@@ -1,8 +1,8 @@
 build
 node_modules
 .env
-.png
-.jpg
+*.png
+*.jpg
 temp
 
 file.png
