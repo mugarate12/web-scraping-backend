@@ -21,6 +21,7 @@ const EQUATORIAL_DATA = 'equatorial_data'
 
 const OCR_DATA_TABLE_NAME = 'ocr_data'
 const OCR_PERMISSIONS = 'ocr_permissions'
+const OCR_SERVICES = 'ocr_services'
 
 const ENERGY_PERMISSIONS_TABLE_NAME = 'energy_permissions'
 
@@ -47,6 +48,7 @@ module.exports = {
 
   OCR_DATA_TABLE_NAME,
   OCR_PERMISSIONS,
+  OCR_SERVICES,
 
   ENERGY_PERMISSIONS_TABLE_NAME
 }

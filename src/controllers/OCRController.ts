@@ -13,7 +13,8 @@ const gm = require('gm').subClass({imageMagick: true})
 
 import { 
   ocrDataRepository,
-  ocrPermissionsRepository
+  ocrPermissionsRepository,
+  ocrServicesRepository
 } from './../repositories'
 import { AppError, errorHandler } from '../utils/handleError'
 
@@ -91,7 +92,19 @@ export default class OCRController {
     await this.sleep(5)
   }
 
-  // private 
+  private isServiceAvaible = async (state: string, city: string, pix_name: string) => {
+    const ocrService = await ocrServicesRepository.get({ pix_name, state, city })
+ 
+    if (!ocrService) {
+      return false
+    } else {
+      if (ocrService.able === 1) {
+        return true
+      } else {
+        return false
+      }
+    } 
+  }
 
   private formatValue = (value: string) => {
     let formattedValue = value
@@ -100,14 +113,15 @@ export default class OCRController {
       formattedValue = formattedValue.slice(1, formattedValue.length)
     }
     
-    const lastLetterOfValue = formattedValue[formattedValue.length - 1]
-    if (lastLetterOfValue === ']' || lastLetterOfValue === '|' || lastLetterOfValue === '/') {
+    let lastLetterOfValue = formattedValue[formattedValue.length - 1]
+    if (lastLetterOfValue === ']' || lastLetterOfValue === '|' || lastLetterOfValue === '/' || lastLetterOfValue === '_') {
       formattedValue = formattedValue.slice(0, formattedValue.length - 1)
     }
 
     const haveDotInValue = formattedValue.includes('.')
     const lastLetterIsZero = lastLetterOfValue === '0'
 
+    lastLetterOfValue = formattedValue[formattedValue.length - 1]
     if (lastLetterOfValue === '6' || (haveDotInValue && lastLetterIsZero)) {
       formattedValue = formattedValue.slice(0, formattedValue.length - 1) + 'G'
     }
@@ -1737,6 +1751,11 @@ export default class OCRController {
     for (let index = 0; index < cropedKeys.length; index++) {
       const key = cropedKeys[index]
 
+      const isAvaible = await this.isServiceAvaible(state, city, key)
+      if (!isAvaible) {
+        continue
+      }
+
       await this.cropImage(
         filename,
         cropedFilename,
@@ -1793,6 +1812,11 @@ export default class OCRController {
     for (let index = 0; index < cropedKeys.length; index++) {
       const key = cropedKeys[index]
 
+      const isAvaible = await this.isServiceAvaible(state, city, key)
+      if (!isAvaible) {
+        continue
+      }
+
       await this.cropImage(
         filename,
         cropedFilename,
@@ -1842,6 +1866,11 @@ export default class OCRController {
 
     for (let index = 0; index < cropedKeys.length; index++) {
       const key = cropedKeys[index]
+
+      const isAvaible = await this.isServiceAvaible(state, city, key)
+      if (!isAvaible) {
+        continue
+      }
 
       await this.cropImage(
         filename,
@@ -1957,6 +1986,11 @@ export default class OCRController {
     for (let index = 0; index < cropedKeys.length; index++) {
       const key = cropedKeys[index]
 
+      const isAvaible = await this.isServiceAvaible(state, city, key)
+      if (!isAvaible) {
+        continue
+      }
+
       await this.cropImage(
         filename,
         cropedFilename,
@@ -2071,6 +2105,11 @@ export default class OCRController {
 
     for (let index = 0; index < cropedKeys.length; index++) {
       const key = cropedKeys[index]
+
+      const isAvaible = await this.isServiceAvaible(state, city, key)
+      if (!isAvaible) {
+        continue
+      }
       
       await this.cropImage(
         filename,
@@ -2187,6 +2226,11 @@ export default class OCRController {
     for (let index = 0; index < cropedKeys.length; index++) {
       const key = cropedKeys[index]
 
+      const isAvaible = await this.isServiceAvaible(state, city, key)
+      if (!isAvaible) {
+        continue
+      }
+
       await this.cropImage(
         filename,
         cropedFilename,
@@ -2299,6 +2343,11 @@ export default class OCRController {
     for (let index = 0; index < cropedKeys.length; index++) {
       const key = cropedKeys[index]
 
+      const isAvaible = await this.isServiceAvaible(state, city, key)
+      if (!isAvaible) {
+        continue
+      }
+
       await this.cropImage(
         filename,
         cropedFilename,
@@ -2326,6 +2375,8 @@ export default class OCRController {
       }  
     }
 
+    console.log(formattedInformations);
+
     // const imageDate = await this.getDateInformation(filename, cropedFilename, 156, 10, 238, 457)
 
     await this.updateInDatabase(formattedInformations, state, city, '', isRoutine)
@@ -2348,6 +2399,12 @@ export default class OCRController {
 
     for (let index = 0; index < cropedKeys.length; index++) {
       const key = cropedKeys[index]
+
+      const isAvaible = await this.isServiceAvaible(state, city, key)
+      if (!isAvaible) {
+        continue
+      }
+
       let informations: {
         serviceName: string;
         up_value: string;
@@ -2470,11 +2527,11 @@ export default class OCRController {
     await Promise.all([
       // this.getRJ(false),
       // this.getFortaleza(false),
-      this.getCascavel(false),
+      // this.getCascavel(false),
       // this.getCuritiba(false),
       // this.getLondrina(false),
       // this.getMaringa(false),
-      // this.getPortoAlegre(false),
+      this.getPortoAlegre(false),
       // this.getSaoPaulo(false)
     ])
 
@@ -2499,9 +2556,13 @@ export default class OCRController {
     await this.sleep(70)
 
     await Promise.all([
-      this.getPortoAlegre(true),
+      this.getRJ(true),
+      this.getFortaleza(true),
+      this.getCascavel(true),
       this.getCuritiba(true),
-      // this.getRJ(true),
+      this.getLondrina(true),
+      this.getMaringa(true),
+      this.getPortoAlegre(true),
       this.getSaoPaulo(true)
     ])
   }
