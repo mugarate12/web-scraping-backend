@@ -30,11 +30,68 @@ const client = new vision.ImageAnnotatorClient({
   projectId: "fifth-repeater-335914"
 })
 
+interface formattedInformationInterface {
+  serviceName: string;
+  up_value: string;
+  up_percent: string;
+  down_value: string;
+  down_percent: string
+}
+
+type formattedInformationsInterface = Array<formattedInformationInterface>
 
 export default class OCRController {
   private sleep = (seconds: number) => {
     return new Promise(resolve => setTimeout(resolve, 1000 * seconds))
   }
+
+  private getImage = async (nameOfFile: string, url: string) => {
+    const file = fs.createWriteStream(nameOfFile, { encoding: 'base64' })
+    const request = https.get(url, function(response) {
+      response.pipe(file)
+    })
+
+    await this.sleep(7)
+  }
+
+  private getFilenameAndCropedFilename = (nameOfFile: string, nameOfCropedFile: string) => {
+    let filename = path.resolve(__dirname, '..', '..', nameOfFile)
+    let cropedFilename =  path.resolve(__dirname, '..', '..', nameOfCropedFile)
+    
+    if (process.env.NODE_ENV === 'production') {
+        filename = path.resolve(__dirname, '..', '..', '..', nameOfFile)
+        cropedFilename =  path.resolve(__dirname, '..', '..', '..', nameOfCropedFile)
+    }
+
+    return {
+      filename,
+      cropedFilename
+    }
+  }
+
+  private cropImage = async (
+    filePath: string, 
+    cropFilePath: string,
+    width: number,
+    height: number,
+    initialPointX: number,
+    initialPointY: number
+  ) => {
+    gm(filePath)
+      .crop(
+        width, 
+        height, 
+        initialPointX, 
+        initialPointY
+      )
+      .write(cropFilePath, function(err) {
+        if (err) return console.dir(arguments)
+      })
+
+    await this.sleep(5)
+  }
+
+  // private 
 
   private formatValue = (value: string) => {
     let formattedValue = value
@@ -142,13 +199,45 @@ export default class OCRController {
     return value
   }
 
-  private updateInDatabase = async (dataArray: {
-    serviceName: string;
-    up_value: string;
-    up_percent: string;
-    down_value: string;
-    down_percent: string;
-  }[], state: string, city: string, imageDate: string, updateLastExecution: boolean) => {
+  private setPercentValueToServiceWithColorsParams = (
+    formattedInformations: formattedInformationsInterface,
+    key: string,
+    red: number | undefined | null,
+    green: number | undefined | null,
+    blue: number | undefined | null,
+    type: 'up' | 'down'
+  ) => {
+    if (type === 'up') {
+      formattedInformations.forEach((information, index) => {
+        if (information.serviceName === key) {
+          formattedInformations[index].up_percent = this.formatColorToPercent(
+            red,
+            green,
+            blue
+          )
+        }
+      })
+    } else {
+      formattedInformations.forEach((information, index) => {
+        if (information.serviceName === key) {
+          formattedInformations[index].down_percent = this.formatColorToPercent(
+            red,
+            green,
+            blue
+          )
+        }
+      })
+    }
+  }
+
+  private updateInDatabase = async (
+    dataArray: formattedInformationsInterface, 
+    state: string, city: string, 
+    imageDate: string, 
+    updateLastExecution: boolean
+  ) => {
+    console.log(`OCR --> atualizando no banco de dados: ${state}-${city}`)
+    
     const actualDate = moment().subtract(3, 'hours').format('YYYY-MM-DD HH:mm')
     
     for (let index = 0; index < dataArray.length; index++) {
@@ -197,6 +286,8 @@ export default class OCRController {
       }
 
     }
+
+    console.log(`OCR --> atualizado: ${state}-${city}`)
   }
 
   private getRJCropedInformations = () => {
@@ -1447,52 +1538,31 @@ export default class OCRController {
   }
 
   private getRJ = async (isRoutine: boolean) => {
-    let example = 'https://old.ix.br/stats/3047274b0830e6f8371d5d14b0970580/rj/images/setas01.png'
+    let url = 'https://old.ix.br/stats/3047274b0830e6f8371d5d14b0970580/rj/images/setas01.png'
     const nameOfFile = 'file_rioDeJaneiro.png'
     const nameOfCropedFile = 'croped_rioDeJaneiro.jpg'
 
-    const file = fs.createWriteStream(nameOfFile, { encoding: 'base64' })
-    const request = https.get(example, function(response) {
-      response.pipe(file)
-    })
+    const state = 'RJ'
+    const city = 'Rio de Janeiro'
 
-    await this.sleep(7)
-
-    let filename = path.resolve(__dirname, '..', '..', nameOfFile)
-    let cropedFilename =  path.resolve(__dirname, '..', '..', nameOfCropedFile)
-    if (process.env.NODE_ENV === 'production') {
-        filename = path.resolve(__dirname, '..', '..', '..', nameOfFile)
-        cropedFilename =  path.resolve(__dirname, '..', '..', '..', nameOfCropedFile)
-    }
+    await this.getImage(nameOfFile, url)
+    const { filename, cropedFilename } = this.getFilenameAndCropedFilename(nameOfFile, nameOfCropedFile)
     
     const cropedInformations = this.getRJCropedInformations()
     const cropedKeys = Object.keys(cropedInformations)
-    let formattedInformations: {
-      serviceName: string;
-      up_value: string;
-      up_percent: string;
-      down_value: string;
-      down_percent: string;
-    }[] = []
+    let formattedInformations: formattedInformationsInterface = []
 
     for (let index = 0; index < cropedKeys.length; index++) {
       const key = cropedKeys[index]
 
-      await gm(filename)
-        .crop(
-          cropedInformations[key].width, 
-          cropedInformations[key].height, 
-          cropedInformations[key].initialPointX, 
-          cropedInformations[key].initialPointY
-          )
-        .write(cropedFilename, function(err) {
-          if (err) return console.dir(arguments)
-          // console.log('OCR --> image croped')
-        })
-
-      await this.sleep(5)
-      // console.log('OCR --> image croped timming ok')
-      // console.log(key)
+      await this.cropImage(
+        filename,
+        cropedFilename,
+        cropedInformations[key].width, 
+        cropedInformations[key].height, 
+        cropedInformations[key].initialPointX, 
+        cropedInformations[key].initialPointY
+      )
 
       try {
         const [ result ] = await client.textDetection(cropedFilename)
@@ -1520,105 +1590,35 @@ export default class OCRController {
       initialPointY: 456
     }
 
-    gm(filename)
-      .crop(
-        dataCrop.width, 
-        dataCrop.height, 
-        dataCrop.initialPointX, 
-        dataCrop.initialPointY
-        )
-      .write(cropedFilename, function(err) {
-        if (err) return console.dir(arguments)
-        // console.log('OCR --> created')
-      })
-
-    await this.sleep(5)
-    // console.log('OCR --> timming  date ok')
-    // let imageDate = ''
-
-    // try {
-    //   const [ result ] = await client.textDetection(cropedFilename)
-    //   const texts = result.textAnnotations
-    //   let arrayString: Array<string> = []
-
-    //   if (!!texts) {
-    //     texts.forEach(text => {
-    //       // console.log(text.description)
-    //       arrayString.push(String(text.description))
-    //     })
-    //   }
-
-    //   // console.log(arrayString.slice(1, arrayString.length))
-    //   arrayString.slice(1, arrayString.length).forEach((content, index) => {
-    //     if (index === 0) {
-    //       imageDate += content
-    //     } 
-
-    //     if (index === 1) {
-    //       imageDate += ` ${content}`
-    //     }
-    //   })
-
-    // } catch (error) {
-    //   console.log(error)
-    // }
-
-
-    // if (imageDate.includes('(')) {
-    //   imageDate = imageDate.slice(0, imageDate.indexOf('('))
-    // }
-    console.log('OCR --> atualizando no banco de dados - Rio de Janeiro')
-    await this.updateInDatabase(formattedInformations, 'RJ', 'Rio de Janeiro', '', isRoutine)
-    console.log('OCR --> atualizado! - Rio de Janeiro')
+    await this.updateInDatabase(formattedInformations, state, city, '', isRoutine)
   }
 
   private getFortaleza = async (isRoutine: boolean) => {
-    let fortalezaURL = 'https://old.ix.br/stats/cbff2f8aa74c6b3a283048e31b56576d/ce/images/setas01.png'
+    let url = 'https://old.ix.br/stats/cbff2f8aa74c6b3a283048e31b56576d/ce/images/setas01.png'
     const nameOfFile = 'file_fortaleza.png'
     const nameOfCropedFile = 'croped_fortaleza.jpg'
 
-    const file = fs.createWriteStream(nameOfFile, { encoding: 'base64' })
-    const request = https.get(fortalezaURL, function(response) {
-      response.pipe(file)
-    })
+    const state = 'CE'
+    const city = 'Fortaleza'
 
-    await this.sleep(7)
-    
-    let filename = path.resolve(__dirname, '..', '..', nameOfFile)
-    let cropedFilename =  path.resolve(__dirname, '..', '..', nameOfCropedFile)
-    if (process.env.NODE_ENV === 'production') {
-        filename = path.resolve(__dirname, '..', '..', '..', nameOfFile)
-        cropedFilename =  path.resolve(__dirname, '..', '..', '..', nameOfCropedFile)
-    }
+    await this.getImage(nameOfFile, url)
+    const { filename, cropedFilename } = this.getFilenameAndCropedFilename(nameOfFile, nameOfCropedFile)
 
     const cropedInformations = this.getFortalezaCropedInformations()
     const cropedKeys = Object.keys(cropedInformations)
-    let formattedInformations: {
-      serviceName: string;
-      up_value: string;
-      up_percent: string;
-      down_value: string;
-      down_percent: string;
-    }[] = []
+    let formattedInformations: formattedInformationsInterface = []
 
     for (let index = 0; index < cropedKeys.length; index++) {
       const key = cropedKeys[index]
 
-      await gm(filename)
-        .crop(
-          cropedInformations[key].width, 
-          cropedInformations[key].height, 
-          cropedInformations[key].initialPointX, 
-          cropedInformations[key].initialPointY
-          )
-        .write(cropedFilename, function(err) {
-          if (err) return console.dir(arguments)
-          // console.log('OCR --> image croped')
-        })
-
-      await this.sleep(5)
-        // console.log('OCR --> image croped timming ok')
-        // console.log(key)
+      await this.cropImage(
+        filename,
+        cropedFilename,
+        cropedInformations[key].width, 
+        cropedInformations[key].height, 
+        cropedInformations[key].initialPointX, 
+        cropedInformations[key].initialPointY
+      )
 
       try {
         const [ result ] = await client.textDetection(cropedFilename)
@@ -1633,63 +1633,42 @@ export default class OCRController {
   
         const information = this.getInformationFortaleza(arrayString.slice(1, arrayString.length), key)
         formattedInformations.push(information)
-        
       } catch (error) {
         console.log(error)
       }
     }
     
-    let imageDate = await this.getDateInformation(filename, cropedFilename, 165, 12, 454, 456)
+    // let imageDate = await this.getDateInformation(filename, cropedFilename, 165, 12, 454, 456)
 
-    console.log('OCR --> atualizando no banco de dados - Fortaleza')
-    await this.updateInDatabase(formattedInformations, 'CE', 'Fortaleza', imageDate, isRoutine)
-    console.log('OCR --> atualizado! - Fortaleza')
+    await this.updateInDatabase(formattedInformations, state, city, '', isRoutine)
   }
 
   private getCascavel = async (isRoutine: boolean) => {
-    const cascavelURL = 'https://old.ix.br/stats/56e371cdae2b4155300bf05876654a02/cac/images/setas01.png'
+    const url = 'https://old.ix.br/stats/56e371cdae2b4155300bf05876654a02/cac/images/setas01.png'
     const nameOfFile = 'file_cascavel.png'
     const nameOfCropedFile = 'croped_cascavel.jpg'
 
-    const file = fs.createWriteStream(nameOfFile, { encoding: 'base64' })
-    const request = https.get(cascavelURL, function(response) {
-      response.pipe(file)
-    })
+    const state = 'PR'
+    const city = 'Cascavel'
 
-    await this.sleep(7)
-
-    let filename = path.resolve(__dirname, '..', '..', nameOfFile)
-    let cropedFilename =  path.resolve(__dirname, '..', '..', nameOfCropedFile)
-    if (process.env.NODE_ENV === 'production') {
-        filename = path.resolve(__dirname, '..', '..', '..', nameOfFile)
-        cropedFilename =  path.resolve(__dirname, '..', '..', '..', nameOfCropedFile)
-    }
+    await this.getImage(nameOfFile, url)
+    const { filename, cropedFilename } = this.getFilenameAndCropedFilename(nameOfFile, nameOfCropedFile)
 
     const cropedInformations = this.getCascavelCropedInformations()
     const cropedKeys = Object.keys(cropedInformations)
-    let formattedInformations: {
-      serviceName: string;
-      up_value: string;
-      up_percent: string;
-      down_value: string;
-      down_percent: string;
-    }[] = []
+    let formattedInformations: formattedInformationsInterface = []
 
     for (let index = 0; index < cropedKeys.length; index++) {
       const key = cropedKeys[index]
 
-      await gm(filename)
-        .crop(
-          cropedInformations[key].width, 
-          cropedInformations[key].height, 
-          cropedInformations[key].initialPointX, 
-          cropedInformations[key].initialPointY
-          )
-        .write(cropedFilename, function(err) {
-          if (err) return console.dir(arguments)
-        })
-
-      await this.sleep(5)
+      await this.cropImage(
+        filename,
+        cropedFilename,
+        cropedInformations[key].width, 
+        cropedInformations[key].height, 
+        cropedInformations[key].initialPointX, 
+        cropedInformations[key].initialPointY
+      )
 
       try {
         const [ result ] = await client.textDetection(cropedFilename)
@@ -1709,11 +1688,9 @@ export default class OCRController {
       }  
     }
 
-    let imageDate = await this.getDateInformation(filename, cropedFilename, 149, 15, 114, 3)
+    // let imageDate = await this.getDateInformation(filename, cropedFilename, 149, 15, 114, 3)
    
-    console.log('OCR --> atualizando no banco de dados - Cascavel')
-    await this.updateInDatabase(formattedInformations, 'PR', 'Cascavel', imageDate, isRoutine)
-    console.log('OCR --> atualizado! - Cascavel')
+    await this.updateInDatabase(formattedInformations, state, city, '', isRoutine)
   }
 
   private getCuritiba = async (isRoutine: boolean) => {
@@ -1721,45 +1698,27 @@ export default class OCRController {
     const nameOfFile = 'file_curitiba.png'
     const nameOfCropedFile = 'croped_curitiba.jpg'
 
-    const file = fs.createWriteStream(nameOfFile, { encoding: 'base64' })
-    const request = https.get(url, function(response) {
-      response.pipe(file)
-    })
+    const state = 'PR'
+    const city = 'Curitiba'
 
-    await this.sleep(7)
-
-    let filename = path.resolve(__dirname, '..', '..', nameOfFile)
-    let cropedFilename =  path.resolve(__dirname, '..', '..', nameOfCropedFile)
-    if (process.env.NODE_ENV === 'production') {
-        filename = path.resolve(__dirname, '..', '..', '..', nameOfFile)
-        cropedFilename =  path.resolve(__dirname, '..', '..', '..', nameOfCropedFile)
-    }
+    await this.getImage(nameOfFile, url)
+    const { filename, cropedFilename } = this.getFilenameAndCropedFilename(nameOfFile, nameOfCropedFile)
 
     const cropedInformations = this.getCuritibaCropedInformations()
     const cropedKeys = Object.keys(cropedInformations)
-    let formattedInformations: {
-      serviceName: string;
-      up_value: string;
-      up_percent: string;
-      down_value: string;
-      down_percent: string;
-    }[] = []
+    let formattedInformations: formattedInformationsInterface = []
 
     for (let index = 0; index < cropedKeys.length; index++) {
       const key = cropedKeys[index]
 
-      await gm(filename)
-        .crop(
-          cropedInformations[key].width, 
-          cropedInformations[key].height, 
-          cropedInformations[key].initialPointX, 
-          cropedInformations[key].initialPointY
-          )
-        .write(cropedFilename, function(err) {
-          if (err) return console.dir(arguments)
-        })
-
-      await this.sleep(5)
+      await this.cropImage(
+        filename,
+        cropedFilename,
+        cropedInformations[key].width, 
+        cropedInformations[key].height, 
+        cropedInformations[key].initialPointX, 
+        cropedInformations[key].initialPointY
+      )
 
       try {
         const [ result ] = await client.textDetection(cropedFilename)
@@ -1779,18 +1738,15 @@ export default class OCRController {
       }
 
       // up percent
-      await gm(filename)
-        .crop(
-          cropedInformations[key].colors.UP.width, 
-          cropedInformations[key].colors.UP.height, 
-          cropedInformations[key].colors.UP.initialPointX, 
-          cropedInformations[key].colors.UP.initialPointY
-          )
-        .write(cropedFilename, function(err) {
-          if (err) return console.dir(arguments)
-        })
-
-      await this.sleep(5)
+      // refactor to adaptate diffence to up value in graph and down value in graph
+      await this.cropImage(
+        filename,
+        cropedFilename,
+        cropedInformations[key].colors.UP.width, 
+        cropedInformations[key].colors.UP.height, 
+        cropedInformations[key].colors.UP.initialPointX, 
+        cropedInformations[key].colors.UP.initialPointY
+      )
 
       try {
         const [ result ] = await client.imageProperties(cropedFilename)
@@ -1800,15 +1756,14 @@ export default class OCRController {
           const colorDetected = colors[0].color
 
           if (!!colorDetected) {
-            formattedInformations.forEach((information, index) => {
-              if (information.serviceName === key) {
-                formattedInformations[index].up_percent = this.formatColorToPercent(
-                  colorDetected.red,
-                  colorDetected.green,
-                  colorDetected.blue
-                )
-              }
-            })
+            this.setPercentValueToServiceWithColorsParams(
+              formattedInformations, 
+              key,
+              colorDetected.red,
+              colorDetected.green,
+              colorDetected.blue,
+              'up'
+            )
           }
         }
       } catch (error) {
@@ -1816,18 +1771,15 @@ export default class OCRController {
       }
 
       // down percent
-      await gm(filename)
-        .crop(
-          cropedInformations[key].colors.DOWN.width, 
-          cropedInformations[key].colors.DOWN.height, 
-          cropedInformations[key].colors.DOWN.initialPointX, 
-          cropedInformations[key].colors.DOWN.initialPointY
-          )
-        .write(cropedFilename, function(err) {
-          if (err) return console.dir(arguments)
-        })
-
-      await this.sleep(5)
+      // refactor to adaptate diffence to up value in graph and down value in graph
+      await this.cropImage(
+        filename,
+        cropedFilename,
+        cropedInformations[key].colors.DOWN.width, 
+        cropedInformations[key].colors.DOWN.height, 
+        cropedInformations[key].colors.DOWN.initialPointX, 
+        cropedInformations[key].colors.DOWN.initialPointY
+      )
 
       try {
         const [ result ] = await client.imageProperties(cropedFilename)
@@ -1837,15 +1789,14 @@ export default class OCRController {
           const colorDetected = colors[0].color
 
           if (!!colorDetected) {
-            formattedInformations.forEach((information, index) => {
-              if (information.serviceName === key) {
-                formattedInformations[index].down_percent = this.formatColorToPercent(
-                  colorDetected.red,
-                  colorDetected.green,
-                  colorDetected.blue
-                )
-              }
-            })
+            this.setPercentValueToServiceWithColorsParams(
+              formattedInformations, 
+              key,
+              colorDetected.red,
+              colorDetected.green,
+              colorDetected.blue,
+              'down'
+            )
           }
         }
       } catch (error) {
@@ -1856,9 +1807,7 @@ export default class OCRController {
     // const imageDate = await this.getDateInformation(filename, cropedFilename, 161, 10, 236, 457)
     // console.log(imageDate)
 
-    console.log('OCR --> atualizando no banco de dados - Curitiba')
-    await this.updateInDatabase(formattedInformations, 'PR', 'Curitiba', '', isRoutine)
-    console.log('OCR --> atualizado! - Curitiba')
+    await this.updateInDatabase(formattedInformations, state, city, '', isRoutine)
   }
 
   private getLondrina = async (isRoutine: boolean) => {
@@ -1866,45 +1815,27 @@ export default class OCRController {
     const nameOfFile = 'file_londrina.png'
     const nameOfCropedFile = 'croped_londrina.jpg'
 
-    const file = fs.createWriteStream(nameOfFile, { encoding: 'base64' })
-    const request = https.get(url, function(response) {
-      response.pipe(file)
-    })
+    const state = 'PR'
+    const city = 'Londrina'
 
-    await this.sleep(7)
-
-    let filename = path.resolve(__dirname, '..', '..', nameOfFile)
-    let cropedFilename =  path.resolve(__dirname, '..', '..', nameOfCropedFile)
-    if (process.env.NODE_ENV === 'production') {
-        filename = path.resolve(__dirname, '..', '..', '..', nameOfFile)
-        cropedFilename =  path.resolve(__dirname, '..', '..', '..', nameOfCropedFile)
-    }
+    await this.getImage(nameOfFile, url)
+    const { filename, cropedFilename } = this.getFilenameAndCropedFilename(nameOfFile, nameOfCropedFile)
 
     const cropedInformations = this.getLondrinaCropedInformations()
     const cropedKeys = Object.keys(cropedInformations)
-    let formattedInformations: {
-      serviceName: string;
-      up_value: string;
-      up_percent: string;
-      down_value: string;
-      down_percent: string;
-    }[] = []
+    let formattedInformations: formattedInformationsInterface = []
 
     for (let index = 0; index < cropedKeys.length; index++) {
       const key = cropedKeys[index]
-
-      await gm(filename)
-        .crop(
-          cropedInformations[key].width, 
+      
+      await this.cropImage(
+        filename,
+        cropedFilename,
+        cropedInformations[key].width, 
           cropedInformations[key].height, 
           cropedInformations[key].initialPointX, 
           cropedInformations[key].initialPointY
-          )
-        .write(cropedFilename, function(err) {
-          if (err) return console.dir(arguments)
-        })
-
-      await this.sleep(5)
+      )
 
       try {
         const [ result ] = await client.textDetection(cropedFilename)
@@ -1999,11 +1930,9 @@ export default class OCRController {
 
     // console.log(formattedInformations)
 
-    let imageDate = await this.getDateInformation(filename, cropedFilename, 150, 14, 115, 4)    
+    // let imageDate = await this.getDateInformation(filename, cropedFilename, 150, 14, 115, 4)    
 
-    console.log('OCR --> atualizando no banco de dados - Londrina')
-    await this.updateInDatabase(formattedInformations, 'PR', 'Londrina', imageDate, isRoutine)
-    console.log('OCR --> atualizado! - Londrina')
+    await this.updateInDatabase(formattedInformations, state, city, '', isRoutine)
   }
 
   private getMaringa = async (isRoutine: boolean) => {
@@ -2011,45 +1940,27 @@ export default class OCRController {
     const nameOfFile = 'file_maringa.png'
     const nameOfCropedFile = 'croped_maringa.jpg'
 
-    const file = fs.createWriteStream(nameOfFile, { encoding: 'base64' })
-    const request = https.get(url, function(response) {
-      response.pipe(file)
-    })
+    const state = 'PR'
+    const city = 'Maringa'
 
-    await this.sleep(7)
-
-    let filename = path.resolve(__dirname, '..', '..', nameOfFile)
-    let cropedFilename =  path.resolve(__dirname, '..', '..', nameOfCropedFile)
-    if (process.env.NODE_ENV === 'production') {
-        filename = path.resolve(__dirname, '..', '..', '..', nameOfFile)
-        cropedFilename =  path.resolve(__dirname, '..', '..', '..', nameOfCropedFile)
-    }
+    await this.getImage(nameOfFile, url)
+    const { filename, cropedFilename } = this.getFilenameAndCropedFilename(nameOfFile, nameOfCropedFile)
 
     const cropedInformations = this.getMaringaCropedInformations()
     const cropedKeys = Object.keys(cropedInformations)
-    let formattedInformations: {
-      serviceName: string;
-      up_value: string;
-      up_percent: string;
-      down_value: string;
-      down_percent: string;
-    }[] = []
+    let formattedInformations: formattedInformationsInterface = []
 
     for (let index = 0; index < cropedKeys.length; index++) {
       const key = cropedKeys[index]
 
-      await gm(filename)
-        .crop(
-          cropedInformations[key].width, 
-          cropedInformations[key].height, 
-          cropedInformations[key].initialPointX, 
-          cropedInformations[key].initialPointY
-          )
-        .write(cropedFilename, function(err) {
-          if (err) return console.dir(arguments)
-        })
-
-      await this.sleep(5)
+      await this.cropImage(
+        filename,
+        cropedFilename,
+        cropedInformations[key].width, 
+        cropedInformations[key].height, 
+        cropedInformations[key].initialPointX, 
+        cropedInformations[key].initialPointY
+      )
 
       try {
         const [ result ] = await client.textDetection(cropedFilename)
@@ -2071,9 +1982,7 @@ export default class OCRController {
 
     const imageDate = await this.getDateInformation(filename, cropedFilename, 147, 16, 112, 4)
 
-    console.log('OCR --> atualizando no banco de dados - Maringa')
-    await this.updateInDatabase(formattedInformations, 'PR', 'Maringa', imageDate, isRoutine)
-    console.log('OCR --> atualizado! - Maringa')
+    await this.updateInDatabase(formattedInformations, state, city, imageDate, isRoutine)
   }
 
   private getPortoAlegre = async (isRoutine: boolean) => {
@@ -2081,45 +1990,27 @@ export default class OCRController {
     const nameOfFile = 'file_portoalegre.png'
     const nameOfCropedFile = 'croped_portoalegre.jpg'
 
-    const file = fs.createWriteStream(nameOfFile, { encoding: 'base64' })
-    const request = https.get(url, function(response) {
-      response.pipe(file)
-    })
+    const state = 'RS'
+    const city = 'Porto Alegre'
 
-    await this.sleep(7)
-
-    let filename = path.resolve(__dirname, '..', '..', nameOfFile)
-    let cropedFilename =  path.resolve(__dirname, '..', '..', nameOfCropedFile)
-    if (process.env.NODE_ENV === 'production') {
-        filename = path.resolve(__dirname, '..', '..', '..', nameOfFile)
-        cropedFilename =  path.resolve(__dirname, '..', '..', '..', nameOfCropedFile)
-    }
+    await this.getImage(nameOfFile, url)
+    const { filename, cropedFilename } = this.getFilenameAndCropedFilename(nameOfFile, nameOfCropedFile)
 
     const cropedInformations = this.getPortoAlegreCropedInformations()
     const cropedKeys = Object.keys(cropedInformations)
-    let formattedInformations: {
-      serviceName: string;
-      up_value: string;
-      up_percent: string;
-      down_value: string;
-      down_percent: string;
-    }[] = []
+    let formattedInformations: formattedInformationsInterface = []
 
     for (let index = 0; index < cropedKeys.length; index++) {
       const key = cropedKeys[index]
 
-      await gm(filename)
-        .crop(
-          cropedInformations[key].width, 
-          cropedInformations[key].height, 
-          cropedInformations[key].initialPointX, 
-          cropedInformations[key].initialPointY
-          )
-        .write(cropedFilename, function(err) {
-          if (err) return console.dir(arguments)
-        })
-
-      await this.sleep(5)
+      await this.cropImage(
+        filename,
+        cropedFilename,
+        cropedInformations[key].width, 
+        cropedInformations[key].height, 
+        cropedInformations[key].initialPointX, 
+        cropedInformations[key].initialPointY
+      )
 
       try {
         const [ result ] = await client.textDetection(cropedFilename)
@@ -2141,9 +2032,7 @@ export default class OCRController {
 
     // const imageDate = await this.getDateInformation(filename, cropedFilename, 156, 10, 238, 457)
 
-    console.log('OCR --> atualizando no banco de dados - Porto Alegre')
-    await this.updateInDatabase(formattedInformations, 'RS', 'Porto Alegre', '', isRoutine)
-    console.log('OCR --> atualizado! - Porto Alegre')
+    await this.updateInDatabase(formattedInformations, state, city, '', isRoutine)
   }
 
   private getSaoPaulo = async (isRoutine: boolean) => {
@@ -2151,29 +2040,15 @@ export default class OCRController {
     const nameOfFile = 'file_sp.png'
     const nameOfCropedFile = 'croped_sp.jpg'
 
-    const file = fs.createWriteStream(nameOfFile, { encoding: 'base64' })
-    const request = https.get(url, function(response) {
-      response.pipe(file)
-    })
+    const state = 'SP'
+    const city = 'São Paulo'
 
-    await this.sleep(7)
-
-    let filename = path.resolve(__dirname, '..', '..', nameOfFile)
-    let cropedFilename =  path.resolve(__dirname, '..', '..', nameOfCropedFile)
-    if (process.env.NODE_ENV === 'production') {
-        filename = path.resolve(__dirname, '..', '..', '..', nameOfFile)
-        cropedFilename =  path.resolve(__dirname, '..', '..', '..', nameOfCropedFile)
-    }
+    await this.getImage(nameOfFile, url)
+    const { filename, cropedFilename } = this.getFilenameAndCropedFilename(nameOfFile, nameOfCropedFile)
 
     const cropedInformations = this.getSaoPauloCropedInformations()
     const cropedKeys = Object.keys(cropedInformations)
-    let formattedInformations: {
-      serviceName: string;
-      up_value: string;
-      up_percent: string;
-      down_value: string;
-      down_percent: string;
-    }[] = []
+    let formattedInformations: formattedInformationsInterface = []
 
     for (let index = 0; index < cropedKeys.length; index++) {
       const key = cropedKeys[index]
@@ -2193,18 +2068,27 @@ export default class OCRController {
 
       informations['serviceName'] = key
 
-      gm(filename)
-        .crop(
-          cropedInformations[key]['UP'].width, 
-          cropedInformations[key]['UP'].height, 
-          cropedInformations[key]['UP'].initialPointX, 
-          cropedInformations[key]['UP'].initialPointY
-          )
-        .write(cropedFilename, function(err) {
-          if (err) return console.dir(arguments)
-        })
+      await this.cropImage(
+        filename,
+        cropedFilename,
+        cropedInformations[key]['UP'].width, 
+        cropedInformations[key]['UP'].height, 
+        cropedInformations[key]['UP'].initialPointX, 
+        cropedInformations[key]['UP'].initialPointY
+      )
+
+      // gm(filename)
+      //   .crop(
+      //     cropedInformations[key]['UP'].width, 
+      //     cropedInformations[key]['UP'].height, 
+      //     cropedInformations[key]['UP'].initialPointX, 
+      //     cropedInformations[key]['UP'].initialPointY
+      //     )
+      //   .write(cropedFilename, function(err) {
+      //     if (err) return console.dir(arguments)
+      //   })
         
-      await this.sleep(5)
+      // await this.sleep(5)
       try {
         const [ result ] = await client.textDetection(cropedFilename)
         const texts = result.textAnnotations
@@ -2226,18 +2110,27 @@ export default class OCRController {
         console.log(error)
       }
       
-      gm(filename)
-        .crop(
-          cropedInformations[key]['DOWN'].width, 
-          cropedInformations[key]['DOWN'].height, 
-          cropedInformations[key]['DOWN'].initialPointX, 
-          cropedInformations[key]['DOWN'].initialPointY
-          )
-        .write(cropedFilename, function(err) {
-          if (err) return console.dir(arguments)
-        })
+      await this.cropImage(
+        filename,
+        cropedFilename,
+        cropedInformations[key]['DOWN'].width, 
+        cropedInformations[key]['DOWN'].height, 
+        cropedInformations[key]['DOWN'].initialPointX, 
+        cropedInformations[key]['DOWN'].initialPointY
+      )
       
-      await this.sleep(5)
+      // gm(filename)
+      //   .crop(
+      //     cropedInformations[key]['DOWN'].width, 
+      //     cropedInformations[key]['DOWN'].height, 
+      //     cropedInformations[key]['DOWN'].initialPointX, 
+      //     cropedInformations[key]['DOWN'].initialPointY
+      //     )
+      //   .write(cropedFilename, function(err) {
+      //     if (err) return console.dir(arguments)
+      //   })
+      
+      // await this.sleep(5)
 
       try {
         const [ result ] = await client.textDetection(cropedFilename)
@@ -2265,9 +2158,7 @@ export default class OCRController {
 
     // let imageDate = await this.getDateInformation(filename, cropedFilename, 158, 11, 469, 458)
     
-    console.log('OCR --> atualizando no banco de dados - São Paulo (SP)')
-    await this.updateInDatabase(formattedInformations, 'SP', 'São Paulo', '', isRoutine)
-    console.log('OCR --> atualizado! - São Paulo (SP)')
+    await this.updateInDatabase(formattedInformations, state, city, '', isRoutine)
   }
 
   public updateManually = async (req: Request, res: Response) => {
@@ -2284,10 +2175,10 @@ export default class OCRController {
       // this.getRJ(false),
       // this.getFortaleza(false),
       // this.getCascavel(false),
-      this.getCuritiba(false),
+      // this.getCuritiba(false),
       // this.getLondrina(false),
       // this.getMaringa(false),
-      // this.getPortoAlegre(false),
+      this.getPortoAlegre(false),
       // this.getSaoPaulo(false)
     ])
 
