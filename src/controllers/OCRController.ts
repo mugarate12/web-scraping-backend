@@ -455,13 +455,41 @@ export default class OCRController {
         width: 106,
         height: 100,
         initialPointX: 43,
-        initialPointY: 86
+        initialPointY: 86,
+        colors: {
+          UP: {
+            width: 4,
+            height: 4,
+            initialPointX: 73,
+            initialPointY: 85,
+          },
+          DOWN: {
+            width: 4,
+            height: 4,
+            initialPointX: 148,
+            initialPointY: 176,
+          }
+        }
       },
       DIPELNET: {
         width: 117,
         height: 100,
         initialPointX: 199,
-        initialPointY: 86
+        initialPointY: 86,
+        colors: {
+          UP: {
+            width: 4,
+            height: 4,
+            initialPointX: 293,
+            initialPointY: 86,
+          },
+          DOWN: {
+            width: 4,
+            height: 4,
+            initialPointX: 218,
+            initialPointY: 178,
+          }
+        }
       },
     }
 
@@ -470,18 +498,46 @@ export default class OCRController {
 
   private getCuritibaCropedInformations = () => {
     const services = {
-      // OI: {
-      //   width: 100,
-      //   height: 85,
-      //   initialPointX: 36,
-      //   initialPointY: 93
-      // },
-      // NovaFibra: {
-      //   width: 96,
-      //   height: 85,
-      //   initialPointX: 267,
-      //   initialPointY: 93
-      // },
+      OI: {
+        width: 100,
+        height: 85,
+        initialPointX: 36,
+        initialPointY: 93,
+        colors: {
+          UP: {
+            width: 4,
+            height: 4,
+            initialPointX: 89,
+            initialPointY: 104,
+          },
+          DOWN: {
+            width: 4,
+            height: 4,
+            initialPointX: 80,
+            initialPointY: 163,
+          }
+        }
+      },
+      NovaFibra: {
+        width: 96,
+        height: 85,
+        initialPointX: 267,
+        initialPointY: 93,
+        colors: {
+          UP: {
+            width: 4,
+            height: 4,
+            initialPointX: 320,
+            initialPointY: 104,
+          },
+          DOWN: {
+            width: 4,
+            height: 4,
+            initialPointX: 311,
+            initialPointY: 163,
+          }
+        }
+      },
       CenturyLink: {
         width: 105,
         height: 85,
@@ -502,36 +558,106 @@ export default class OCRController {
           }
         }
       },
-      // CELEPAR: {
-      //   width: 105,
-      //   height: 85,
-      //   initialPointX: 637,
-      //   initialPointY: 93
-      // },
-      // UFPR: {
-      //   width: 115,
-      //   height: 87,
-      //   initialPointX: 37,
-      //   initialPointY: 283
-      // },
-      // GVT: {
-      //   width: 108,
-      //   height: 87,
-      //   initialPointX: 170,
-      //   initialPointY: 283
-      // },
-      // COPEL: {
-      //   width: 108,
-      //   height: 87,
-      //   initialPointX: 320,
-      //   initialPointY: 283
-      // },
-      // COMMCORP: {
-      //   width: 110,
-      //   height: 87,
-      //   initialPointX: 465,
-      //   initialPointY: 283
-      // },
+      CELEPAR: {
+        width: 105,
+        height: 85,
+        initialPointX: 637,
+        initialPointY: 93,
+        colors: {
+          UP: {
+            width: 4,
+            height: 4,
+            initialPointX: 685,
+            initialPointY: 104,
+          },
+          DOWN: {
+            width: 4,
+            height: 4,
+            initialPointX: 675,
+            initialPointY: 163,
+          }
+        }
+      },
+      UFPR: {
+        width: 115,
+        height: 87,
+        initialPointX: 37,
+        initialPointY: 283,
+        colors: {
+          UP: {
+            width: 4,
+            height: 4,
+            initialPointX: 90,
+            initialPointY: 355,
+          },
+          DOWN: {
+            width: 4,
+            height: 4,
+            initialPointX: 80,
+            initialPointY: 306,
+          }
+        }
+      },
+      GVT: {
+        width: 108,
+        height: 87,
+        initialPointX: 170,
+        initialPointY: 283,
+        colors: {
+          UP: {
+            width: 4,
+            height: 4,
+            initialPointX: 222,
+            initialPointY: 355,
+          },
+          DOWN: {
+            width: 4,
+            height: 4,
+            initialPointX: 213,
+            initialPointY: 306,
+          }
+        }
+      },
+      COPEL: {
+        width: 108,
+        height: 87,
+        initialPointX: 320,
+        initialPointY: 283,
+        colors: {
+          UP: {
+            width: 4,
+            height: 4,
+            initialPointX: 372,
+            initialPointY: 355,
+          },
+          DOWN: {
+            width: 4,
+            height: 4,
+            initialPointX: 363,
+            initialPointY: 306,
+          }
+        }
+      },
+      COMMCORP: {
+        width: 110,
+        height: 87,
+        initialPointX: 465,
+        initialPointY: 283,
+        colors: {
+          UP: {
+            width: 4,
+            height: 4,
+            initialPointX: 90,
+            initialPointY: 355,
+          },
+          DOWN: {
+            width: 4,
+            height: 4,
+            initialPointX: 80,
+            initialPointY: 306,
+          }
+        }
+      },
       DBUG: {
         width: 105,
         height: 87,
@@ -541,14 +667,14 @@ export default class OCRController {
           UP: {
             width: 4,
             height: 4,
-            initialPointX: 674,
-            initialPointY: 296,
+            initialPointX: 682,
+            initialPointY: 355,
           },
           DOWN: {
             width: 4,
             height: 4,
-            initialPointX: 683,
-            initialPointY: 360,
+            initialPointX: 673,
+            initialPointY: 306,
           }
         }
       }
@@ -579,18 +705,46 @@ export default class OCRController {
           }
         }
       },
-      // SERCOMTEL: {
-      //   width: 65,
-      //   height: 103,
-      //   initialPointX: 231,
-      //   initialPointY: 86
-      // },
-      // UEL: {
-      //   width: 59,
-      //   height: 106,
-      //   initialPointX: 238,
-      //   initialPointY: 229
-      // }
+      SERCOMTEL: {
+        width: 65,
+        height: 103,
+        initialPointX: 231,
+        initialPointY: 86,
+        colors: {
+          UP: {
+            width: 4,
+            height: 4,
+            initialPointX: 291,
+            initialPointY: 85,
+          },
+          DOWN: {
+            width: 4,
+            height: 4,
+            initialPointX: 218,
+            initialPointY: 178,
+          }
+        }
+      },
+      UEL: {
+        width: 59,
+        height: 106,
+        initialPointX: 238,
+        initialPointY: 229,
+        colors: {
+          UP: {
+            width: 4,
+            height: 4,
+            initialPointX: 293,
+            initialPointY: 322,
+          },
+          DOWN: {
+            width: 4,
+            height: 4,
+            initialPointX: 218,
+            initialPointY: 230,
+          }
+        }
+      }
     }
 
     return services
@@ -602,13 +756,41 @@ export default class OCRController {
         width: 201,
         height: 62,
         initialPointX: 76,
-        initialPointY: 60
+        initialPointY: 60,
+        colors: {
+          UP: {
+            width: 4,
+            height: 4,
+            initialPointX: 87,
+            initialPointY: 77,
+          },
+          DOWN: {
+            width: 4,
+            height: 4,
+            initialPointX: 259,
+            initialPointY: 87,
+          }
+        }
       },
       VSX: {
         width: 201,
         height: 62,
         initialPointX: 76,
-        initialPointY: 60
+        initialPointY: 60,
+        colors: {
+          UP: {
+            width: 4,
+            height: 4,
+            initialPointX: 259,
+            initialPointY: 87,
+          },
+          DOWN: {
+            width: 4,
+            height: 4,
+            initialPointX: 85,
+            initialPointY: 77,
+          }
+        }
       },
     }
 
@@ -1686,7 +1868,71 @@ export default class OCRController {
       } catch (error) {
         console.log(error)
       }  
+
+      await this.cropImage(
+        filename,
+        cropedFilename,
+        cropedInformations[key].colors.UP.width, 
+        cropedInformations[key].colors.UP.height, 
+        cropedInformations[key].colors.UP.initialPointX, 
+        cropedInformations[key].colors.UP.initialPointY
+      )
+
+      try {
+        const [ result ] = await client.imageProperties(cropedFilename)
+        const colors = result.imagePropertiesAnnotation?.dominantColors?.colors
+
+        if (!!colors) {
+          const colorDetected = colors[0].color
+
+          if (!!colorDetected) {
+            this.setPercentValueToServiceWithColorsParams(
+              formattedInformations, 
+              key,
+              colorDetected.red,
+              colorDetected.green,
+              colorDetected.blue,
+              'up'
+            )
+          }
+        }
+      } catch (error) {
+        console.log(error)
+      }
+
+      await this.cropImage(
+        filename,
+        cropedFilename,
+        cropedInformations[key].colors.DOWN.width, 
+        cropedInformations[key].colors.DOWN.height, 
+        cropedInformations[key].colors.DOWN.initialPointX, 
+        cropedInformations[key].colors.DOWN.initialPointY
+      )
+
+      try {
+        const [ result ] = await client.imageProperties(cropedFilename)
+        const colors = result.imagePropertiesAnnotation?.dominantColors?.colors
+
+        if (!!colors) {
+          const colorDetected = colors[0].color
+
+          if (!!colorDetected) {
+            this.setPercentValueToServiceWithColorsParams(
+              formattedInformations, 
+              key,
+              colorDetected.red,
+              colorDetected.green,
+              colorDetected.blue,
+              'down'
+            )
+          }
+        }
+      } catch (error) {
+        console.log(error)
+      }
     }
+
+    console.log(formattedInformations)
 
     // let imageDate = await this.getDateInformation(filename, cropedFilename, 149, 15, 114, 3)
    
@@ -1738,7 +1984,6 @@ export default class OCRController {
       }
 
       // up percent
-      // refactor to adaptate diffence to up value in graph and down value in graph
       await this.cropImage(
         filename,
         cropedFilename,
@@ -1771,7 +2016,6 @@ export default class OCRController {
       }
 
       // down percent
-      // refactor to adaptate diffence to up value in graph and down value in graph
       await this.cropImage(
         filename,
         cropedFilename,
@@ -1855,80 +2099,70 @@ export default class OCRController {
       }
 
       // processamento das cores
-    //   await gm(filename)
-    //     .crop(
-    //       cropedInformations[key].colors.UP.width, 
-    //       cropedInformations[key].colors.UP.height, 
-    //       cropedInformations[key].colors.UP.initialPointX, 
-    //       cropedInformations[key].colors.UP.initialPointY
-    //       )
-    //     .write(cropedFilename, function(err) {
-    //       if (err) return console.dir(arguments)
-    //     })
+      await this.cropImage(
+        filename,
+        cropedFilename,
+        cropedInformations[key].colors.UP.width, 
+        cropedInformations[key].colors.UP.height, 
+        cropedInformations[key].colors.UP.initialPointX, 
+        cropedInformations[key].colors.UP.initialPointY
+      )
 
-    //   await this.sleep(5)
+      try {
+        const [ result ] = await client.imageProperties(cropedFilename)
+        const colors = result.imagePropertiesAnnotation?.dominantColors?.colors
 
-    //   try {
-    //     const [ result ] = await client.imageProperties(cropedFilename)
-    //     const colors = result.imagePropertiesAnnotation?.dominantColors?.colors
+        if (!!colors) {
+          const colorDetected = colors[0].color
 
-    //     if (!!colors) {
-    //       const colorDetected = colors[0].color
+          if (!!colorDetected) {
+            this.setPercentValueToServiceWithColorsParams(
+              formattedInformations, 
+              key,
+              colorDetected.red,
+              colorDetected.green,
+              colorDetected.blue,
+              'up'
+            )
+          }
+        }
+      } catch (error) {
+        console.log(error)
+      }
 
-    //       if (!!colorDetected) {
-    //         formattedInformations.forEach((information, index) => {
-    //           if (information.serviceName === key) {
-    //             formattedInformations[index].up_percent = this.formatColorToPercent(
-    //               colorDetected.red,
-    //               colorDetected.green,
-    //               colorDetected.blue
-    //             )
-    //           }
-    //         })
-    //       }
-    //     }
-    //   } catch (error) {
-    //     console.log(error)
-    //   }
+      await this.cropImage(
+        filename,
+        cropedFilename,
+        cropedInformations[key].colors.DOWN.width, 
+        cropedInformations[key].colors.DOWN.height, 
+        cropedInformations[key].colors.DOWN.initialPointX, 
+        cropedInformations[key].colors.DOWN.initialPointY
+      )
 
-    //   await gm(filename)
-    //     .crop(
-    //       cropedInformations[key].colors.DOWN.width, 
-    //       cropedInformations[key].colors.DOWN.height, 
-    //       cropedInformations[key].colors.DOWN.initialPointX, 
-    //       cropedInformations[key].colors.DOWN.initialPointY
-    //       )
-    //     .write(cropedFilename, function(err) {
-    //       if (err) return console.dir(arguments)
-    //     })
+      try {
+        const [ result ] = await client.imageProperties(cropedFilename)
+        const colors = result.imagePropertiesAnnotation?.dominantColors?.colors
 
-    //   await this.sleep(5)
+        if (!!colors) {
+          const colorDetected = colors[0].color
 
-    //   try {
-    //     const [ result ] = await client.imageProperties(cropedFilename)
-    //     const colors = result.imagePropertiesAnnotation?.dominantColors?.colors
-
-    //     if (!!colors) {
-    //       const colorDetected = colors[0].color
-
-    //       if (!!colorDetected) {
-    //         formattedInformations.forEach((information, index) => {
-    //           if (information.serviceName === key) {
-    //             formattedInformations[index].down_percent = this.formatColorToPercent(
-    //               colorDetected.red,
-    //               colorDetected.green,
-    //               colorDetected.blue
-    //             )
-    //           }
-    //         })
-    //       }
-    //     }
-    //   } catch (error) {
-    //     console.log(error)
-    //   }
+          if (!!colorDetected) {
+            this.setPercentValueToServiceWithColorsParams(
+              formattedInformations, 
+              key,
+              colorDetected.red,
+              colorDetected.green,
+              colorDetected.blue,
+              'down'
+            )
+          }
+        }
+      } catch (error) {
+        console.log(error)
+      }
     }
 
-    // console.log(formattedInformations)
+    console.log(formattedInformations)
 
     // let imageDate = await this.getDateInformation(filename, cropedFilename, 150, 14, 115, 4)    
 
@@ -1977,12 +2211,74 @@ export default class OCRController {
         formattedInformations.push(information)
       } catch (error) {
         console.log(error)
-      }  
+      }
+
+      await this.cropImage(
+        filename,
+        cropedFilename,
+        cropedInformations[key].colors.UP.width, 
+        cropedInformations[key].colors.UP.height, 
+        cropedInformations[key].colors.UP.initialPointX, 
+        cropedInformations[key].colors.UP.initialPointY
+      )
+
+      try {
+        const [ result ] = await client.imageProperties(cropedFilename)
+        const colors = result.imagePropertiesAnnotation?.dominantColors?.colors
+
+        if (!!colors) {
+          const colorDetected = colors[0].color
+
+          if (!!colorDetected) {
+            this.setPercentValueToServiceWithColorsParams(
+              formattedInformations, 
+              key,
+              colorDetected.red,
+              colorDetected.green,
+              colorDetected.blue,
+              'up'
+            )
+          }
+        }
+      } catch (error) {
+        console.log(error)
+      }
+
+      await this.cropImage(
+        filename,
+        cropedFilename,
+        cropedInformations[key].colors.DOWN.width, 
+        cropedInformations[key].colors.DOWN.height, 
+        cropedInformations[key].colors.DOWN.initialPointX, 
+        cropedInformations[key].colors.DOWN.initialPointY
+      )
+
+      try {
+        const [ result ] = await client.imageProperties(cropedFilename)
+        const colors = result.imagePropertiesAnnotation?.dominantColors?.colors
+
+        if (!!colors) {
+          const colorDetected = colors[0].color
+
+          if (!!colorDetected) {
+            this.setPercentValueToServiceWithColorsParams(
+              formattedInformations, 
+              key,
+              colorDetected.red,
+              colorDetected.green,
+              colorDetected.blue,
+              'down'
+            )
+          }
+        }
+      } catch (error) {
+        console.log(error)
+      }
     }
 
-    const imageDate = await this.getDateInformation(filename, cropedFilename, 147, 16, 112, 4)
+    // const imageDate = await this.getDateInformation(filename, cropedFilename, 147, 16, 112, 4)
 
-    await this.updateInDatabase(formattedInformations, state, city, imageDate, isRoutine)
+    await this.updateInDatabase(formattedInformations, state, city, '', isRoutine)
   }
 
   private getPortoAlegre = async (isRoutine: boolean) => {
@@ -2174,11 +2470,11 @@ export default class OCRController {
     await Promise.all([
       // this.getRJ(false),
       // this.getFortaleza(false),
-      // this.getCascavel(false),
+      this.getCascavel(false),
       // this.getCuritiba(false),
       // this.getLondrina(false),
       // this.getMaringa(false),
-      this.getPortoAlegre(false),
+      // this.getPortoAlegre(false),
       // this.getSaoPaulo(false)
     ])
 
