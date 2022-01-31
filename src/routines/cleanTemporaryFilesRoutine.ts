@@ -43,7 +43,7 @@ export function cleanTemporaryFiles() {
       console.log('if: ', isTemporaryFileOfPuppeteer || isTemporaryFileOfChromium, 'file: ', file)
 
       if (isTemporaryFileOfPuppeteer || isTemporaryFileOfChromium) {
-        fs.rmSync(file, { recursive: true, force: true })
+        fs.rmSync(`/tmp/${file}`, { recursive: true, force: true })
       }
     })
 
