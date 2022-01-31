@@ -16,11 +16,13 @@ export function cleanTemporaryFiles() {
 
       console.log('if: ', isTemporaryFileOfPuppeteer || isTemporaryFileOfChromium, 'file: ', file)
 
-      exec(``, (error, stdout, stderr) => {
+      exec(`rm -r ${file}`, (error, stdout, stderr) => {
         if (error) {
           console.log(`
             TEMPORARY FILES --> Erro ao excluir arquivos temporários
           `)
+
+          return
         }
 
         if (stderr) {

@@ -24,7 +24,12 @@ export function convertMinutesToMilliseconds(minutes: number) {
 export default async (serverIo: Server) => {
   if(processName.search(/primary/) !== -1){
     // cleanTemporaryFilesRoutine()
-    cleanTemporaryFiles()
+    try {
+      cleanTemporaryFiles()
+    } catch (error) {
+      console.log(error)
+    }
+
     clientKeysExpirationRoutine()
     
     routinesRequests(serverIo)
