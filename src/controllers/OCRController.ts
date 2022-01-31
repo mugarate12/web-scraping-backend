@@ -96,6 +96,9 @@ export default class OCRController {
     const ocrService = await ocrServicesRepository.get({ pix_name, state, city })
  
     if (!ocrService) {
+      await ocrServicesRepository
+        .create({ pix_name, state, city, able: 2 })
+
       return false
     } else {
       if (ocrService.able === 1) {
@@ -2525,14 +2528,14 @@ export default class OCRController {
     // await this.getSaoPaulo(false)
 
     await Promise.all([
-      // this.getRJ(false),
-      // this.getFortaleza(false),
-      // this.getCascavel(false),
-      // this.getCuritiba(false),
-      // this.getLondrina(false),
-      // this.getMaringa(false),
+      this.getRJ(false),
+      this.getFortaleza(false),
+      this.getCascavel(false),
+      this.getCuritiba(false),
+      this.getLondrina(false),
+      this.getMaringa(false),
       this.getPortoAlegre(false),
-      // this.getSaoPaulo(false)
+      this.getSaoPaulo(false)
     ])
 
     return res.status(200).json({
