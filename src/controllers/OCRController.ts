@@ -309,91 +309,90 @@ export default class OCRController {
 
   private getRJCropedInformations = () => {
     const services = {
-      // CLARO: {
-      //   width: 105,
-      //   height: 167,
-      //   initialPointX: 145,
-      //   initialPointY: 0
-      // },
-      // LUMEN: {
-      //   width: 117,
-      //   height: 167,
-      //   initialPointX: 273,
-      //   initialPointY: 0
-      // },
-      // ELETRONET: {
-      //   width: 97,
-      //   height: 167,
-      //   initialPointX: 404,
-      //   initialPointY: 0
-      // },
-      // DURAND: {
-      //   width: 110,
-      //   height: 167,
-      //   initialPointX: 522,
-      //   initialPointY: 0
-      // },
-      // GLOBO: {
-      //   width: 104,
-      //   height: 167,
-      //   initialPointX: 652,
-      //   initialPointY: 0
-      // },
-      // 'UFINET-SC': {
-      //   width: 116,
-      //   height: 167,
-      //   initialPointX: 774,
-      //   initialPointY: 0
-      // },
-      // CBPF: {
-      //   width: 650,
-      //   height: 90,
-      //   initialPointX: 190,
-      //   initialPointY: 170
-      // },
-      // 'EQUINIX-RJ1': {
-      //   width: 650,
-      //   height: 90,
-      //   initialPointX: 190,
-      //   initialPointY: 170
-      // },
-      // 'UFINET-JB': {
-      //   width: 119,
-      //   height: 169,
-      //   initialPointX: 146,
-      //   initialPointY: 271
-      // },
-      // MUNDIVOX: {
-      //   width: 98,
-      //   height: 169,
-      //   initialPointX: 280,
-      //   initialPointY: 271
-      // },
-      // COMMCORP: {
-      //   width: 104,
-      //   height: 169,
-      //   initialPointX: 402,
-      //   initialPointY: 271
-      // },
-      // INTERNEXA: {
-      //   width: 104,
-      //   height: 169,
-      //   initialPointX: 526,
-      //   initialPointY: 271
-      // },
-      // LINKFULL: {
-      //   width: 101,
-      //   height: 169,
-      //   initialPointX: 656,
-      //   initialPointY: 271
-      // },
-      // 'EQUINIX-RJ2': {
-      //   width: 116,
-      //   height: 169,
-      //   initialPointX: 773,
-      //   initialPointY: 271
-      // },
-
+      CLARO: {
+        width: 105,
+        height: 167,
+        initialPointX: 145,
+        initialPointY: 0
+      },
+      LUMEN: {
+        width: 117,
+        height: 167,
+        initialPointX: 273,
+        initialPointY: 0
+      },
+      ELETRONET: {
+        width: 97,
+        height: 167,
+        initialPointX: 404,
+        initialPointY: 0
+      },
+      DURAND: {
+        width: 110,
+        height: 167,
+        initialPointX: 522,
+        initialPointY: 0
+      },
+      GLOBO: {
+        width: 104,
+        height: 167,
+        initialPointX: 652,
+        initialPointY: 0
+      },
+      'UFINET-SC': {
+        width: 116,
+        height: 167,
+        initialPointX: 774,
+        initialPointY: 0
+      },
+      CBPF: {
+        width: 650,
+        height: 90,
+        initialPointX: 190,
+        initialPointY: 170
+      },
+      'EQUINIX-RJ1': {
+        width: 650,
+        height: 90,
+        initialPointX: 190,
+        initialPointY: 170
+      },
+      'UFINET-JB': {
+        width: 119,
+        height: 169,
+        initialPointX: 146,
+        initialPointY: 271
+      },
+      MUNDIVOX: {
+        width: 98,
+        height: 169,
+        initialPointX: 280,
+        initialPointY: 271
+      },
+      COMMCORP: {
+        width: 104,
+        height: 169,
+        initialPointX: 402,
+        initialPointY: 271
+      },
+      INTERNEXA: {
+        width: 104,
+        height: 169,
+        initialPointX: 526,
+        initialPointY: 271
+      },
+      LINKFULL: {
+        width: 101,
+        height: 169,
+        initialPointX: 656,
+        initialPointY: 271
+      },
+      'EQUINIX-RJ2': {
+        width: 116,
+        height: 169,
+        initialPointX: 773,
+        initialPointY: 271
+      }
     }
 
     return services
@@ -816,90 +815,90 @@ export default class OCRController {
 
   private getPortoAlegreCropedInformations = () => {
     const services = {
-      // SYGO: {
-      //   width: 86,
-      //   height: 92,
-      //   initialPointX: 43,
-      //   initialPointY: 93
-      // },
-      // COMMCORP: {
-      //   width: 94,
-      //   height: 92,
-      //   initialPointX: 141,
-      //   initialPointY: 93
-      // },
-      // OI: {
-      //   width: 102,
-      //   height: 92,
-      //   initialPointX: 236,
-      //   initialPointY: 93
-      // },
+      SYGO: {
+        width: 86,
+        height: 92,
+        initialPointX: 43,
+        initialPointY: 93
+      },
+      COMMCORP: {
+        width: 94,
+        height: 92,
+        initialPointX: 141,
+        initialPointY: 93
+      },
+      OI: {
+        width: 102,
+        height: 92,
+        initialPointX: 236,
+        initialPointY: 93
+      },
       'Nossa Telecom': {
         width: 89,
         height: 92,
         initialPointX: 343,
         initialPointY: 93
       },
-      // GVT: {
-      //   width: 91,
-      //   height: 92,
-      //   initialPointX: 439,
-      //   initialPointY: 93
-      // },
-      // Defferrari: {
-      //   width: 93,
-      //   height: 92,
-      //   initialPointX: 536,
-      //   initialPointY: 93
-      // },
-      // CenturyLink: {
-      //   width: 109,
-      //   height: 92,
-      //   initialPointX: 630,
-      //   initialPointY: 93
-      // },
-      // VOGEL: {
-      //   width: 93,
-      //   height: 88,
-      //   initialPointX: 42,
-      //   initialPointY: 286
-      // },
-      // 'RNP UFRGS': {
-      //   width: 100,
-      //   height: 88,
-      //   initialPointX: 134,
-      //   initialPointY: 286
-      // },
-      // LVT: {
-      //   width: 92,
-      //   height: 88,
-      //   initialPointX: 241,
-      //   initialPointY: 286
-      // },
-      // ADYLNET: {
-      //   width: 101,
-      //   height: 88,
-      //   initialPointX: 336,
-      //   initialPointY: 286
-      // },
-      // RENOVARE: {
-      //   width: 92,
-      //   height: 88,
-      //   initialPointX: 440,
-      //   initialPointY: 286
-      // },
-      // RedeISP: {
-      //   width: 102,
-      //   height: 88,
-      //   initialPointX: 535,
-      //   initialPointY: 286
-      // },
-      // METROLAN: {
-      //   width: 101,
-      //   height: 88,
-      //   initialPointX: 637,
-      //   initialPointY: 286
-      // },
+      GVT: {
+        width: 91,
+        height: 92,
+        initialPointX: 439,
+        initialPointY: 93
+      },
+      Defferrari: {
+        width: 93,
+        height: 92,
+        initialPointX: 536,
+        initialPointY: 93
+      },
+      CenturyLink: {
+        width: 109,
+        height: 92,
+        initialPointX: 630,
+        initialPointY: 93
+      },
+      VOGEL: {
+        width: 93,
+        height: 88,
+        initialPointX: 42,
+        initialPointY: 286
+      },
+      'RNP UFRGS': {
+        width: 100,
+        height: 88,
+        initialPointX: 134,
+        initialPointY: 286
+      },
+      LVT: {
+        width: 92,
+        height: 88,
+        initialPointX: 241,
+        initialPointY: 286
+      },
+      ADYLNET: {
+        width: 101,
+        height: 88,
+        initialPointX: 336,
+        initialPointY: 286
+      },
+      RENOVARE: {
+        width: 92,
+        height: 88,
+        initialPointX: 440,
+        initialPointY: 286
+      },
+      RedeISP: {
+        width: 102,
+        height: 88,
+        initialPointX: 535,
+        initialPointY: 286
+      },
+      METROLAN: {
+        width: 101,
+        height: 88,
+        initialPointX: 637,
+        initialPointY: 286
+      },
     }
 
     return services
@@ -908,160 +907,160 @@ export default class OCRController {
   private getSaoPauloCropedInformations = () => {
     const services = {
       // UP VALUES
-      // 'NIC-NU': {
-      //   UP: {
-      //     width: 40,
-      //     height: 27,
-      //     initialPointX: 64,
-      //     initialPointY: 93
-      //   },
-      //   DOWN: {
-      //     width: 41,
-      //     height: 28,
-      //     initialPointX: 1,
-      //     initialPointY: 144
-      //   }
-      // },
-      // 'Telium': {
-      //   UP: {
-      //     width: 42,
-      //     height: 27,
-      //     initialPointX: 130,
-      //     initialPointY: 93
-      //   },
-      //   DOWN: {
-      //     width: 39,
-      //     height: 28,
-      //     initialPointX: 70,
-      //     initialPointY: 144
-      //   }
-      // },
-      // 'SAMMCCR': {
-      //   UP: {
-      //     width: 43,
-      //     height: 27,
-      //     initialPointX: 199,
-      //     initialPointY: 93
-      //   },
-      //   DOWN: {
-      //     width: 39,
-      //     height: 28,
-      //     initialPointX: 140,
-      //     initialPointY: 144
-      //   }
-      // },
-      // 'USP': {
-      //   UP: {
-      //     width: 41,
-      //     height: 27,
-      //     initialPointX: 268,
-      //     initialPointY: 93
-      //   },
-      //   DOWN: {
-      //     width: 39,
-      //     height: 28,
-      //     initialPointX: 201,
-      //     initialPointY: 144
-      //   }
-      // },
-      // 'Embratel': {
-      //   UP: {
-      //     width: 43,
-      //     height: 27,
-      //     initialPointX: 328,
-      //     initialPointY: 93
-      //   },
-      //   DOWN: {
-      //     width: 41,
-      //     height: 28,
-      //     initialPointX: 265,
-      //     initialPointY: 144
-      //   }
-      // },
-      // 'Telefônica': {
-      //   UP: {
-      //     width: 43,
-      //     height: 27,
-      //     initialPointX: 395,
-      //     initialPointY: 93
-      //   },
-      //   DOWN: {
-      //     width: 44,
-      //     height: 28,
-      //     initialPointX: 330,
-      //     initialPointY: 144
-      //   }
-      // },
-      // 'Algar-PIAF': {
-      //   UP: {
-      //     width: 42,
-      //     height: 27,
-      //     initialPointX: 461,
-      //     initialPointY: 93
-      //   },
-      //   DOWN: {
-      //     width: 43,
-      //     height: 28,
-      //     initialPointX: 397,
-      //     initialPointY: 144
-      //   }
-      // },
-      // 'Commcorp': {
-      //   UP: {
-      //     width: 50,
-      //     height: 27,
-      //     initialPointX: 524,
-      //     initialPointY: 93
-      //   },
-      //   DOWN: {
-      //     width: 43,
-      //     height: 28,
-      //     initialPointX: 462,
-      //     initialPointY: 144
-      //   }
-      // },
-      // 'Americanet': {
-      //   UP: {
-      //     width: 50,
-      //     height: 27,
-      //     initialPointX: 600,
-      //     initialPointY: 93
-      //   },
-      //   DOWN: {
-      //     width: 44,
-      //     height: 28,
-      //     initialPointX: 534,
-      //     initialPointY: 144
-      //   }
-      // },
-      // 'G8': {
-      //   UP: {
-      //     width: 48,
-      //     height: 27,
-      //     initialPointX: 672,
-      //     initialPointY: 93
-      //   },
-      //   DOWN: {
-      //     width: 47,
-      //     height: 28,
-      //     initialPointX: 604,
-      //     initialPointY: 144
-      //   }
-      // },
-      // 'Matrix': {
-      //   UP: {
-      //     width: 48,
-      //     height: 27,
-      //     initialPointX: 741,
-      //     initialPointY: 93
-      //   },
-      //   DOWN: {
-      //     width: 45,
-      //     height: 28,
-      //     initialPointX: 676,
-      //     initialPointY: 144
-      //   }
-      // },
+      'NIC-NU': {
+        UP: {
+          width: 40,
+          height: 27,
+          initialPointX: 64,
+          initialPointY: 93
+        },
+        DOWN: {
+          width: 41,
+          height: 28,
+          initialPointX: 1,
+          initialPointY: 144
+        }
+      },
+      'Telium': {
+        UP: {
+          width: 42,
+          height: 27,
+          initialPointX: 130,
+          initialPointY: 93
+        },
+        DOWN: {
+          width: 39,
+          height: 28,
+          initialPointX: 70,
+          initialPointY: 144
+        }
+      },
+      'SAMMCCR': {
+        UP: {
+          width: 43,
+          height: 27,
+          initialPointX: 199,
+          initialPointY: 93
+        },
+        DOWN: {
+          width: 39,
+          height: 28,
+          initialPointX: 140,
+          initialPointY: 144
+        }
+      },
+      'USP': {
+        UP: {
+          width: 41,
+          height: 27,
+          initialPointX: 268,
+          initialPointY: 93
+        },
+        DOWN: {
+          width: 39,
+          height: 28,
+          initialPointX: 201,
+          initialPointY: 144
+        }
+      },
+      'Embratel': {
+        UP: {
+          width: 43,
+          height: 27,
+          initialPointX: 328,
+          initialPointY: 93
+        },
+        DOWN: {
+          width: 41,
+          height: 28,
+          initialPointX: 265,
+          initialPointY: 144
+        }
+      },
+      'Telefônica': {
+        UP: {
+          width: 43,
+          height: 27,
+          initialPointX: 395,
+          initialPointY: 93
+        },
+        DOWN: {
+          width: 44,
+          height: 28,
+          initialPointX: 330,
+          initialPointY: 144
+        }
+      },
+      'Algar-PIAF': {
+        UP: {
+          width: 42,
+          height: 27,
+          initialPointX: 461,
+          initialPointY: 93
+        },
+        DOWN: {
+          width: 43,
+          height: 28,
+          initialPointX: 397,
+          initialPointY: 144
+        }
+      },
+      'Commcorp': {
+        UP: {
+          width: 50,
+          height: 27,
+          initialPointX: 524,
+          initialPointY: 93
+        },
+        DOWN: {
+          width: 43,
+          height: 28,
+          initialPointX: 462,
+          initialPointY: 144
+        }
+      },
+      'Americanet': {
+        UP: {
+          width: 50,
+          height: 27,
+          initialPointX: 600,
+          initialPointY: 93
+        },
+        DOWN: {
+          width: 44,
+          height: 28,
+          initialPointX: 534,
+          initialPointY: 144
+        }
+      },
+      'G8': {
+        UP: {
+          width: 48,
+          height: 27,
+          initialPointX: 672,
+          initialPointY: 93
+        },
+        DOWN: {
+          width: 47,
+          height: 28,
+          initialPointX: 604,
+          initialPointY: 144
+        }
+      },
+      'Matrix': {
+        UP: {
+          width: 48,
+          height: 27,
+          initialPointX: 741,
+          initialPointY: 93
+        },
+        DOWN: {
+          width: 45,
+          height: 28,
+          initialPointX: 676,
+          initialPointY: 144
+        }
+      },
       'Algar CENESP': {
         UP: {
           width: 45,
@@ -1090,34 +1089,34 @@ export default class OCRController {
           initialPointY: 144
         }
       },
-      // 'NIC-JD': {
-      //   UP: {
-      //     width: 44,
-      //     height: 27,
-      //     initialPointX: 955,
-      //     initialPointY: 93
-      //   },
-      //   DOWN: {
-      //     width: 42,
-      //     height: 28,
-      //     initialPointX: 891,
-      //     initialPointY: 144
-      //   }
-      // },
-      // 'Odata': {
-      //   UP: {
-      //     width: 52,
-      //     height: 27,
-      //     initialPointX: 1024,
-      //     initialPointY: 93
-      //   },
-      //   DOWN: {
-      //     width: 46,
-      //     height: 30,
-      //     initialPointX: 958,
-      //     initialPointY: 143
-      //   }
-      // },
+      'NIC-JD': {
+        UP: {
+          width: 44,
+          height: 27,
+          initialPointX: 955,
+          initialPointY: 93
+        },
+        DOWN: {
+          width: 42,
+          height: 28,
+          initialPointX: 891,
+          initialPointY: 144
+        }
+      },
+      'Odata': {
+        UP: {
+          width: 52,
+          height: 27,
+          initialPointX: 1024,
+          initialPointY: 93
+        },
+        DOWN: {
+          width: 46,
+          height: 30,
+          initialPointX: 958,
+          initialPointY: 143
+        }
+      },
       // DOWN VALUES
       'Level 3 CenturyLink': {
         UP: {
@@ -1133,118 +1132,118 @@ export default class OCRController {
           initialPointY: 280
         }
       },
-      // 'OI': {
-      //   UP: {
-      //     width: 44,
-      //     height: 26,
-      //     initialPointX: 130,
-      //     initialPointY: 314
-      //   },
-      //   DOWN: {
-      //     width: 39,
-      //     height: 27,
-      //     initialPointX: 71,
-      //     initialPointY: 280
-      //   }
-      // },
-      // 'Equinix-SP1': {
-      //   UP: {
-      //     width: 44,
-      //     height: 26,
-      //     initialPointX: 199,
-      //     initialPointY: 314
-      //   },
-      //   DOWN: {
-      //     width: 46,
-      //     height: 27,
-      //     initialPointX: 130,
-      //     initialPointY: 280
-      //   }
-      // },
-      // 'GVT-JD': {
-      //   UP: {
-      //     width: 44,
-      //     height: 26,
-      //     initialPointX: 268,
-      //     initialPointY: 314
-      //   },
-      //   DOWN: {
-      //     width: 41,
-      //     height: 27,
-      //     initialPointX: 204,
-      //     initialPointY: 280
-      //   }
-      // },
-      // 'TIVIT': {
-      //   UP: {
-      //     width: 44,
-      //     height: 26,
-      //     initialPointX: 327,
-      //     initialPointY: 314
-      //   },
-      //   DOWN: {
-      //     width: 42,
-      //     height: 27,
-      //     initialPointX: 264,
-      //     initialPointY: 280
-      //   }
-      // },
-      // 'Scala': {
-      //   UP: {
-      //     width: 41,
-      //     height: 26,
-      //     initialPointX: 396,
-      //     initialPointY: 314
-      //   },
-      //   DOWN: {
-      //     width: 44,
-      //     height: 29,
-      //     initialPointX: 330,
-      //     initialPointY: 280
-      //   }
-      // },
-      // 'GVT-CENU': {
-      //   UP: {
-      //     width: 46,
-      //     height: 26,
-      //     initialPointX: 459,
-      //     initialPointY: 314
-      //   },
-      //   DOWN: {
-      //     width: 41,
-      //     height: 27,
-      //     initialPointX: 397,
-      //     initialPointY: 280
-      //   }
-      // },
-      // 'Vogel': {
-      //   UP: {
-      //     width: 49,
-      //     height: 26,
-      //     initialPointX: 527,
-      //     initialPointY: 314
-      //   },
-      //   DOWN: {
-      //     width: 43,
-      //     height: 27,
-      //     initialPointX: 461,
-      //     initialPointY: 280
-      //   }
-      // },
-      // 'Eletronet': {
-      //   UP: {
-      //     width: 47,
-      //     height: 26,
-      //     initialPointX: 600,
-      //     initialPointY: 314
-      //   },
-      //   DOWN: {
-      //     width: 48,
-      //     height: 27,
-      //     initialPointX: 530,
-      //     initialPointY: 280
-      //   }
-      // },
+      'OI': {
+        UP: {
+          width: 44,
+          height: 26,
+          initialPointX: 130,
+          initialPointY: 314
+        },
+        DOWN: {
+          width: 39,
+          height: 27,
+          initialPointX: 71,
+          initialPointY: 280
+        }
+      },
+      'Equinix-SP1': {
+        UP: {
+          width: 44,
+          height: 26,
+          initialPointX: 199,
+          initialPointY: 314
+        },
+        DOWN: {
+          width: 46,
+          height: 27,
+          initialPointX: 130,
+          initialPointY: 280
+        }
+      },
+      'GVT-JD': {
+        UP: {
+          width: 44,
+          height: 26,
+          initialPointX: 268,
+          initialPointY: 314
+        },
+        DOWN: {
+          width: 41,
+          height: 27,
+          initialPointX: 204,
+          initialPointY: 280
+        }
+      },
+      'TIVIT': {
+        UP: {
+          width: 44,
+          height: 26,
+          initialPointX: 327,
+          initialPointY: 314
+        },
+        DOWN: {
+          width: 42,
+          height: 27,
+          initialPointX: 264,
+          initialPointY: 280
+        }
+      },
+      'Scala': {
+        UP: {
+          width: 41,
+          height: 26,
+          initialPointX: 396,
+          initialPointY: 314
+        },
+        DOWN: {
+          width: 44,
+          height: 29,
+          initialPointX: 330,
+          initialPointY: 280
+        }
+      },
+      'GVT-CENU': {
+        UP: {
+          width: 46,
+          height: 26,
+          initialPointX: 459,
+          initialPointY: 314
+        },
+        DOWN: {
+          width: 41,
+          height: 27,
+          initialPointX: 397,
+          initialPointY: 280
+        }
+      },
+      'Vogel': {
+        UP: {
+          width: 49,
+          height: 26,
+          initialPointX: 527,
+          initialPointY: 314
+        },
+        DOWN: {
+          width: 43,
+          height: 27,
+          initialPointX: 461,
+          initialPointY: 280
+        }
+      },
+      'Eletronet': {
+        UP: {
+          width: 47,
+          height: 26,
+          initialPointX: 600,
+          initialPointY: 314
+        },
+        DOWN: {
+          width: 48,
+          height: 27,
+          initialPointX: 530,
+          initialPointY: 280
+        }
+      },
       'Equinix-SP3': {
         UP: {
           width: 47,
@@ -1259,20 +1258,20 @@ export default class OCRController {
           initialPointY: 280
         }
       },
-      // 'Locaweb': {
-      //   UP: {
-      //     width: 47,
-      //     height: 26,
-      //     initialPointX: 741,
-      //     initialPointY: 314
-      //   },
-      //   DOWN: {
-      //     width: 46,
-      //     height: 27,
-      //     initialPointX: 674,
-      //     initialPointY: 280
-      //   }
-      // },
+      'Locaweb': {
+        UP: {
+          width: 47,
+          height: 26,
+          initialPointX: 741,
+          initialPointY: 314
+        },
+        DOWN: {
+          width: 46,
+          height: 27,
+          initialPointX: 674,
+          initialPointY: 280
+        }
+      },
       'Equinix-SP2': {
         UP: {
           width: 48,
@@ -1287,48 +1286,48 @@ export default class OCRController {
           initialPointY: 280
         }
       },
-      // 'Ufinet': {
-      //   UP: {
-      //     width: 47,
-      //     height: 26,
-      //     initialPointX: 885,
-      //     initialPointY: 314
-      //   },
-      //   DOWN: {
-      //     width: 46,
-      //     height: 27,
-      //     initialPointX: 817,
-      //     initialPointY: 280
-      //   }
-      // },
-      // 'TIM': {
-      //   UP: {
-      //     width: 41,
-      //     height: 26,
-      //     initialPointX: 955,
-      //     initialPointY: 314
-      //   },
-      //   DOWN: {
-      //     width: 47,
-      //     height: 27,
-      //     initialPointX: 886,
-      //     initialPointY: 280
-      //   }
-      // },
-      // 'Ascenty-SP2': {
-      //   UP: {
-      //     width: 46,
-      //     height: 26,
-      //     initialPointX: 1020,
-      //     initialPointY: 314
-      //   },
-      //   DOWN: {
-      //     width: 42,
-      //     height: 27,
-      //     initialPointX: 955,
-      //     initialPointY: 280
-      //   }
-      // },
+      'Ufinet': {
+        UP: {
+          width: 47,
+          height: 26,
+          initialPointX: 885,
+          initialPointY: 314
+        },
+        DOWN: {
+          width: 46,
+          height: 27,
+          initialPointX: 817,
+          initialPointY: 280
+        }
+      },
+      'TIM': {
+        UP: {
+          width: 41,
+          height: 26,
+          initialPointX: 955,
+          initialPointY: 314
+        },
+        DOWN: {
+          width: 47,
+          height: 27,
+          initialPointX: 886,
+          initialPointY: 280
+        }
+      },
+      'Ascenty-SP2': {
+        UP: {
+          width: 46,
+          height: 26,
+          initialPointX: 1020,
+          initialPointY: 314
+        },
+        DOWN: {
+          width: 42,
+          height: 27,
+          initialPointX: 955,
+          initialPointY: 280
+        }
+      },
     }
 
     return services
@@ -1964,8 +1963,6 @@ export default class OCRController {
       }
     }
 
-    console.log(formattedInformations)
-
     // let imageDate = await this.getDateInformation(filename, cropedFilename, 149, 15, 114, 3)
    
     await this.updateInDatabase(formattedInformations, state, city, '', isRoutine)
@@ -2204,8 +2201,6 @@ export default class OCRController {
       }
     }
 
-    console.log(formattedInformations)
-
     // let imageDate = await this.getDateInformation(filename, cropedFilename, 150, 14, 115, 4)    
 
     await this.updateInDatabase(formattedInformations, state, city, '', isRoutine)
@@ -2377,8 +2372,6 @@ export default class OCRController {
         console.log(error)
       }  
     }
-
-    console.log(formattedInformations);
 
     // const imageDate = await this.getDateInformation(filename, cropedFilename, 156, 10, 238, 457)
 
@@ -2571,7 +2564,6 @@ export default class OCRController {
   }
 
   public addPermission = async (req: Request, res: Response) => {
-    const { client_FK, state, city, pix_name } = req.body
     const {
       permissions
     } = req.body
@@ -2608,7 +2600,6 @@ export default class OCRController {
   }
 
   public removePermission = async  (req: Request, res: Response) => {
-    const { client_FK, state, city, pix_name } = req.body
     const {
       permissions
     } = req.body
@@ -2666,8 +2657,10 @@ export default class OCRController {
   public getRegistredStates = async (req: Request, res: Response) => {
     let states: Array<string> = []
 
-    const ocrData = await ocrDataRepository.index({})
-    ocrData.forEach((data) => {
+    const ocrServices = await ocrServicesRepository.index({
+      able: 1
+    })
+    ocrServices.forEach(data => {
       if (!states.includes(data.state)) {
         states.push(data.state)
       }
@@ -2685,12 +2678,13 @@ export default class OCRController {
 
   public getRegistredCities = async (req: Request, res: Response) => {
     const { state } = req.params
-
     let cities: Array<string> = []
-    const ocrData = await ocrDataRepository.index({
-      states: [ state ]
+
+    const ocrServices = await ocrServicesRepository.index({
+      state: String(state),
+      able: 1
     })
-    ocrData.forEach((data) => {
+    ocrServices.forEach(data => {
       if (!cities.includes(data.city)) {
         cities.push(data.city)
       }
@@ -2708,15 +2702,16 @@ export default class OCRController {
 
   public getRegistredServices = async (req: Request, res: Response) => {
     const { state, city } = req.params
-
     let services: Array<string> = []
-    const ocrData = await ocrDataRepository.index({
-      states: [ state ],
-      cities: [ city ]
+
+    const ocrServices = await ocrServicesRepository.index({
+      state: String(state),
+      city: String(city),
+      able: 1
     })
-    ocrData.forEach(data => {
-      if (!services.includes(data.service)) {
-        services.push(data.service)
+    ocrServices.forEach(data => {
+      if (!services.includes(data.pix_name)) {
+        services.push(data.pix_name)
       }
     })
 
@@ -2728,6 +2723,51 @@ export default class OCRController {
         }
       })
     })
+  }
+
+  public updateServiceAble = async (req: Request, res: Response) => {
+    const { 
+      state, 
+      city, 
+      service,
+      able 
+    } = req.body
+
+    return await ocrServicesRepository.update({
+      identifiers: {
+        state: String(state),
+        city: String(city),
+        pix_name: String(service)
+      },
+      payload: {
+        able: Number(able)
+      }
+    })
+      .then(() => {
+        return res.status(200).json({
+          message: 'serviço atualizado com sucesso!'
+        })
+      })
+      .catch(error => {
+        return errorHandler(
+          new AppError('Database error', 403, 'não foi possível atualizar serviço', true),
+          res
+        )
+      })
+  }
+
+  public index = async (req: Request, res: Response) => {
+    return await ocrServicesRepository.index({})
+      .then(data => {
+        return res.status(200).json({
+          services: data
+        })
+      })
+      .catch(error => {
+        return res.status(200).json({
+          services: []
+        })
+      })
   }
 
   public getAllData = async (req: Request, res: Response) => { 
@@ -2744,12 +2784,25 @@ export default class OCRController {
       })
     }
 
-    const formattedData = data.map((orcData) => {
+    let formattedData = data.map((orcData) => {
       return {
         ...orcData,
         up_percent: Number(orcData.up_percent.slice(0, orcData.up_percent.length - 1)),
         down_percent: Number(orcData.down_percent.slice(0, orcData.down_percent.length - 1))
       }
+    })
+
+    const ocrServices = await ocrServicesRepository.index({})
+    formattedData = formattedData.filter(data => {
+      let isAvaible = false
+
+      ocrServices.forEach(ocrService => {
+        if (ocrService.pix_name === data.service && ocrService.able === 1) {
+          isAvaible = true
+        }
+      })
+
+      return isAvaible
     })
 
     return res.status(200).json({
@@ -2760,12 +2813,25 @@ export default class OCRController {
   public getAllDataWithoutKey = async (req: Request, res: Response) => {
     const data = await ocrDataRepository.index({})
 
-    const formattedData = data.map((orcData) => {
+    let formattedData = data.map((orcData) => {
       return {
         ...orcData,
         up_percent: Number(orcData.up_percent.slice(0, orcData.up_percent.length - 1)),
         down_percent: Number(orcData.down_percent.slice(0, orcData.down_percent.length - 1))
       }
+    })
+
+    const ocrServices = await ocrServicesRepository.index({})
+    formattedData = formattedData.filter(data => {
+      let isAvaible = false
+
+      ocrServices.forEach(ocrService => {
+        if (ocrService.pix_name === data.service && ocrService.able === 1) {
+          isAvaible = true
+        }
+      })
+
+      return isAvaible
     })
 
     return res.status(200).json({
