@@ -2549,7 +2549,7 @@ export default class OCRController {
   }
 
   public runRoutineTeenMinutes = async () => {
-    await this.sleep(70)
+    await this.sleep(120)
 
     await Promise.all([
       this.getRJ(true),
