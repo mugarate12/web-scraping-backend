@@ -32,6 +32,7 @@ export default class ZabbixController {
 
       const rows = res.data.values
       if (rows.length) {
+        // console.log(rows)
         this.rows = rows
         // rows.map((row) => {
         //   console.log(row)
@@ -100,7 +101,7 @@ export default class ZabbixController {
       if (err) return console.log('Error loading client secret file:', err);
       // Authorize a client with credentials, then call the Google Sheets API.
 
-      const a = this.authorize(JSON.parse(String(content)), this.listMajors);
+      this.authorize(JSON.parse(String(content)), this.listMajors);
     })
   }
   
