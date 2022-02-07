@@ -12,7 +12,8 @@ import {
   publicAccess,
   services,
   session,
-  users
+  users,
+  zabbix
 } from './routesDefinition'
 
 const routes = Router()
@@ -45,5 +46,8 @@ services(routes)
 
 // api access
 publicAccess(routes)
+
+// zabbix routes
+zabbix(routes)
 
 export default routes

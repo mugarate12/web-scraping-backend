@@ -50,6 +50,8 @@
     "dotenv": "^10.0.0",
     "express": "4.17.1",
     "gm": "^1.23.1",
+    "google-spreadsheet": "^3.2.0",
+    "googleapis": "^39.2.0",
     "jsonwebtoken": "^8.5.1",
     "knex": "^0.95.11",
     "moment": "^2.29.1",
@@ -61,7 +63,8 @@
     "run-script-os": "^1.1.6",
     "socket.io": "^4.3.0",
     "swagger-ui-express": "^4.1.6",
-    "tesseract.js": "^2.1.5"
+    "tesseract.js": "^2.1.5",
+    "zabbix-promise": "^2.0.2"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",

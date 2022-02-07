@@ -30,10 +30,10 @@ export default async (serverIo: Server) => {
       console.log(error)
     }
 
-    clientKeysExpirationRoutine()
+    // clientKeysExpirationRoutine()
     
-    routinesRequests(serverIo)
-    CPFLRoutine()
-    ocrRoutine()
+    // routinesRequests(serverIo)
+    // CPFLRoutine()
+    // ocrRoutine()
   }
 }
