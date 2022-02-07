@@ -1,9 +1,5 @@
 import { Server } from 'socket.io'
-import puppeteer from 'puppeteer'
-import CronJob from 'cron'
 import dotenv from 'dotenv'
-import path from 'path'
-import fs from 'fs'
 
 import cleanTemporaryFilesRoutine, { cleanTemporaryFiles } from './cleanTemporaryFilesRoutine'
 import clientKeysExpirationRoutine from './clientKeysExpirationRoutine'
@@ -30,10 +26,10 @@ export default async (serverIo: Server) => {
       console.log(error)
     }
 
-    // clientKeysExpirationRoutine()
+    clientKeysExpirationRoutine()
     
-    // routinesRequests(serverIo)
-    // CPFLRoutine()
-    // ocrRoutine()
+    routinesRequests(serverIo)
+    CPFLRoutine()
+    ocrRoutine()
   }
 }
