@@ -1,10 +1,12 @@
 const API_ACCESS_CLIENTS_TABLE_NAME = 'api_access_clients'
 const API_ACCESS_TOKENS_TABLE_NAME = 'api_access_tokens'
 const CLIENTS_ACCESS_TABLE_NAME = 'clients_access'
+
 const DOWN_DETECTOR_SEARCH_NOW = 'downdetector_search_now'
 const DOWN_DETECTOR_CHANGE_TABLE_NAME = 'downdetector_change'
 const DOWN_DETECTOR_HIST_TABLE_NAME = 'downdetector_hist'
 const DOWN_DETECTOR_ROUTINE_EXECUTION = 'down_detector_routine_execution'
+
 const MONITORING_TABLE_NAME = 'monitoring'
 const PERMISSIONS_TABLE_NAME = 'permissions'
 const SERVICES_TABLE_NAME = 'services'
@@ -25,10 +27,13 @@ const OCR_SERVICES = 'ocr_services'
 
 const ENERGY_PERMISSIONS_TABLE_NAME = 'energy_permissions'
 
+const HOSTS_PERFIS_TABLE_NAME = 'hosts_perfis'
+
 module.exports = {
   API_ACCESS_CLIENTS_TABLE_NAME,
   API_ACCESS_TOKENS_TABLE_NAME,
   CLIENTS_ACCESS_TABLE_NAME,
+
   DOWN_DETECTOR_CHANGE_TABLE_NAME,
   DOWN_DETECTOR_HIST_TABLE_NAME,
   DOWN_DETECTOR_ROUTINE_EXECUTION,
@@ -36,6 +41,7 @@ module.exports = {
   PERMISSIONS_TABLE_NAME,
   SERVICES_TABLE_NAME,
   SERVICES_UPDATE_TIME_TABLE_NAME,
+
   USERS_ACCESS_TABLE_NAME,
   USERS_TABLE_NAME,
 
@@ -50,5 +56,7 @@ module.exports = {
   OCR_PERMISSIONS,
   OCR_SERVICES,
 
-  ENERGY_PERMISSIONS_TABLE_NAME
+  ENERGY_PERMISSIONS_TABLE_NAME,
+
+  HOSTS_PERFIS_TABLE_NAME
 }

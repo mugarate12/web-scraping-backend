@@ -10,6 +10,7 @@ import DownDetectorHistRepository from "./downDetectorHistRepository"
 import DownDetectorRoutineExecutionRepository from './downDetectorRoutineExecution'
 import EnergyPermissionsRepository from './EnergyPermissionsRepository'
 import EquatorialDataRepository from './EquatorialDataRepository'
+import HostsPerfilsRepository from './HostsPerfilsRepository'
 import MonitoringRepository from "./monitoringRepository"
 import OCRDataRepository from './OCRDataRepository'
 import OCRPermissionsRepository from './OCRPermissionsRepository'
@@ -32,6 +33,7 @@ export const downDetectorHistRepository = new DownDetectorHistRepository()
 export const downDetectorRoutineExecutionRepository = new DownDetectorRoutineExecutionRepository()
 export const energyPermissionsRepository = new EnergyPermissionsRepository()
 export const equatorialDataRepository = new EquatorialDataRepository()
+export const hostsPerfilsRepository = new HostsPerfilsRepository()
 export const monitoringRepository = new MonitoringRepository()
 export const ocrDataRepository = new OCRDataRepository()
 export const ocrPermissionsRepository = new OCRPermissionsRepository()
