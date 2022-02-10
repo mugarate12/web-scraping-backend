@@ -110,6 +110,8 @@ export default class ZabbixController {
     // const worksheetLink = 'https://docs.google.com/spreadsheets/d/1gy-tg3lNgEVJtj_UTVJ5x_6-3PynpZaA3dL8MftGFDA/edit?usp=sharing'
     // const worksheetID = '1gy-tg3lNgEVJtj_UTVJ5x_6-3PynpZaA3dL8MftGFDA'
 
+    console.log(worksheetID)
+
     this.worksheetID = worksheetID
 
     await this.google()
