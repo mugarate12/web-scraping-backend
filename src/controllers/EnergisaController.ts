@@ -510,6 +510,11 @@ export default class EnergisaController {
         handleStatusOfEnergy.formatDateToGetDuration(document.final_hour.split(' ')[0], document.final_hour.split(' ')[1])
       )
 
+      let duration = handleStatusOfEnergy.getDurationInSeconds(
+        handleStatusOfEnergy.formatDateToGetDuration(document.initial_hour.split(' ')[0], document.initial_hour.split(' ')[1]),
+        handleStatusOfEnergy.formatDateToGetDuration(document.final_hour.split(' ')[0], document.final_hour.split(' ')[1])
+      )
+
       if (finalSeconds < 0) {
         finalSeconds = 0
       }
@@ -529,6 +534,7 @@ export default class EnergisaController {
         payload: {
           final_maintenance: finalMaintenance,
           final_seconds: finalSeconds,
+          duration,
           status
         }
       })
