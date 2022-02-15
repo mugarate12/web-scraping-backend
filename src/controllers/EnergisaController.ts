@@ -503,11 +503,11 @@ export default class EnergisaController {
 
       let finalSeconds = handleStatusOfEnergy.getDurationInSeconds(
         handleStatusOfEnergy.formatDateToGetDuration(actualDate.split(' ')[0], actualDate.split(' ')[1]),
-        handleStatusOfEnergy.formatDateToGetDuration(document.date, document.initial_hour.split(' ')[1])
+        handleStatusOfEnergy.formatDateToGetDuration(document.initial_hour.split(' ')[0], document.initial_hour.split(' ')[1])
       )
       let finalMaintenance = handleStatusOfEnergy.getDurationInSeconds(
         handleStatusOfEnergy.formatDateToGetDuration(actualDate.split(' ')[0], actualDate.split(' ')[1]),
-        handleStatusOfEnergy.formatDateToGetDuration(document.date, document.final_hour.split(' ')[1])
+        handleStatusOfEnergy.formatDateToGetDuration(document.final_hour.split(' ')[0], document.final_hour.split(' ')[1])
       )
 
       if (finalSeconds < 0) {
