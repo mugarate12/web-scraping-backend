@@ -5,6 +5,7 @@ import {
   apiAccessController,
   cpflController,
   equatorialController,
+  energisaController,
   ocrController
 } from './../controllers'
 
@@ -176,6 +177,28 @@ export default function publicAccessRoutes(routes: Router) {
       token: Joi.string().required()
     })
   }), publicAccessJWT, readApiInformations, readFlow4EnergyInformation, equatorialController.getSummary)
+
+  // ENERGISA ROUTES
+  routes.get('/public/access/energisa/all', celebrate({
+    [Segments.QUERY]: Joi.object().keys({
+      token: Joi.string().required()
+    }),
+    // [Segments.PARAMS]: Joi.object().keys({
+    //   state: Joi.string().required()
+    // })
+  }), publicAccessJWT, energisaController.getDataByState)
+
+  routes.get('/public/access/energisa/count/status/all', celebrate({
+    [Segments.QUERY]: Joi.object().keys({
+      token: Joi.string().required()
+    })
+  }), publicAccessJWT, energisaController.getCountStatus)
+
+  routes.get('/public/access/energisa/count/resumo/actualDate', celebrate({
+    [Segments.QUERY]: Joi.object().keys({
+      token: Joi.string().required()
+    })
+  }), publicAccessJWT, energisaController.getSummary)
 
   // OCR ROUTES
   routes.get('/public/access/ocr/all', celebrate({

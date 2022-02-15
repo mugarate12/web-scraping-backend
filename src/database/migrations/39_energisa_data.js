@@ -1,0 +1,27 @@
+const {
+	ENERGISA_DATA_TABLE_NAME
+} = require('./../types')
+
+exports.up = async function(knex) {
+	await knex.schema.createTable(ENERGISA_DATA_TABLE_NAME, (table) => {
+		table.increments('id').notNullable()
+
+    table.string('state', 191).notNullable()
+    table.string('city', 191).notNullable()
+    table.string('street').notNullable()
+    
+    table.integer('status').notNullable()
+    
+    table.string('date').notNullable()
+    table.string('initial_hour').notNullable()
+    table.string('final_hour').notNullable()
+
+    table.integer('duration').notNullable()
+    table.integer('final_seconds').notNullable()
+    table.integer('final_maintenance').notNullable()
+	})
+}
+
+exports.down = function(knex) {
+	return knex.schema.dropTable(ENERGISA_DATA_TABLE_NAME)
+}

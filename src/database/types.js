@@ -21,6 +21,9 @@ const CPFL_SEARCH_NOW = 'cpfl_search_now'
 
 const EQUATORIAL_DATA = 'equatorial_data'
 
+const ENERGISA_INFORMATIONS_TABLE_NAME = 'energisa_informations'
+const ENERGISA_DATA_TABLE_NAME = 'energisa_data'
+
 const OCR_DATA_TABLE_NAME = 'ocr_data'
 const OCR_PERMISSIONS = 'ocr_permissions'
 const OCR_SERVICES = 'ocr_services'
@@ -51,6 +54,9 @@ module.exports = {
   CPFL_SEARCH_NOW,
 
   EQUATORIAL_DATA,
+
+  ENERGISA_INFORMATIONS_TABLE_NAME,
+  ENERGISA_DATA_TABLE_NAME,
 
   OCR_DATA_TABLE_NAME,
   OCR_PERMISSIONS,

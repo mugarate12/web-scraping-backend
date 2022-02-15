@@ -16,7 +16,8 @@ import { EnergyPermissionsInterface } from './../repositories/EnergyPermissionsR
 
 import {
   cpflController,
-  equatorialController
+  equatorialController,
+  energisaController
 } from './'
 
 import { errorHandler, AppError } from './../utils/handleError'
@@ -33,13 +34,19 @@ type clientsKeys = Array<number>
 const JWT_SECRET = process.env.JWT_SECRET || 'Secret'
 
 export default class CPFLSearchController {
-  private dealerships = [{
-    label: 'CPFL',
-    value: 'cpfl'
-  }, {
-    label: 'EQUATORIAL',
-    value: 'equatorial'
-  }]
+  private dealerships = [
+    {
+      label: 'CPFL',
+      value: 'cpfl'
+    }, {
+      label: 'EQUATORIAL',
+      value: 'equatorial'
+    },
+    {
+      label: 'ENERGISA',
+      value: 'energisa'
+    }
+  ]
 
   private updates_times = [{
     label: '15 minutos',
@@ -229,6 +236,9 @@ export default class CPFLSearchController {
     } else if (dealership === 'equatorial') {
       states = equatorialController.states
       formattedStates = equatorialController.formatStatesToFrontend(states)
+    } else if (dealership === 'energisa') {
+      states = energisaController.states
+      formattedStates = energisaController.formatStatesToFrontend(states)
     }
 
     return res.status(200).json({
@@ -278,8 +288,10 @@ export default class CPFLSearchController {
 
     if (dealership === 'cpfl') {
       cities = this.getCPFLCities(state)
-    } else {
+    } else if (dealership === 'equatorial') {
       cities = this.getEquatorialCities(state)
+    } else if (dealership === 'energisa') {
+      cities = await energisaController.getCities(state)
     }
  
     return res.status(200).json({
