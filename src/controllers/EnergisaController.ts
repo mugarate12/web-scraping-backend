@@ -45,20 +45,6 @@ type statusCountInterface = Array<{
   status_concluidas: number,
 }>
 
-type reasonsCountInterface = Array<{
-  name: string,
-  state: string,
-  total_manutencao: number,
-  total_obra: number,
-  total_melhorias: number,
-  total_preventivas: number,
-  total_obraDeTerceiros: number,
-  total_documentoReserva: number,
-  total_outros: number,
-  clients_afetados: number
-}>
-
-
 export default class EnergisaController {
   // códigos das empresas que vem do estado
   // minas gerais === 1
@@ -307,6 +293,7 @@ export default class EnergisaController {
       const streets = information.logradouros
 
       const date = information.strDataInicial.split(' ')[0]
+      const finalMaintenanceDate = information.strDataFinal.split(' ')[0]
       let initialDate = information.strDataInicial
       let finalDate = information.strDataFinal
 
@@ -315,34 +302,19 @@ export default class EnergisaController {
 
       let duration = handleStatusOfEnergy.getDurationInSeconds(
         handleStatusOfEnergy.formatDateToGetDuration(date, initialHour),
-        handleStatusOfEnergy.formatDateToGetDuration(date, finalHour)
+        handleStatusOfEnergy.formatDateToGetDuration(finalMaintenanceDate, finalHour)
       )
-
-      const moreThanHalfDay = Number(initialHour.split(':')[0]) > 12
-      const nextDayhour  = Number(finalHour.split(':')[0]) < 12
-
-      if (moreThanHalfDay && nextDayhour) {
-        const newDate = moment(handleStatusOfEnergy.formatDateToGetDuration(date, finalHour)).add(1, 'day').format('DD/MM/YYYY HH:mm')
-        const dateFormatted = newDate.split(' ')[0]
-  
-        duration = handleStatusOfEnergy.getDurationInSeconds(
-          handleStatusOfEnergy.formatDateToGetDuration(dateFormatted, initialHour),
-          handleStatusOfEnergy.formatDateToGetDuration(dateFormatted, finalHour)
-        )
-  
-        finalDate = moment(handleStatusOfEnergy.formatDateToGetDuration(dateFormatted, finalHour)).add(1, 'day').format('DD/MM/YYYY')
-      }
 
       const actualDate = moment().format('DD/MM/YYYY HH:mm')
 
       let finalSeconds = handleStatusOfEnergy.getDurationInSeconds(
         handleStatusOfEnergy.formatDateToGetDuration(actualDate.split(' ')[0], actualDate.split(' ')[1]),
-        handleStatusOfEnergy.formatDateToGetDuration(date, initialHour)
+        handleStatusOfEnergy.formatDateToGetDuration(finalMaintenanceDate, initialHour)
       )
   
       let finalMaintenance = handleStatusOfEnergy.getDurationInSeconds(
         handleStatusOfEnergy.formatDateToGetDuration(actualDate.split(' ')[0], actualDate.split(' ')[1]),
-        handleStatusOfEnergy.formatDateToGetDuration(date, finalHour)
+        handleStatusOfEnergy.formatDateToGetDuration(finalMaintenanceDate, finalHour)
       )
 
       if (finalSeconds < 0) {
@@ -354,12 +326,6 @@ export default class EnergisaController {
       }
 
       const status = handleStatusOfEnergy.getStatus(finalSeconds, finalMaintenance)
-
-      // console.log('data, data inicial e data final', date, initialDate, finalDate)
-      // console.log('duração', duration)
-      // console.log('status', status)
-      // console.log('final seconds', finalSeconds)
-      // console.log('finalMaintenance', finalMaintenance)
 
       return streets.map((street) => {
         return {
@@ -573,7 +539,6 @@ export default class EnergisaController {
     const documents = await energisaInformationsRepository.index({ state_name: stateName, city_name: cityName })
     const doc = documents[0]
 
-    console.log('document', doc)
     if (!!doc) {
       const data = await this.getDataAndFormat(doc.state_cod, doc.city_cod)
       await this.updateData(data)
@@ -586,6 +551,20 @@ export default class EnergisaController {
 
   public deleteAllDataWithStatusFinished = async () => {
     await energisaDataRepository.delete({ status: 4 })
+  }
+
+  public updateManually = async (req: Request<{ state: string, city: string }>, res: Response) => {
+    const { state, city } = req.params
+
+    const documents = await energisaInformationsRepository.index({ state_name: state, city_name: city })
+    const doc = documents[0]
+
+    if (!!doc) {
+      const data = await this.getDataAndFormat(doc.state_cod, doc.city_cod)
+      await this.updateData(data)
+    }
+
+    return res.status(200).json({})
   }
 
   public getDataByState = async (req: Request, res: Response) => {
@@ -761,7 +740,7 @@ export default class EnergisaController {
 
     // const energisa = await energisaInformationsRepository.index({})
     // essa requisição de dados precisa ser em paralelo
-    // const data = await this.getDataAndFormat('1', '1')
+    // const data = await this.getDataAndFormat('3', '1')
     // await this.updateData(data)
 
     // const requests = await cpflSearchRepository.index({ able: 1, dealership: 'energisa', update_time: 15 })
@@ -773,7 +752,7 @@ export default class EnergisaController {
     // }
 
     return res.status(200).json({
-      
+      // data: data.filter(d => d.street === 'RUA I')
     })
   }
 }
