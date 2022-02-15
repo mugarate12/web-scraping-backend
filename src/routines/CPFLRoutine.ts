@@ -314,7 +314,7 @@ export default async () => {
     await deleteDataWithStatusFinished()
   })
 
-  const getEnergisaInformationsRoutine = new CronJob.CronJob('10 * * * *', async () => {
+  const getEnergisaInformationsRoutine = new CronJob.CronJob('*/10 * * * *', async () => {
     getEnergisaInformations
   })
 
