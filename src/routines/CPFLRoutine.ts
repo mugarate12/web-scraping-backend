@@ -315,7 +315,7 @@ export default async () => {
   })
 
   const getEnergisaInformationsRoutine = new CronJob.CronJob('*/10 * * * *', async () => {
-    getEnergisaInformations
+    await getEnergisaInformations()
   })
 
   fifteenRoutine.start()

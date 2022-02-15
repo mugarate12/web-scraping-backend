@@ -757,20 +757,20 @@ export default class EnergisaController {
  
   public test = async (req: Request, res: Response) => {
     // method to add states and cities to list of requestable
-    // await this.getInformationsAndUpdateInformations()
+    await this.getInformationsAndUpdateInformations()
 
     // const energisa = await energisaInformationsRepository.index({})
     // essa requisição de dados precisa ser em paralelo
     // const data = await this.getDataAndFormat('1', '1')
     // await this.updateData(data)
 
-    const requests = await cpflSearchRepository.index({ able: 1, dealership: 'energisa', update_time: 15 })
-    for (let index = 0; index < requests.length; index++) {
-      const request = requests[index];
+    // const requests = await cpflSearchRepository.index({ able: 1, dealership: 'energisa', update_time: 15 })
+    // for (let index = 0; index < requests.length; index++) {
+    //   const request = requests[index];
       
-      console.log(request.state, request.city)
-      await this.runRoutine(request.state, request.city)
-    }
+    //   console.log(request.state, request.city)
+    //   await this.runRoutine(request.state, request.city)
+    // }
 
     return res.status(200).json({
       
