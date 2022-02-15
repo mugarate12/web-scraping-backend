@@ -580,6 +580,10 @@ export default class EnergisaController {
     }
   }
 
+  public getCitiesAvailable = async () => {
+    await this.getInformationsAndUpdateInformations()
+  }
+
   public deleteAllDataWithStatusFinished = async () => {
     await energisaDataRepository.delete({ status: 4 })
   }

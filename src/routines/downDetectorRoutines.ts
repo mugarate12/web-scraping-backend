@@ -116,9 +116,9 @@ function headquarterInitialLog(updateTime: number, indicator: number) {
   `)
 }
 
-function headquarterCompleteLog(updateTime: number, indicator: number) {
+function headquarterCompleteLog(updateTime: number, indicator: number, totalOfSteps: number) {
   console.log(colorToLog, `
-    Detector --> parte ${indicator} da rotina de ${updateTime} minuto(s) finalizada
+    Detector --> parte ${indicator} de ${totalOfSteps} da rotina de ${updateTime} minuto(s) finalizada
   `)
 }
 
@@ -214,7 +214,7 @@ async function routinesRequests(serverIo: Server, browser: puppeteer.Browser, up
       })
 
       await Promise.all([ ...requestsResultsPromises ])
-      headquarterCompleteLog(updateTime, index + 1)
+      headquarterCompleteLog(updateTime, index + 1, headquartersOFRequests.length)
     }
     
     setRedisKeyToComplete(updateTime)

@@ -243,6 +243,10 @@ async function deleteDataWithStatusFinished() {
     `)
 }
 
+async function getEnergisaInformations() {
+  await energisaController.getCitiesAvailable()
+}
+
 export default async () => {
   const fifteenMinutesBrowser = await cpflController.runBrowser()
   const thirtyMinutesBrowser = await cpflController.runBrowser()
@@ -310,6 +314,10 @@ export default async () => {
     await deleteDataWithStatusFinished()
   })
 
+  const getEnergisaInformationsRoutine = new CronJob.CronJob('10 * * * *', async () => {
+    getEnergisaInformations
+  })
+
   fifteenRoutine.start()
   thirtyRoutine.start()
   fortyFiveRoutine.start()
@@ -322,4 +330,6 @@ export default async () => {
   
   updateTimeRoutine.start()
   deleteDataWithStatusFinishedRoutine.start()
+
+  getEnergisaInformationsRoutine.start()
 }
