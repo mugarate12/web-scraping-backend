@@ -4,6 +4,7 @@ import fs from 'fs'
 import dotenv from 'dotenv'
 
 import {
+  nfeFazendaPermissionsRepository,
   nfseFazendaRepository
 } from './../repositories'
 
@@ -24,7 +25,18 @@ interface dataInterface {
   'Recepção Evento': number
 }
 
+interface permissonInterface {
+  nfe_fazenda_FK: number,
+  client_FK: number
+}
+
 type dataArrayInterface = Array<dataInterface>
+
+type permissionsInterface = Array<permissonInterface>
+
+interface permissionsBodyInterface {
+  permissions: permissionsInterface
+}
 
 export default class NFSEFazendaController {
   private sleep = (seconds: number) => {
@@ -266,6 +278,78 @@ export default class NFSEFazendaController {
 
   public runRoutine = async () => {
     await this.get()
+  }
+
+  public addPermissions = async (req: Request, res: Response) => {
+    const userID = Number(res.getHeader('userID'))
+    const { permissions } = req.body as permissionsBodyInterface
+   
+    for (let index = 0; index < permissions.length; index++) {
+      const permission = permissions[index];
+      
+      await nfeFazendaPermissionsRepository.create({
+        nfe_fazenda_FK: permission.nfe_fazenda_FK,
+        client_FK: permission.client_FK
+      })
+        .catch(() => {})
+    }
+
+    return res.status(200).json({
+
+    })
+  }
+ 
+  public removePermissions = async (req: Request, res: Response) => {
+    const userID = Number(res.getHeader('userID'))
+    const { permissions } = req.body as permissionsBodyInterface
+
+    for (let index = 0; index < permissions.length; index++) {
+      const permission = permissions[index];
+      
+      await nfeFazendaPermissionsRepository.delete({
+        nfe_fazenda_FK: permission.nfe_fazenda_FK,
+        client_FK: permission.client_FK
+      })
+        .catch(() => {})
+    }
+
+    return res.status(200).json({
+      
+    })
+  }
+
+  public getInformations = async (req: Request, res: Response) => {
+    const data = await nfseFazendaRepository.index({})
+
+    return res.status(200).json({
+      data
+    })
+  }
+
+  private getServicesOfUserHaveAccess = async (userID: number) => {
+    const permissions = await nfeFazendaPermissionsRepository.index({ client_FK: userID })
+    const ids = permissions.map(permission => {
+      return permission.nfe_fazenda_FK
+    })
+
+    return ids
+  }
+
+  public sendJson = async (req: Request, res: Response) => {
+    const userID = Number(res.getHeader('userID'))
+
+    const ids = await this.getServicesOfUserHaveAccess(userID)
+    let data = await nfseFazendaRepository.index({
+      ids
+    })
+
+    if (ids.length === 0) {
+      data = []
+    }
+
+    return res.status(200).json({
+      data
+    })
   }
 
   public test = async (req: Request, res: Response) => {

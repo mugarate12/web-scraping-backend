@@ -23,6 +23,7 @@ import HostsPerfilsRepository from './HostsPerfilsRepository'
 
 import MonitoringRepository from "./monitoringRepository"
 
+import NFEFazendaPermissionsRepository from './NFEFazendaPermissonsRepository'
 import NfseFazendaRepository from './NFSEFazendaRepository'
 
 import OCRDataRepository from './OCRDataRepository'
@@ -53,6 +54,8 @@ export const energyPermissionsRepository = new EnergyPermissionsRepository()
 export const equatorialDataRepository = new EquatorialDataRepository()
 export const hostsPerfilsRepository = new HostsPerfilsRepository()
 export const monitoringRepository = new MonitoringRepository()
+
+export const nfeFazendaPermissionsRepository = new NFEFazendaPermissionsRepository()
 export const nfseFazendaRepository = new NfseFazendaRepository()
 export const ocrDataRepository = new OCRDataRepository()
 export const ocrPermissionsRepository = new OCRPermissionsRepository()

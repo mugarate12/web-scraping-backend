@@ -36,9 +36,9 @@ interface indexOCRPermissionsInterface {
 
 interface deleteOCRPermissionsInterface {
   client_FK: number,
-  state: string,
-  city: string,
-  pix_name: string
+  state?: string,
+  city?: string,
+  pix_name?: string
 }
 
 export default class OCRPermissionsRepository {
@@ -82,8 +82,14 @@ export default class OCRPermissionsRepository {
   }
 
   public delete = async ({ client_FK, state, city, pix_name }: deleteOCRPermissionsInterface) => {
-    return this.reference()
-      .where({ client_FK, state, city, pix_name })
+    let query = this.reference()
+
+    query.where('client_FK', '=', client_FK)
+    if (!!state) query.where('state', '=', state)
+    if (!!city) query.where('city', '=', city)
+    if (!!pix_name) query.where('pix_name', '=', pix_name)
+
+    return query
       .del()
       .then(() => {
         return

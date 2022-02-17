@@ -17,7 +17,9 @@ import {
   energyPermissionsRepository,
   servicesRepository,
   permissionsRepository,
-  cpflSearchRepository
+  cpflSearchRepository,
+  ocrPermissionsRepository,
+  nfeFazendaPermissionsRepository
 } from './../repositories'
 import { permissionsInterface } from './../repositories/permissionsRepository'
 
@@ -569,9 +571,12 @@ export default class ApiAccessController {
     const client = await apiAccessClientsRepository.get({ identifier: String(identifier) })
     await clientsAccessRepository.delete({ client_FK: client.id })
     await energyPermissionsRepository.delete({ client_FK: client.id })
+    await ocrPermissionsRepository.delete({ client_FK: client.id })
+    await nfeFazendaPermissionsRepository.delete({ client_FK: client.id })
+
     await apiAccessTokensRepository.delete({ api_access_client_FK: client.id })
     await apiAccessClientsRepository.delete({ id: client.id })
-
+    
     return res.status(200).json({
       message: 'cliente deletado com sucesso!'
     })

@@ -38,6 +38,10 @@ interface createNfseFazendaInterface {
   recepcao_evento: number
 }
 
+interface indexNfseFazendaInterface {
+  ids?: Array<number>
+}
+
 interface getNfseFazendaInterface {
   autorizador: string,
 }
@@ -101,8 +105,20 @@ export default class NfseFazendaRepository {
       })
   }
 
-  public index = async () => {
-    return this.reference()
+  public index = async ({ ids }: indexNfseFazendaInterface) => {
+    let query = this.reference()
+    
+    if (!!ids && ids.length > 0) {
+      query = query.where(function() {
+        this.where('id', '=', ids[0])
+  
+        ids.slice(1, ids.length).forEach((id) => {
+          this.orWhere('id', '=', id)
+        })
+      })
+    }
+    
+    return query
       .select('*')
       .then(nfseFazendaData => nfseFazendaData)
       .catch(error => {
