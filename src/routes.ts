@@ -10,6 +10,7 @@ import {
   cpflSearch,
   energisa,
   hostsPerfis,
+  nfseFazenda,
   ocr,
   publicAccess,
   services,
@@ -39,6 +40,9 @@ energisa(routes)
 
 // hosts perfis
 hostsPerfis(routes)
+
+// nfse fazenda routes
+nfseFazenda(routes)
 
 // ocr
 ocr(routes)

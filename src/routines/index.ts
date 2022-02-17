@@ -6,6 +6,7 @@ import clientKeysExpirationRoutine from './clientKeysExpirationRoutine'
 import CPFLRoutine from './CPFLRoutine'
 import routinesRequests from './downDetectorRoutines'
 import ocrRoutine from './ocrRoutine'
+import nfeFazendaRoutine from './nfeFazendaRoutine'
 
 dotenv.config()
 
@@ -30,6 +31,7 @@ export default async (serverIo: Server) => {
     
     routinesRequests(serverIo)
     CPFLRoutine()
+    nfeFazendaRoutine()
     ocrRoutine()
   }
 }

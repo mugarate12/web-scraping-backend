@@ -32,6 +32,8 @@ const ENERGY_PERMISSIONS_TABLE_NAME = 'energy_permissions'
 
 const HOSTS_PERFIS_TABLE_NAME = 'hosts_perfis'
 
+const NFE_FAZENDA_TABLE_NAME = 'nfe_fazenda'
+
 module.exports = {
   API_ACCESS_CLIENTS_TABLE_NAME,
   API_ACCESS_TOKENS_TABLE_NAME,
@@ -64,5 +66,7 @@ module.exports = {
 
   ENERGY_PERMISSIONS_TABLE_NAME,
 
-  HOSTS_PERFIS_TABLE_NAME
+  HOSTS_PERFIS_TABLE_NAME,
+  
+  NFE_FAZENDA_TABLE_NAME
 }

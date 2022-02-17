@@ -746,7 +746,7 @@ export default class EnergisaController {
 
     // const energisa = await energisaInformationsRepository.index({})
     // essa requisição de dados precisa ser em paralelo
-    // const data = await this.getDataAndFormat('3', '1')
+    const data = await this.getDataAndFormat('3', '1')
     // await this.updateData(data)
 
     // const requests = await cpflSearchRepository.index({ able: 1, dealership: 'energisa', update_time: 15 })

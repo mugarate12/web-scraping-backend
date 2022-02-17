@@ -1,6 +1,7 @@
 import cpflRoutes from './cpflRoutes'
 import cpflSearchRoutes from './cpflSearchRoutes'
 import energisaRoutes from './energisaRoutes'
+import nfseFazendaRoutes from './nfseFazenda'
 import ocrRoutes from './ocrRoutes'
 import hostsPerfisRoutes from './hostsPerfisRoutes'
 import publicAccessRoutes from "./publicAccessRoutes"
@@ -13,6 +14,7 @@ export const cpfl = cpflRoutes
 export const cpflSearch = cpflSearchRoutes
 export const energisa = energisaRoutes
 export const hostsPerfis = hostsPerfisRoutes
+export const nfseFazenda = nfseFazendaRoutes
 export const ocr = ocrRoutes
 export const publicAccess = publicAccessRoutes
 export const services = servicesRoutes
