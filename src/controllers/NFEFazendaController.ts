@@ -8,6 +8,8 @@ import {
   nfseFazendaRepository
 } from './../repositories'
 
+import { NFSEFazendaInterface } from './../repositories/NFSEFazendaRepository'
+
 dotenv.config()
 
 interface dataInterface {
@@ -335,6 +337,118 @@ export default class NFSEFazendaController {
     return ids
   }
 
+  // status is 1 if not incidents
+  // status is 2 if have incidents
+  private countIncidents = (data: Array<NFSEFazendaInterface>) => {
+    const incidents: Array<{
+      autorizador: string,
+      status: number  
+    }> = []
+
+    data.forEach(autorizador => {
+      const haveIncidentiInAutorizacao = autorizador.autorizacao !== 1
+      const haveIncidentiInRetornoAutorizacao = autorizador.retorno_autorizacao !== 1
+      const haveIncidentiInInutilizacao = autorizador.inutilizacao !== 1
+      const haveIncidentiInConsultaProtocolo = autorizador.consulta_protocolo !== 1
+      const haveIncidentiInStatusServico = autorizador.status_servico !== 1
+      const haveIncidentiInConsultaCadastro = autorizador.consulta_cadastro !== 1
+      const haveIncidentiInRecepcaoEvento = autorizador.recepcao_evento !== 1
+
+      if (haveIncidentiInAutorizacao || haveIncidentiInRetornoAutorizacao || haveIncidentiInInutilizacao || haveIncidentiInConsultaProtocolo || haveIncidentiInStatusServico || haveIncidentiInConsultaCadastro || haveIncidentiInRecepcaoEvento) {
+        incidents.push({
+          autorizador: autorizador.autorizador,
+          status: 2
+        })
+      } else {
+        incidents.push({
+          autorizador: autorizador.autorizador,
+          status: 1
+        })
+      }
+    })
+
+    return incidents
+  }
+
+  // valores
+  // verde = 1
+  // vermelho = 2
+  // amarelo = 3
+  // nulo = 4
+  private statusByProperty = (property: number) => {
+    const status = {
+      Verde: 0,
+      Amarelo: 0,
+      Vermelho: 0,
+      Nulo: 0
+    }
+
+    if (property === 1) {
+      status.Verde = 1
+    } else if (property === 2) {
+      status.Vermelho = 1
+    } else if (property === 3) {
+      status.Amarelo = 1
+    } else {
+      status.Nulo = 1
+    }
+
+    return status
+  }
+
+  private countStatus = (data: Array<NFSEFazendaInterface>) => {
+    const status = {
+      Verde: 0,
+      Amarelo: 0,
+      Vermelho: 0,
+      Nulo: 0
+    }
+
+    data.forEach(autorizador => {
+      const autorizacao = this.statusByProperty(autorizador.autorizacao)
+      const retorno_autorizacao = this.statusByProperty(autorizador.retorno_autorizacao)
+      const inutilizacao = this.statusByProperty(autorizador.inutilizacao)
+      const consulta_protocolo = this.statusByProperty(autorizador.consulta_protocolo)
+      const status_servico = this.statusByProperty(autorizador.status_servico)
+      const consulta_cadastro = this.statusByProperty(autorizador.consulta_cadastro)
+      const recepcao_evento = this.statusByProperty(autorizador.recepcao_evento)
+     
+      status.Verde += autorizacao.Verde 
+      status.Verde += retorno_autorizacao.Verde 
+      status.Verde += inutilizacao.Verde 
+      status.Verde += consulta_protocolo.Verde 
+      status.Verde += status_servico.Verde 
+      status.Verde += consulta_cadastro.Verde 
+      status.Verde += recepcao_evento.Verde 
+      
+      status.Vermelho += autorizacao.Vermelho 
+      status.Vermelho += retorno_autorizacao.Vermelho 
+      status.Vermelho += inutilizacao.Vermelho 
+      status.Vermelho += consulta_protocolo.Vermelho 
+      status.Vermelho += status_servico.Vermelho 
+      status.Vermelho += consulta_cadastro.Vermelho 
+      status.Vermelho += recepcao_evento.Vermelho 
+      
+      status.Amarelo += autorizacao.Amarelo 
+      status.Amarelo += retorno_autorizacao.Amarelo 
+      status.Amarelo += inutilizacao.Amarelo 
+      status.Amarelo += consulta_protocolo.Amarelo 
+      status.Amarelo += status_servico.Amarelo 
+      status.Amarelo += consulta_cadastro.Amarelo 
+      status.Amarelo += recepcao_evento.Amarelo 
+      
+      status.Nulo += autorizacao.Nulo 
+      status.Nulo += retorno_autorizacao.Nulo 
+      status.Nulo += inutilizacao.Nulo 
+      status.Nulo += consulta_protocolo.Nulo 
+      status.Nulo += status_servico.Nulo 
+      status.Nulo += consulta_cadastro.Nulo 
+      status.Nulo += recepcao_evento.Nulo 
+    })
+
+    return status
+  }
+
   public sendJson = async (req: Request, res: Response) => {
     const userID = Number(res.getHeader('userID'))
 
@@ -347,8 +461,13 @@ export default class NFSEFazendaController {
       data = []
     }
 
+    const incidents = this.countIncidents(data)
+    const status = this.countStatus(data)
+
     return res.status(200).json({
-      data
+      data,
+      incidents,
+      status
     })
   }
 
