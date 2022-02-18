@@ -103,7 +103,6 @@ export default function publicAccessRoutes(routes: Router) {
     })
   }), publicAccessJWT, readApiInformations, readFlow4DetectorInformation, apiAccessController.changes)
 
-
   // CPFL ROUTES
   routes.get('/public/access/cpfl/:state', celebrate({
     [Segments.QUERY]: Joi.object().keys({

@@ -16,8 +16,24 @@
   "basePath": "/Flowbix/web-scraping/1.0.0",
   "tags": [
     {
-      "name": "Down Detector",
+      "name": "Flow4Detector",
       "description": "rotas para acesso as informações monitoradas do Flow4Detector"
+    },
+    {
+      "name": "CPFL",
+      "description": "rotas para acesso as informações monitoradas do Flow4Energy CPFL"
+    },
+    {
+      "name": "Equatorial",
+      "description": "rotas para acesso as informações monitoradas do Flow4Energy Equatorial"
+    },
+    {
+      "name": "Energisa",
+      "description": "rotas para acesso as informações monitoradas do Flow4Energy Energisa"
+    },
+    {
+      "name": "OCR",
+      "description": "rotas para acesso as informações monitoradas do Flow4OCR"
     },
     {
       "name": "SEFAZ",
@@ -25,13 +41,14 @@
     }
   ],
   "schemes": [
-    "https"
+    "https",
+    "http"
   ],
   "paths": {
     "/public/access/status/{serviceName}": {
       "get": {
         "tags": [
-          "Down Detector"
+          "Flow4Detector"
         ],
         "summary": "recuperar status atual de um serviço",
         "parameters": [
@@ -81,7 +98,7 @@
     "/public/access/changes/{serviceName}": {
       "get": {
         "tags": [
-          "Down Detector"
+          "Flow4Detector"
         ],
         "summary": "recuperar histórico de mudanças atual de um serviço",
         "parameters": [
@@ -131,7 +148,7 @@
     "/public/access/status/all": {
       "get": {
         "tags": [
-          "Down Detector"
+          "Flow4Detector"
         ],
         "summary": "recuperar status atual de um serviço",
         "parameters": [
@@ -174,7 +191,7 @@
     "/public/access/changes/all": {
       "get": {
         "tags": [
-          "Down Detector"
+          "Flow4Detector"
         ],
         "summary": "recuperar mudanças de status de todos os serviços",
         "parameters": [
@@ -234,6 +251,522 @@
             "description": "Dados recuperados com sucesso",
             "schema": {
               "$ref": "#/definitions/inline_response_200_4"
+            }
+          },
+          "400": {
+            "description": "campo inválido ou não informado",
+            "schema": {
+              "$ref": "#/definitions/inline_response_400"
+            }
+          },
+          "401": {
+            "description": "token não informado, invalido, ou o token não tem permissão para realizar a operação",
+            "schema": {
+              "$ref": "#/definitions/inline_response_401"
+            }
+          },
+          "406": {
+            "description": "cliente não está habilitado, necessário entrar em contato com o adminstrador do sistema",
+            "schema": {
+              "$ref": "#/definitions/inline_response_406"
+            }
+          }
+        }
+      }
+    },
+    "/public/access/cpfl/all": {
+      "get": {
+        "tags": [
+          "CPFL"
+        ],
+        "summary": "recuperar dados do desligamento programado da CPFL",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "description": "token do cliente para ter acesso aos informações",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/inline_response_200_5"
+            }
+          },
+          "400": {
+            "description": "campo inválido ou não informado",
+            "schema": {
+              "$ref": "#/definitions/inline_response_400"
+            }
+          },
+          "401": {
+            "description": "token não informado, invalido, ou o token não tem permissão para realizar a operação",
+            "schema": {
+              "$ref": "#/definitions/inline_response_401"
+            }
+          },
+          "406": {
+            "description": "cliente não está habilitado, necessário entrar em contato com o adminstrador do sistema",
+            "schema": {
+              "$ref": "#/definitions/inline_response_406"
+            }
+          }
+        }
+      }
+    },
+    "/public/access/cpfl/count/status/all": {
+      "get": {
+        "tags": [
+          "CPFL"
+        ],
+        "summary": "recuperar status do desligamento programado da CPFL",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "description": "token do cliente para ter acesso aos informações",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/inline_response_200_6"
+            }
+          },
+          "400": {
+            "description": "campo inválido ou não informado",
+            "schema": {
+              "$ref": "#/definitions/inline_response_400"
+            }
+          },
+          "401": {
+            "description": "token não informado, invalido, ou o token não tem permissão para realizar a operação",
+            "schema": {
+              "$ref": "#/definitions/inline_response_401"
+            }
+          },
+          "406": {
+            "description": "cliente não está habilitado, necessário entrar em contato com o adminstrador do sistema",
+            "schema": {
+              "$ref": "#/definitions/inline_response_406"
+            }
+          }
+        }
+      }
+    },
+    "/public/access/cpfl/count/causas/all": {
+      "get": {
+        "tags": [
+          "CPFL"
+        ],
+        "summary": "recuperar causas do desligamento programado da CPFL",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "description": "token do cliente para ter acesso aos informações",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/inline_response_200_7"
+            }
+          },
+          "400": {
+            "description": "campo inválido ou não informado",
+            "schema": {
+              "$ref": "#/definitions/inline_response_400"
+            }
+          },
+          "401": {
+            "description": "token não informado, invalido, ou o token não tem permissão para realizar a operação",
+            "schema": {
+              "$ref": "#/definitions/inline_response_401"
+            }
+          },
+          "406": {
+            "description": "cliente não está habilitado, necessário entrar em contato com o adminstrador do sistema",
+            "schema": {
+              "$ref": "#/definitions/inline_response_406"
+            }
+          }
+        }
+      }
+    },
+    "/public/access/cpfl/count/resumo/actualDate": {
+      "get": {
+        "tags": [
+          "CPFL"
+        ],
+        "summary": "recuperar resumo do desligamento programado da CPFL",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "description": "token do cliente para ter acesso aos informações",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/inline_response_200_8"
+            }
+          },
+          "400": {
+            "description": "campo inválido ou não informado",
+            "schema": {
+              "$ref": "#/definitions/inline_response_400"
+            }
+          },
+          "401": {
+            "description": "token não informado, invalido, ou o token não tem permissão para realizar a operação",
+            "schema": {
+              "$ref": "#/definitions/inline_response_401"
+            }
+          },
+          "406": {
+            "description": "cliente não está habilitado, necessário entrar em contato com o adminstrador do sistema",
+            "schema": {
+              "$ref": "#/definitions/inline_response_406"
+            }
+          }
+        }
+      }
+    },
+    "/public/access/equatorial/all": {
+      "get": {
+        "tags": [
+          "Equatorial"
+        ],
+        "summary": "recuperar dados do desligamento programado da Equatorial",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "description": "token do cliente para ter acesso aos informações",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/inline_response_200_9"
+            }
+          },
+          "400": {
+            "description": "campo inválido ou não informado",
+            "schema": {
+              "$ref": "#/definitions/inline_response_400"
+            }
+          },
+          "401": {
+            "description": "token não informado, invalido, ou o token não tem permissão para realizar a operação",
+            "schema": {
+              "$ref": "#/definitions/inline_response_401"
+            }
+          },
+          "406": {
+            "description": "cliente não está habilitado, necessário entrar em contato com o adminstrador do sistema",
+            "schema": {
+              "$ref": "#/definitions/inline_response_406"
+            }
+          }
+        }
+      }
+    },
+    "/public/access/equatorial/count/causas/all": {
+      "get": {
+        "tags": [
+          "Equatorial"
+        ],
+        "summary": "recuperar reações do desligamento programado da Equatorial",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "description": "token do cliente para ter acesso aos informações",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/inline_response_200_10"
+            }
+          },
+          "400": {
+            "description": "campo inválido ou não informado",
+            "schema": {
+              "$ref": "#/definitions/inline_response_400"
+            }
+          },
+          "401": {
+            "description": "token não informado, invalido, ou o token não tem permissão para realizar a operação",
+            "schema": {
+              "$ref": "#/definitions/inline_response_401"
+            }
+          },
+          "406": {
+            "description": "cliente não está habilitado, necessário entrar em contato com o adminstrador do sistema",
+            "schema": {
+              "$ref": "#/definitions/inline_response_406"
+            }
+          }
+        }
+      }
+    },
+    "/public/access/equatorial/count/status/all": {
+      "get": {
+        "tags": [
+          "Equatorial"
+        ],
+        "summary": "recuperar status do desligamento programado da Equatorial",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "description": "token do cliente para ter acesso aos informações",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/inline_response_200_11"
+            }
+          },
+          "400": {
+            "description": "campo inválido ou não informado",
+            "schema": {
+              "$ref": "#/definitions/inline_response_400"
+            }
+          },
+          "401": {
+            "description": "token não informado, invalido, ou o token não tem permissão para realizar a operação",
+            "schema": {
+              "$ref": "#/definitions/inline_response_401"
+            }
+          },
+          "406": {
+            "description": "cliente não está habilitado, necessário entrar em contato com o adminstrador do sistema",
+            "schema": {
+              "$ref": "#/definitions/inline_response_406"
+            }
+          }
+        }
+      }
+    },
+    "/public/access/equatorial/count/resumo/actualDate": {
+      "get": {
+        "tags": [
+          "Equatorial"
+        ],
+        "summary": "recuperar resumo do desligamento programado da Equatorial",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "description": "token do cliente para ter acesso aos informações",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/inline_response_200_12"
+            }
+          },
+          "400": {
+            "description": "campo inválido ou não informado",
+            "schema": {
+              "$ref": "#/definitions/inline_response_400"
+            }
+          },
+          "401": {
+            "description": "token não informado, invalido, ou o token não tem permissão para realizar a operação",
+            "schema": {
+              "$ref": "#/definitions/inline_response_401"
+            }
+          },
+          "406": {
+            "description": "cliente não está habilitado, necessário entrar em contato com o adminstrador do sistema",
+            "schema": {
+              "$ref": "#/definitions/inline_response_406"
+            }
+          }
+        }
+      }
+    },
+    "/public/access/energisa/all": {
+      "get": {
+        "tags": [
+          "Energisa"
+        ],
+        "summary": "recuperar dados do desligamento programado da Energisa",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "description": "token do cliente para ter acesso aos informações",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/inline_response_200_13"
+            }
+          },
+          "400": {
+            "description": "campo inválido ou não informado",
+            "schema": {
+              "$ref": "#/definitions/inline_response_400"
+            }
+          },
+          "401": {
+            "description": "token não informado, invalido, ou o token não tem permissão para realizar a operação",
+            "schema": {
+              "$ref": "#/definitions/inline_response_401"
+            }
+          },
+          "406": {
+            "description": "cliente não está habilitado, necessário entrar em contato com o adminstrador do sistema",
+            "schema": {
+              "$ref": "#/definitions/inline_response_406"
+            }
+          }
+        }
+      }
+    },
+    "/public/access/energisa/count/status/all": {
+      "get": {
+        "tags": [
+          "Energisa"
+        ],
+        "summary": "recuperar status do desligamento programado da Energisa",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "description": "token do cliente para ter acesso aos informações",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/inline_response_200_14"
+            }
+          },
+          "400": {
+            "description": "campo inválido ou não informado",
+            "schema": {
+              "$ref": "#/definitions/inline_response_400"
+            }
+          },
+          "401": {
+            "description": "token não informado, invalido, ou o token não tem permissão para realizar a operação",
+            "schema": {
+              "$ref": "#/definitions/inline_response_401"
+            }
+          },
+          "406": {
+            "description": "cliente não está habilitado, necessário entrar em contato com o adminstrador do sistema",
+            "schema": {
+              "$ref": "#/definitions/inline_response_406"
+            }
+          }
+        }
+      }
+    },
+    "/public/access/energisa/count/resumo/actualDate": {
+      "get": {
+        "tags": [
+          "Energisa"
+        ],
+        "summary": "recuperar resumo do desligamento programado da Energisa",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "description": "token do cliente para ter acesso aos informações",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/inline_response_200_15"
+            }
+          },
+          "400": {
+            "description": "campo inválido ou não informado",
+            "schema": {
+              "$ref": "#/definitions/inline_response_400"
+            }
+          },
+          "401": {
+            "description": "token não informado, invalido, ou o token não tem permissão para realizar a operação",
+            "schema": {
+              "$ref": "#/definitions/inline_response_401"
+            }
+          },
+          "406": {
+            "description": "cliente não está habilitado, necessário entrar em contato com o adminstrador do sistema",
+            "schema": {
+              "$ref": "#/definitions/inline_response_406"
+            }
+          }
+        }
+      }
+    },
+    "/public/access/ocr/all": {
+      "get": {
+        "tags": [
+          "OCR"
+        ],
+        "summary": "recuperar dados do mapeamento da OCR",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "description": "token do cliente para ter acesso aos informações",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/inline_response_200_16"
             }
           },
           "400": {
@@ -375,6 +908,391 @@
         "status": {
           "type": "number",
           "example": 1
+        }
+      }
+    },
+    "CPFLData": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "example": 1
+        },
+        "state": {
+          "type": "string",
+          "example": "São Paulo"
+        },
+        "city": {
+          "type": "string",
+          "example": "Aguas de Lindoia"
+        },
+        "district": {
+          "type": "string",
+          "example": "Pelados"
+        },
+        "street": {
+          "type": "string",
+          "example": "CRT 222D 17 ao 177"
+        },
+        "status": {
+          "type": "number",
+          "example": 4
+        },
+        "date": {
+          "type": "string",
+          "example": "17/01/2022"
+        },
+        "initial_hour": {
+          "type": "string",
+          "example": "17/01/2022 - 13:00"
+        },
+        "final_hour": {
+          "type": "string",
+          "example": "17/01/2022 - 18:00"
+        },
+        "duration": {
+          "type": "string",
+          "example": "5:0"
+        },
+        "final_seconds": {
+          "type": "number",
+          "example": 1200
+        },
+        "final_maintenance": {
+          "type": "number",
+          "example": 600
+        },
+        "reason": {
+          "type": "string",
+          "example": "Obra"
+        },
+        "clientes_afetados": {
+          "type": "number",
+          "example": 100
+        }
+      }
+    },
+    "CPFLStatusData": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "Aguas de Lindoas"
+        },
+        "state": {
+          "type": "string",
+          "example": "Paulista"
+        },
+        "status_agendamento": {
+          "type": "number",
+          "example": 200
+        },
+        "status_emAndamento": {
+          "type": "number",
+          "example": 100
+        },
+        "status_concluidas": {
+          "type": "number",
+          "example": 150
+        },
+        "clientes_afetados": {
+          "type": "number",
+          "example": 90
+        }
+      }
+    },
+    "CPFLReasonData": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "Aguas de Lindoas"
+        },
+        "state": {
+          "type": "string",
+          "example": "Paulista"
+        },
+        "total_manutencao": {
+          "type": "number",
+          "example": 0
+        },
+        "total_obra": {
+          "type": "number",
+          "example": 0
+        },
+        "total_melhorias": {
+          "type": "number",
+          "example": 10
+        },
+        "total_preventivas": {
+          "type": "number",
+          "example": 20
+        },
+        "total_obraDeTerceiros": {
+          "type": "number",
+          "example": 15
+        },
+        "total_documentoReserva": {
+          "type": "number",
+          "example": 35
+        },
+        "total_outros": {
+          "type": "number",
+          "example": 10
+        },
+        "clients_afetados": {
+          "type": "number",
+          "example": 2000
+        }
+      }
+    },
+    "EquatorialData": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "example": 1
+        },
+        "state": {
+          "type": "string",
+          "example": "CORURIPE"
+        },
+        "city": {
+          "type": "string",
+          "example": "Alagoas"
+        },
+        "district": {
+          "type": "string",
+          "example": "POÇAO"
+        },
+        "street": {
+          "type": "string",
+          "example": "PV POCAO"
+        },
+        "status": {
+          "type": "number",
+          "example": 4
+        },
+        "date": {
+          "type": "string",
+          "example": "17/01/2022"
+        },
+        "initial_hour": {
+          "type": "string",
+          "example": "17/01/2022 - 13:00"
+        },
+        "final_hour": {
+          "type": "string",
+          "example": "17/01/2022 - 18:00"
+        },
+        "duration": {
+          "type": "number",
+          "example": 216000
+        },
+        "final_seconds": {
+          "type": "number",
+          "example": 1200
+        },
+        "final_maintenance": {
+          "type": "number",
+          "example": 600
+        },
+        "reason": {
+          "type": "string",
+          "example": "Obra"
+        },
+        "clientes_afetados": {
+          "type": "number",
+          "example": 100
+        }
+      }
+    },
+    "EquatorialStatusData": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "CORURIPE"
+        },
+        "state": {
+          "type": "string",
+          "example": "Alagoas"
+        },
+        "status_agendamento": {
+          "type": "number",
+          "example": 200
+        },
+        "status_emAndamento": {
+          "type": "number",
+          "example": 100
+        },
+        "status_concluidas": {
+          "type": "number",
+          "example": 150
+        },
+        "clientes_afetados": {
+          "type": "number",
+          "example": 90
+        }
+      }
+    },
+    "EquatorialReasonData": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "CORURIPE"
+        },
+        "state": {
+          "type": "string",
+          "example": "Alagoas"
+        },
+        "total_manutencao": {
+          "type": "number",
+          "example": 0
+        },
+        "total_obra": {
+          "type": "number",
+          "example": 0
+        },
+        "total_melhorias": {
+          "type": "number",
+          "example": 10
+        },
+        "total_preventivas": {
+          "type": "number",
+          "example": 20
+        },
+        "total_obraDeTerceiros": {
+          "type": "number",
+          "example": 15
+        },
+        "total_documentoReserva": {
+          "type": "number",
+          "example": 35
+        },
+        "total_outros": {
+          "type": "number",
+          "example": 10
+        },
+        "clients_afetados": {
+          "type": "number",
+          "example": 2000
+        }
+      }
+    },
+    "EnergisaData": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "example": 1
+        },
+        "state": {
+          "type": "string",
+          "example": "Sergipe"
+        },
+        "city": {
+          "type": "string",
+          "example": "ARACAJU"
+        },
+        "street": {
+          "type": "string",
+          "example": "RUA ARNALDO PEREIRA SOUZA"
+        },
+        "status": {
+          "type": "number",
+          "example": 4
+        },
+        "date": {
+          "type": "string",
+          "example": "17/01/2022"
+        },
+        "initial_hour": {
+          "type": "string",
+          "example": "17/01/2022 - 13:00"
+        },
+        "final_hour": {
+          "type": "string",
+          "example": "17/01/2022 - 18:00"
+        },
+        "duration": {
+          "type": "number",
+          "example": 216000
+        },
+        "final_seconds": {
+          "type": "number",
+          "example": 1200
+        },
+        "final_maintenance": {
+          "type": "number",
+          "example": 600
+        }
+      }
+    },
+    "EnergisaStatusData": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "CORURIPE"
+        },
+        "state": {
+          "type": "string",
+          "example": "Alagoas"
+        },
+        "status_agendamento": {
+          "type": "number",
+          "example": 200
+        },
+        "status_emAndamento": {
+          "type": "number",
+          "example": 100
+        },
+        "status_concluidas": {
+          "type": "number",
+          "example": 150
+        }
+      }
+    },
+    "OCRData": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "example": 1
+        },
+        "state": {
+          "type": "string",
+          "example": "PR"
+        },
+        "city": {
+          "type": "string",
+          "example": "Curitiba"
+        },
+        "service": {
+          "type": "string",
+          "example": "CenturyLink"
+        },
+        "up_value": {
+          "type": "string",
+          "example": "13.3G"
+        },
+        "up_percent": {
+          "type": "number",
+          "example": 40
+        },
+        "down_value": {
+          "type": "string",
+          "example": "13.3G"
+        },
+        "down_percent": {
+          "type": "number",
+          "example": 30
+        },
+        "last_update_routine": {
+          "type": "string",
+          "example": "2022-02-08 09:33"
         }
       }
     },
@@ -556,6 +1474,212 @@
         },
         "status": {
           "$ref": "#/definitions/inline_response_200_4_status"
+        }
+      }
+    },
+    "inline_response_200_5": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CPFLData"
+          }
+        }
+      }
+    },
+    "inline_response_200_6": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CPFLStatusData"
+          }
+        }
+      }
+    },
+    "inline_response_200_7": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CPFLReasonData"
+          }
+        }
+      }
+    },
+    "inline_response_200_8_data": {
+      "type": "object",
+      "properties": {
+        "totalDeAgendamentos": {
+          "type": "number",
+          "example": 100
+        },
+        "manutencoesAgora": {
+          "type": "number",
+          "example": 50
+        },
+        "manutencoesEm24h": {
+          "type": "number",
+          "example": 80
+        },
+        "concluidasEm24h": {
+          "type": "number",
+          "example": 80
+        },
+        "paraIniciaremEm20min": {
+          "type": "number",
+          "example": 10
+        },
+        "clientesAfetados": {
+          "type": "number",
+          "example": 10200
+        }
+      }
+    },
+    "inline_response_200_8": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/inline_response_200_8_data"
+        }
+      }
+    },
+    "inline_response_200_9": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/EquatorialData"
+          }
+        }
+      }
+    },
+    "inline_response_200_10": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/EquatorialReasonData"
+          }
+        }
+      }
+    },
+    "inline_response_200_11": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/EquatorialStatusData"
+          }
+        }
+      }
+    },
+    "inline_response_200_12_data": {
+      "type": "object",
+      "properties": {
+        "totalDeAgendamentos": {
+          "type": "number",
+          "example": 100
+        },
+        "manutencoesAgora": {
+          "type": "number",
+          "example": 50
+        },
+        "manutencoesEm24h": {
+          "type": "number",
+          "example": 80
+        },
+        "concluidasEm24h": {
+          "type": "number",
+          "example": 80
+        },
+        "paraIniciaremEm20min": {
+          "type": "number",
+          "example": 10
+        },
+        "clientes_afetados": {
+          "type": "number",
+          "example": 12000
+        }
+      }
+    },
+    "inline_response_200_12": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/inline_response_200_12_data"
+        }
+      }
+    },
+    "inline_response_200_13": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/EnergisaData"
+          }
+        }
+      }
+    },
+    "inline_response_200_14": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/EnergisaStatusData"
+          }
+        }
+      }
+    },
+    "inline_response_200_15_data": {
+      "type": "object",
+      "properties": {
+        "totalDeAgendamentos": {
+          "type": "number",
+          "example": 100
+        },
+        "manutencoesAgora": {
+          "type": "number",
+          "example": 50
+        },
+        "manutencoesEm24h": {
+          "type": "number",
+          "example": 80
+        },
+        "concluidasEm24h": {
+          "type": "number",
+          "example": 80
+        },
+        "paraIniciaremEm20min": {
+          "type": "number",
+          "example": 10
+        }
+      }
+    },
+    "inline_response_200_15": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/inline_response_200_15_data"
+        }
+      }
+    },
+    "inline_response_200_16": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/OCRData"
+          }
         }
       }
     }
