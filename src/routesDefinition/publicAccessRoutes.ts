@@ -112,7 +112,7 @@ export default function publicAccessRoutes(routes: Router) {
     [Segments.PARAMS]: Joi.object().keys({
       state: Joi.string().required()
     })
-  }), publicAccessJWT, readApiInformations, readFlow4EnergyInformation, cpflEnergyPermissions, cpflController.getCPFLStateJson)
+  }), publicAccessJWT, cpflController.getCPFLStateJson)
   
   routes.get('/public/access/cpfl/:state/:city', celebrate({
     [Segments.QUERY]: Joi.object().keys({
@@ -122,7 +122,7 @@ export default function publicAccessRoutes(routes: Router) {
       state: Joi.string().required(),
       city: Joi.string().required()
     })
-  }), publicAccessJWT, readApiInformations, readFlow4EnergyInformation, cpflController.getCPFLCityJson)
+  }), publicAccessJWT, cpflController.getCPFLCityJson)
 
   routes.get('/public/access/cpfl/count/status/:state', celebrate({
     [Segments.QUERY]: Joi.object().keys({
@@ -130,7 +130,7 @@ export default function publicAccessRoutes(routes: Router) {
       bairro: Joi.string().optional(),
       rua: Joi.string().optional()
     })
-  }), publicAccessJWT, readApiInformations, readFlow4EnergyInformation, cpflEnergyPermissions, cpflController.getCountStatus)
+  }), publicAccessJWT, cpflController.getCountStatus)
   
   routes.get('/public/access/cpfl/count/causas/:state', celebrate({
     [Segments.QUERY]: Joi.object().keys({
@@ -138,13 +138,13 @@ export default function publicAccessRoutes(routes: Router) {
       bairro: Joi.string().optional(),
       rua: Joi.string().optional()
     })
-  }), publicAccessJWT, readApiInformations, readFlow4EnergyInformation, cpflEnergyPermissions, cpflController.getCountReasons)
+  }), publicAccessJWT, cpflController.getCountReasons)
 
   routes.get('/public/access/cpfl/count/resumo/actualDate', celebrate({
     [Segments.QUERY]: Joi.object().keys({
       token: Joi.string().required()
     })
-  }), publicAccessJWT, readApiInformations, readFlow4EnergyInformation, cpflController.getSummary)
+  }), publicAccessJWT, cpflController.getSummary)
 
   // EQUATORIAL ROUTES
   routes.get('/public/access/equatorial/:state', celebrate({
@@ -154,7 +154,7 @@ export default function publicAccessRoutes(routes: Router) {
     [Segments.PARAMS]: Joi.object().keys({
       state: Joi.string().required()
     })
-  }), publicAccessJWT, readApiInformations, readFlow4EnergyInformation, cpflEnergyPermissions, equatorialController.getPerState)
+  }), publicAccessJWT, equatorialController.getPerState)
 
   routes.get('/public/access/equatorial/count/status/:state', celebrate({
     [Segments.QUERY]: Joi.object().keys({
@@ -162,7 +162,7 @@ export default function publicAccessRoutes(routes: Router) {
       bairro: Joi.string().optional(),
       rua: Joi.string().optional()
     })
-  }), publicAccessJWT, readApiInformations, readFlow4EnergyInformation, cpflEnergyPermissions, equatorialController.getCountStatus)
+  }), publicAccessJWT, equatorialController.getCountStatus)
 
   routes.get('/public/access/equatorial/count/causas/:state', celebrate({
     [Segments.QUERY]: Joi.object().keys({
@@ -176,7 +176,7 @@ export default function publicAccessRoutes(routes: Router) {
     [Segments.QUERY]: Joi.object().keys({
       token: Joi.string().required()
     })
-  }), publicAccessJWT, readApiInformations, readFlow4EnergyInformation, equatorialController.getSummary)
+  }), publicAccessJWT, equatorialController.getSummary)
 
   // ENERGISA ROUTES
   routes.get('/public/access/energisa/all', celebrate({

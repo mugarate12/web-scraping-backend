@@ -3,7 +3,7 @@
   "info": {
     "description": "Api com as informações do monitoramento dos serviços",
     "version": "1.0.0",
-    "title": "FLOW4DETECTOR",
+    "title": "Web Scraping",
     "contact": {
       "email": "cribeiro@flowbix.com"
     },
@@ -16,8 +16,12 @@
   "basePath": "/Flowbix/web-scraping/1.0.0",
   "tags": [
     {
-      "name": "services",
-      "description": "rotas para acesso as informações monitoradas a partir de rotas públicas"
+      "name": "Down Detector",
+      "description": "rotas para acesso as informações monitoradas do Flow4Detector"
+    },
+    {
+      "name": "SEFAZ",
+      "description": "rotas para acesso da sefaz"
     }
   ],
   "schemes": [
@@ -27,7 +31,7 @@
     "/public/access/status/{serviceName}": {
       "get": {
         "tags": [
-          "services"
+          "Down Detector"
         ],
         "summary": "recuperar status atual de um serviço",
         "parameters": [
@@ -36,6 +40,13 @@
             "in": "path",
             "description": "nome do serviço do qual quer o status",
             "required": true,
+            "type": "string"
+          },
+          {
+            "name": "token",
+            "in": "query",
+            "description": "token do cliente para ter acesso aos informações",
+            "required": false,
             "type": "string"
           }
         ],
@@ -70,7 +81,7 @@
     "/public/access/changes/{serviceName}": {
       "get": {
         "tags": [
-          "services"
+          "Down Detector"
         ],
         "summary": "recuperar histórico de mudanças atual de um serviço",
         "parameters": [
@@ -79,6 +90,13 @@
             "in": "path",
             "description": "nome do serviço do qual quer o histórico de mudanças",
             "required": true,
+            "type": "string"
+          },
+          {
+            "name": "token",
+            "in": "query",
+            "description": "token do cliente para ter acesso aos informações",
+            "required": false,
             "type": "string"
           }
         ],
@@ -113,10 +131,18 @@
     "/public/access/status/all": {
       "get": {
         "tags": [
-          "services"
+          "Down Detector"
         ],
         "summary": "recuperar status atual de um serviço",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "description": "token do cliente para ter acesso aos informações",
+            "required": false,
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "status de todos os serviços recuperados com sucesso",
@@ -148,15 +174,66 @@
     "/public/access/changes/all": {
       "get": {
         "tags": [
-          "services"
+          "Down Detector"
         ],
         "summary": "recuperar mudanças de status de todos os serviços",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "description": "token do cliente para ter acesso aos informações",
+            "required": false,
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "mudanças de status de todos os serviços recuperados com sucesso",
             "schema": {
               "$ref": "#/definitions/inline_response_200_3"
+            }
+          },
+          "400": {
+            "description": "campo inválido ou não informado",
+            "schema": {
+              "$ref": "#/definitions/inline_response_400"
+            }
+          },
+          "401": {
+            "description": "token não informado, invalido, ou o token não tem permissão para realizar a operação",
+            "schema": {
+              "$ref": "#/definitions/inline_response_401"
+            }
+          },
+          "406": {
+            "description": "cliente não está habilitado, necessário entrar em contato com o adminstrador do sistema",
+            "schema": {
+              "$ref": "#/definitions/inline_response_406"
+            }
+          }
+        }
+      }
+    },
+    "/public/access/nfefazenda": {
+      "get": {
+        "tags": [
+          "SEFAZ"
+        ],
+        "summary": "recuperar status, incidentes e dados do mapeamento da sefaz para monitoramento",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "description": "token do cliente para ter acesso aos informações",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dados recuperados com sucesso",
+            "schema": {
+              "$ref": "#/definitions/inline_response_200_4"
             }
           },
           "400": {
@@ -239,6 +316,68 @@
         }
       }
     },
+    "SefazData": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "example": 1
+        },
+        "autorizador": {
+          "type": "string",
+          "example": "MG"
+        },
+        "update_time": {
+          "type": "string",
+          "example": "17/02/2022 17:03:06"
+        },
+        "autorizacao": {
+          "type": "number",
+          "example": 1
+        },
+        "retorno_autorizacao": {
+          "type": "number",
+          "example": 1
+        },
+        "inutilizacao": {
+          "type": "number",
+          "example": 1
+        },
+        "consulta_protocolo": {
+          "type": "number",
+          "example": 1
+        },
+        "status_servico": {
+          "type": "number",
+          "example": 1
+        },
+        "tempo_medio": {
+          "type": "string",
+          "example": "-"
+        },
+        "consulta_cadastro": {
+          "type": "number",
+          "example": 1
+        },
+        "recepcao_evento": {
+          "type": "number",
+          "example": 1
+        }
+      }
+    },
+    "SefazIncidents": {
+      "type": "object",
+      "properties": {
+        "autorizador": {
+          "type": "string",
+          "example": "MG"
+        },
+        "status": {
+          "type": "number",
+          "example": 1
+        }
+      }
+    },
     "inline_response_200": {
       "type": "object",
       "properties": {
@@ -265,7 +404,7 @@
       "properties": {
         "message": {
           "type": "string",
-          "example": "cliente está desabilitado, por favor, entre em contato com o administrador do sistema"
+          "example": "cliente está desabilitado ou não existe, por favor, entre em contato com o administrador do sistema"
         }
       }
     },
@@ -376,6 +515,47 @@
           "items": {
             "$ref": "#/definitions/ChangeAll"
           }
+        }
+      }
+    },
+    "inline_response_200_4_status": {
+      "type": "object",
+      "properties": {
+        "Verde": {
+          "type": "number",
+          "example": 1
+        },
+        "Amarelo": {
+          "type": "number",
+          "example": 1
+        },
+        "Vermelho": {
+          "type": "number",
+          "example": 1
+        },
+        "Nulo": {
+          "type": "number",
+          "example": 1
+        }
+      }
+    },
+    "inline_response_200_4": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SefazData"
+          }
+        },
+        "incidents": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SefazIncidents"
+          }
+        },
+        "status": {
+          "$ref": "#/definitions/inline_response_200_4_status"
         }
       }
     }
