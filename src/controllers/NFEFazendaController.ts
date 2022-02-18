@@ -346,13 +346,13 @@ export default class NFSEFazendaController {
     }> = []
 
     data.forEach(autorizador => {
-      const haveIncidentiInAutorizacao = autorizador.autorizacao !== 1
-      const haveIncidentiInRetornoAutorizacao = autorizador.retorno_autorizacao !== 1
-      const haveIncidentiInInutilizacao = autorizador.inutilizacao !== 1
-      const haveIncidentiInConsultaProtocolo = autorizador.consulta_protocolo !== 1
-      const haveIncidentiInStatusServico = autorizador.status_servico !== 1
-      const haveIncidentiInConsultaCadastro = autorizador.consulta_cadastro !== 1
-      const haveIncidentiInRecepcaoEvento = autorizador.recepcao_evento !== 1
+      const haveIncidentiInAutorizacao = autorizador.autorizacao !== 1 && autorizador.autorizacao !== 4
+      const haveIncidentiInRetornoAutorizacao = autorizador.retorno_autorizacao !== 1 && autorizador.retorno_autorizacao !== 4
+      const haveIncidentiInInutilizacao = autorizador.inutilizacao !== 1 && autorizador.inutilizacao !== 4
+      const haveIncidentiInConsultaProtocolo = autorizador.consulta_protocolo !== 1 && autorizador.consulta_protocolo !== 4
+      const haveIncidentiInStatusServico = autorizador.status_servico !== 1 && autorizador.status_servico !== 4
+      const haveIncidentiInConsultaCadastro = autorizador.consulta_cadastro !== 1 && autorizador.consulta_cadastro !== 4
+      const haveIncidentiInRecepcaoEvento = autorizador.recepcao_evento !== 1 && autorizador.recepcao_evento !== 4
 
       if (haveIncidentiInAutorizacao || haveIncidentiInRetornoAutorizacao || haveIncidentiInInutilizacao || haveIncidentiInConsultaProtocolo || haveIncidentiInStatusServico || haveIncidentiInConsultaCadastro || haveIncidentiInRecepcaoEvento) {
         incidents.push({
