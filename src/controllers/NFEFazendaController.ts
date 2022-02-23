@@ -125,8 +125,8 @@ export default class NFSEFazendaController {
 
   // valores
   // verde = 1
-  // vermelho = 2
-  // amarelo = 3
+  // amarelo = 2
+  // vermelho = 3
   // nulo = 4
   private getData = async (page: puppeteer.Page) => {
     let result: dataArrayInterface = []
@@ -140,9 +140,9 @@ export default class NFSEFazendaController {
         if (!element) {
           return 4
         } else if (element.includes(red)) {
-          return 2
-        } else if (element.includes(yellow)) {
           return 3
+        } else if (element.includes(yellow)) {
+          return 2
         } else {
           return 1
         }
@@ -372,8 +372,8 @@ export default class NFSEFazendaController {
 
   // valores
   // verde = 1
-  // vermelho = 2
-  // amarelo = 3
+  // amarelo = 2
+  // vermelho = 3
   // nulo = 4
   private statusByProperty = (property: number) => {
     const status = {
@@ -386,9 +386,9 @@ export default class NFSEFazendaController {
     if (property === 1) {
       status.Verde = 1
     } else if (property === 2) {
-      status.Vermelho = 1
-    } else if (property === 3) {
       status.Amarelo = 1
+    } else if (property === 3) {
+      status.Vermelho = 1
     } else {
       status.Nulo = 1
     }
