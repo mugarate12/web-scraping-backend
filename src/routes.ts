@@ -8,6 +8,7 @@ import {
 import {
   cpfl,
   cpflSearch,
+  enel,
   energisa,
   hostsPerfis,
   nfseFazenda,
@@ -34,6 +35,9 @@ routes.get('/downDetector/:serviceName', celebrate({
 // cpfl
 cpfl(routes)
 cpflSearch(routes)
+
+//enel routes
+enel(routes)
 
 // energisa routes
 energisa(routes)

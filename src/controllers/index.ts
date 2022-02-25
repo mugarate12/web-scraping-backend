@@ -2,6 +2,7 @@ import ApiAccessController from "./apiAccessController"
 import CPFLController from "./CPFLController"
 import CPFLSearchController from "./CPFLSearchController"
 import DownDetectorController from "./downDetector"
+import EnelController from "./EnelController"
 import EnergisaController from "./EnergisaController"
 import EquatorialController from "./EquatorialController"
 import HostPerfisController from "./HostPerfisController"
@@ -17,6 +18,7 @@ export const cpflController = new CPFLController()
 export const cpflSearchController = new CPFLSearchController()
 export const downDetectorController = new DownDetectorController()
 export const energisaController = new EnergisaController()
+export const enelController = new EnelController()
 export const equatorialController = new EquatorialController()
 export const hostPerfisController = new HostPerfisController()
 export const nfseFazendaController = new NFSEFazendaController()
